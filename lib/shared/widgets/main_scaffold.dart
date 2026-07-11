@@ -30,9 +30,9 @@ class MainScaffold extends StatelessWidget {
         onDestinationSelected: _onSelected,
         destinations: [
           NavigationDestination(
-            icon: const Icon(Icons.home_outlined),
-            selectedIcon: const Icon(Icons.home),
-            label: l10n.home,
+            icon: const Icon(Icons.restaurant_menu_outlined),
+            selectedIcon: const Icon(Icons.restaurant_menu),
+            label: l10n.menu,
           ),
           NavigationDestination(
             icon: const Icon(Icons.check_box_outlined),

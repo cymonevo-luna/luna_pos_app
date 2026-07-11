@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/auth_controller.dart';
 import '../../features/auth/login_page.dart';
 import '../../features/auth/register_page.dart';
 import '../../features/auth/splash_page.dart';
+import '../../features/menu/menu_page.dart';
 import '../../features/placeholder/coming_soon_page.dart';
 import '../../features/profile/profile_page.dart';
 import '../../features/settings/settings_page.dart';
-import '../../features/showcase/showcase_page.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/main_scaffold.dart';
 
@@ -31,14 +33,56 @@ enum AppRoute {
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
+class _AuthRefreshListenable extends ChangeNotifier {
+  _AuthRefreshListenable(this.ref) {
+    _subscription = ref.listen(authProvider, (_, _) => notifyListeners());
+  }
+
+  final Ref ref;
+  late final ProviderSubscription<AuthState> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.close();
+    super.dispose();
+  }
+}
+
+String? _authRedirect(Ref ref, GoRouterState state) {
+  final auth = ref.read(authProvider);
+  final location = state.matchedLocation;
+  final isSplash = location == AppRoute.splash.path;
+  final isAuthRoute =
+      location == AppRoute.login.path || location == AppRoute.register.path;
+
+  if (auth.status == AuthStatus.unknown) return null;
+
+  if (auth.status == AuthStatus.unauthenticated) {
+    if (isSplash || isAuthRoute) return null;
+    return AppRoute.login.path;
+  }
+
+  if (auth.status == AuthStatus.authenticated && (isSplash || isAuthRoute)) {
+    return AppRoute.home.path;
+  }
+
+  return null;
+}
+
 /// The app's router. Bottom-navigation tabs live inside a
 /// [StatefulShellRoute.indexedStack] so each tab is instantiated only once and
 /// kept alive; everything else (auth, settings, details) sits on the root
 /// navigator and is presented over the shell.
-final GoRouter appRouter = GoRouter(
-  navigatorKey: _rootNavigatorKey,
-  initialLocation: AppRoute.splash.path,
-  routes: [
+final routerProvider = Provider<GoRouter>((ref) {
+  final refresh = _AuthRefreshListenable(ref);
+  ref.onDispose(refresh.dispose);
+
+  return GoRouter(
+    navigatorKey: _rootNavigatorKey,
+    initialLocation: AppRoute.splash.path,
+    refreshListenable: refresh,
+    redirect: (context, state) => _authRedirect(ref, state),
+    routes: [
     GoRoute(
       path: AppRoute.splash.path,
       name: AppRoute.splash.name,
@@ -68,7 +112,7 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: AppRoute.home.path,
               name: AppRoute.home.name,
-              builder: (context, state) => const ShowcasePage(),
+              builder: (context, state) => const MenuPage(),
             ),
           ],
         ),
@@ -132,10 +176,11 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const _DetailsPage(),
     ),
   ],
-  errorBuilder: (context, state) => Scaffold(
-    body: Center(child: Text('Route not found: ${state.uri}')),
-  ),
-);
+    errorBuilder: (context, state) => Scaffold(
+      body: Center(child: Text('Route not found: ${state.uri}')),
+    ),
+  );
+});
 
 /// Placeholder destination to demonstrate navigation. Replace with real pages.
 class _DetailsPage extends StatelessWidget {

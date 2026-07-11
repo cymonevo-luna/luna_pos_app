@@ -4,6 +4,7 @@ import '../../../core/formatting/currency_formatter.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_tokens.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/widgets.dart';
 import '../models/pos_menu.dart';
 import 'menu_photo.dart';
@@ -12,38 +13,30 @@ class MenuItemCard extends StatelessWidget {
   const MenuItemCard({
     super.key,
     required this.item,
-    required this.selected,
-    required this.onTap,
+    required this.onAdd,
   });
 
   final POSMenuItem item;
-  final bool selected;
-  final VoidCallback onTap;
+  final VoidCallback onAdd;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final tokens = context.tokens;
+    final l10n = AppLocalizations.of(context);
     final inStock = item.isInStock;
-    final borderColor = selected
-        ? colors.primary
-        : (inStock ? Colors.transparent : tokens.border);
+    final borderColor = inStock ? Colors.transparent : tokens.border;
 
     return Opacity(
       opacity: inStock ? 1 : 0.55,
       child: AppCard(
-        onTap: inStock ? onTap : null,
-        elevated: !selected,
+        elevated: true,
         padding: EdgeInsets.zero,
         borderRadius: AppRadius.brLg,
-        color: selected ? colors.primaryContainer.withValues(alpha: 0.35) : null,
         child: DecoratedBox(
           decoration: BoxDecoration(
             borderRadius: AppRadius.brLg,
-            border: Border.all(
-              color: borderColor,
-              width: selected ? 2 : 1,
-            ),
+            border: Border.all(color: borderColor),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -88,6 +81,12 @@ class MenuItemCard extends StatelessWidget {
                           ? 'Stock: ${item.availableStock}'
                           : 'Out of stock',
                       muted: true,
+                    ),
+                    const VGap(AppSpacing.sm),
+                    AppButton(
+                      l10n.addToCart,
+                      size: AppButtonSize.small,
+                      onPressed: inStock ? onAdd : null,
                     ),
                   ],
                 ),

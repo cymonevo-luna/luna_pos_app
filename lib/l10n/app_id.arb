@@ -74,5 +74,13 @@
   "noteLabel": "Catatan",
   "unitPrice": "Harga satuan",
   "lineTotal": "Total baris",
-  "noNote": "—"
+  "noNote": "—",
+  "cart": "Keranjang",
+  "addToCart": "Tambah ke keranjang",
+  "emptyCart": "Keranjangmu kosong",
+  "clearCart": "Kosongkan keranjang",
+  "remove": "Hapus",
+  "itemCount": "{count, plural, =0{Tidak ada item} =1{1 item} other{{count} item}}",
+  "editNote": "Ubah catatan",
+  "noteHint": "Catatan opsional (mis. es sedikit)"
 }

@@ -547,6 +547,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'—'**
   String get noNote;
+
+  /// Printer settings section title
+  ///
+  /// In en, this message translates to:
+  /// **'Printer'**
+  String get printer;
+
+  /// Bluetooth status label in printer settings
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth'**
+  String get bluetoothStatus;
+
+  /// Bluetooth enabled status
+  ///
+  /// In en, this message translates to:
+  /// **'On'**
+  String get bluetoothOn;
+
+  /// Bluetooth disabled status
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get bluetoothOff;
+
+  /// Printer connection status label
+  ///
+  /// In en, this message translates to:
+  /// **'Printer'**
+  String get printerConnectionStatus;
+
+  /// Printer connected status
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get connected;
+
+  /// Printer disconnected status
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnected'**
+  String get disconnected;
+
+  /// Printer connecting status
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting…'**
+  String get connecting;
+
+  /// Button to refresh paired Bluetooth printers
+  ///
+  /// In en, this message translates to:
+  /// **'Scan paired printers'**
+  String get scanPairedPrinters;
+
+  /// Placeholder when no paired printers are available
+  ///
+  /// In en, this message translates to:
+  /// **'No paired printers found. Pair a printer in Android Bluetooth settings, then scan again.'**
+  String get noPairedPrintersPlaceholder;
+
+  /// Button to print a sample receipt
+  ///
+  /// In en, this message translates to:
+  /// **'Test print'**
+  String get testPrint;
 }
 
 class _AppLocalizationsDelegate

@@ -74,5 +74,16 @@
   "noteLabel": "Catatan",
   "unitPrice": "Harga satuan",
   "lineTotal": "Total baris",
-  "noNote": "—"
+  "noNote": "—",
+  "printer": "Printer",
+  "bluetoothStatus": "Bluetooth",
+  "bluetoothOn": "Aktif",
+  "bluetoothOff": "Nonaktif",
+  "printerConnectionStatus": "Printer",
+  "connected": "Terhubung",
+  "disconnected": "Terputus",
+  "connecting": "Menghubungkan…",
+  "scanPairedPrinters": "Pindai printer yang dipasangkan",
+  "noPairedPrintersPlaceholder": "Tidak ada printer yang dipasangkan. Pasangkan printer di pengaturan Bluetooth Android, lalu pindai lagi.",
+  "testPrint": "Cetak uji"
 }

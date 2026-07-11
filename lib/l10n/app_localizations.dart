@@ -433,6 +433,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Passwords do not match'**
   String get passwordsDoNotMatch;
+
+  /// No description provided for @menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menu;
+
+  /// No description provided for @refreshMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh menu'**
+  String get refreshMenu;
+
+  /// No description provided for @noMenuItemsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No menu items available'**
+  String get noMenuItemsAvailable;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
 }
 
 class _AppLocalizationsDelegate

@@ -8,8 +8,13 @@ abstract final class AppConfig {
   /// Loads the `.env` asset. Safe to call once at startup.
   static Future<void> load() => dotenv.load(fileName: '.env');
 
-  static String get apiBaseUrl =>
-      dotenv.maybeGet('API_BASE_URL') ?? 'https://api.example.com';
+  static String get apiBaseUrl {
+    try {
+      return dotenv.maybeGet('API_BASE_URL') ?? 'https://api.example.com';
+    } catch (_) {
+      return 'https://api.example.com';
+    }
+  }
 
   static String get sentryDsn => dotenv.maybeGet('SENTRY_DSN') ?? '';
 

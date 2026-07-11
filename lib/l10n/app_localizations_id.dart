@@ -177,4 +177,16 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get passwordsDoNotMatch => 'Kata sandi tidak cocok';
+
+  @override
+  String get menu => 'Menu';
+
+  @override
+  String get refreshMenu => 'Muat ulang menu';
+
+  @override
+  String get noMenuItemsAvailable => 'Tidak ada item menu tersedia';
+
+  @override
+  String get retry => 'Coba lagi';
 }

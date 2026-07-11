@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/di/locator.dart';
 import '../../core/network/api_client.dart';
+import '../../core/network/api_envelope.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/storage/secure_storage_service.dart';
 import '../user/models/user.dart';
@@ -147,7 +148,7 @@ class AuthController extends Notifier<AuthState> {
     final data = await _api.post<Map<String, dynamic>>(
       '/api/v1/auth/login',
       body: {'email': email, 'password': password},
-      decoder: _unwrap,
+      decoder: unwrapApiEnvelope,
     );
     final tokens = (data['tokens'] as Map).cast<String, dynamic>();
     final user = User.fromJson((data['user'] as Map).cast<String, dynamic>());
@@ -162,7 +163,7 @@ class AuthController extends Notifier<AuthState> {
   Future<User> _fetchUser(String id) {
     return _api.get<User>(
       '/api/v1/users/$id',
-      decoder: (raw) => User.fromJson(_unwrap(raw)),
+      decoder: (raw) => User.fromJson(unwrapApiEnvelope(raw)),
     );
   }
 
@@ -173,7 +174,7 @@ class AuthController extends Notifier<AuthState> {
       final data = await _api.post<Map<String, dynamic>>(
         '/api/v1/auth/refresh',
         body: {'refresh_token': refresh},
-        decoder: _unwrap,
+        decoder: unwrapApiEnvelope,
       );
       final tokens = (data['tokens'] as Map).cast<String, dynamic>();
       await _secure.writeToken(tokens['access_token'] as String);
@@ -202,12 +203,6 @@ class AuthController extends Notifier<AuthState> {
     await _secure.deleteToken();
     await _secure.deleteRefreshToken();
     await _secure.deleteUserId();
-  }
-
-  /// Unwraps the standard `{ "success": ..., "data": ... }` API envelope.
-  Map<String, dynamic> _unwrap(dynamic raw) {
-    final map = (raw as Map).cast<String, dynamic>();
-    return (map['data'] as Map).cast<String, dynamic>();
   }
 
   /// Prefers the server-provided error message from the envelope, falling back

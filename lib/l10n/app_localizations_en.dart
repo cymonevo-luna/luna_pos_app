@@ -177,4 +177,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get menu => 'Menu';
+
+  @override
+  String get refreshMenu => 'Refresh menu';
+
+  @override
+  String get noMenuItemsAvailable => 'No menu items available';
+
+  @override
+  String get retry => 'Retry';
 }

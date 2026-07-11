@@ -6,10 +6,12 @@ import '../../core/router/app_router.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_tokens.dart';
 import '../../features/auth/auth_controller.dart';
+import '../../features/order/order_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/widgets.dart';
 import 'menu_controller.dart';
 import 'models/pos_menu.dart';
+import 'widgets/add_to_cart_sheet.dart';
 import 'widgets/menu_item_card.dart';
 
 class MenuPage extends ConsumerStatefulWidget {
@@ -33,19 +35,54 @@ class _MenuPageState extends ConsumerState<MenuPage> {
     }
   }
 
+  void _addToCart(POSMenuItem item) {
+    showAddToCartSheet(
+      context: context,
+      item: item,
+      onAdd: (quantity, note) {
+        ref.read(orderProvider.notifier).addLine(
+              item,
+              quantity: quantity,
+              note: note,
+            );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen(authProvider.select((s) => s.isAuthenticated), (previous, next) {
       if (!next && mounted) context.goNamed(AppRoute.login.name);
     });
 
+    ref.listen<String?>(
+      orderProvider.select((state) => state.errorMessage),
+      (previous, next) {
+        if (next != null && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(next)),
+          );
+        }
+      },
+    );
+
     final l10n = AppLocalizations.of(context);
     final menu = ref.watch(menuProvider);
+    final itemCount = ref.watch(orderProvider.select((state) => state.itemCount));
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.menu),
         actions: [
+          IconButton(
+            tooltip: l10n.cart,
+            onPressed: () => context.pushNamed(AppRoute.cart.name),
+            icon: Badge(
+              isLabelVisible: itemCount > 0,
+              label: Text('$itemCount'),
+              child: const Icon(Icons.shopping_cart_outlined),
+            ),
+          ),
           IconButton(
             tooltip: l10n.refreshMenu,
             onPressed: menu.loading || menu.refreshing
@@ -65,7 +102,7 @@ class _MenuPageState extends ConsumerState<MenuPage> {
         state: menu,
         onRetry: () => ref.read(menuProvider.notifier).retry(),
         onRefresh: () => ref.read(menuProvider.notifier).refresh(),
-        onToggle: (item) => ref.read(menuProvider.notifier).toggleSelection(item),
+        onAdd: _addToCart,
         emptyLabel: l10n.noMenuItemsAvailable,
         retryLabel: l10n.retry,
       ),
@@ -78,7 +115,7 @@ class _MenuBody extends StatelessWidget {
     required this.state,
     required this.onRetry,
     required this.onRefresh,
-    required this.onToggle,
+    required this.onAdd,
     required this.emptyLabel,
     required this.retryLabel,
   });
@@ -86,7 +123,7 @@ class _MenuBody extends StatelessWidget {
   final MenuState state;
   final VoidCallback onRetry;
   final Future<void> Function() onRefresh;
-  final void Function(POSMenuItem item) onToggle;
+  final void Function(POSMenuItem item) onAdd;
   final String emptyLabel;
   final String retryLabel;
 
@@ -139,14 +176,13 @@ class _MenuBody extends StatelessWidget {
                       crossAxisCount: crossAxisCount,
                       mainAxisSpacing: AppSpacing.sm,
                       crossAxisSpacing: AppSpacing.sm,
-                      childAspectRatio: 0.72,
+                      childAspectRatio: 0.68,
                     ),
                     itemBuilder: (context, index) {
                       final item = category.menus[index];
                       return MenuItemCard(
                         item: item,
-                        selected: state.selectedItemId == item.id,
-                        onTap: () => onToggle(item),
+                        onAdd: () => onAdd(item),
                       );
                     },
                   ),

@@ -13,6 +13,7 @@ import 'package:luna_pos/features/auth/login_page.dart';
 import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/features/menu/widgets/menu_item_card.dart';
+import 'package:luna_pos/features/order/order_controller.dart';
 
 import 'helpers/auth_harness.dart';
 
@@ -104,7 +105,7 @@ void main() {
     expect(find.text('Out of stock'), findsWidgets);
   });
 
-  testWidgets('in-stock item can be selected and out-of-stock cannot',
+  testWidgets('add item from menu updates cart count',
       (WidgetTester tester) async {
     secure.store[SecureKeys.authToken] = 'acc';
     secure.store[SecureKeys.userId] = 'u1';
@@ -129,19 +130,42 @@ void main() {
 
     await pumpApp(tester);
 
-    await tester.tap(find.text('Nasi Goreng'));
+    await tester.tap(find.text('Add to cart').first);
     await tester.pumpAndSettle();
 
-    final inStockCard = tester.widget<MenuItemCard>(
-      find.ancestor(
-        of: find.text('Nasi Goreng'),
-        matching: find.byType(MenuItemCard),
-      ),
-    );
-    expect(inStockCard.selected, isTrue);
-
-    await tester.tap(find.text('Empty Stock'));
+    await tester.tap(find.text('Add to cart').last);
     await tester.pumpAndSettle();
+
+    final menuPage = tester.element(find.byType(MenuPage));
+    final container = ProviderScope.containerOf(menuPage);
+    expect(container.read(orderProvider).itemCount, 1);
+    expect(find.text('1'), findsOneWidget);
+  });
+
+  testWidgets('out-of-stock item cannot be added to cart',
+      (WidgetTester tester) async {
+    secure.store[SecureKeys.authToken] = 'acc';
+    secure.store[SecureKeys.userId] = 'u1';
+
+    adapter
+      ..onGet(
+        '/api/v1/users/u1',
+        (server) => server.reply(200, {
+          'success': true,
+          'data': {
+            'id': 'u1',
+            'email': 'a@b.com',
+            'name': 'Alex',
+            'role': 'user',
+          },
+        }),
+      )
+      ..onGet(
+        '/api/v1/pos/menus',
+        (server) => server.reply(200, sampleMenusResponse()),
+      );
+
+    await pumpApp(tester);
 
     final outOfStockCard = tester.widget<MenuItemCard>(
       find.ancestor(
@@ -149,15 +173,12 @@ void main() {
         matching: find.byType(MenuItemCard),
       ),
     );
-    expect(outOfStockCard.selected, isFalse);
+    expect(outOfStockCard.item.isInStock, isFalse);
 
-    final inStockCardAfter = tester.widget<MenuItemCard>(
-      find.ancestor(
-        of: find.text('Nasi Goreng'),
-        matching: find.byType(MenuItemCard),
-      ),
-    );
-    expect(inStockCardAfter.selected, isTrue);
+    await tester.tap(find.text('Add to cart').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Qty'), findsNothing);
   });
 
   testWidgets('menu fetch error shows retry control', (WidgetTester tester) async {

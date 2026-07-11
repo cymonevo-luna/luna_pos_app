@@ -131,5 +131,43 @@
   "noNote": "—",
   "@noNote": {
     "description": "Placeholder when a cart line has no note"
+  },
+  "cart": "Cart",
+  "@cart": {
+    "description": "Cart screen title"
+  },
+  "addToCart": "Add to cart",
+  "@addToCart": {
+    "description": "Add menu item to cart button label"
+  },
+  "emptyCart": "Your cart is empty",
+  "@emptyCart": {
+    "description": "Message shown when the cart has no items"
+  },
+  "clearCart": "Clear cart",
+  "@clearCart": {
+    "description": "Clear all items from the cart"
+  },
+  "remove": "Remove",
+  "@remove": {
+    "description": "Remove a line from the cart"
+  },
+  "itemCount": "{count, plural, =0{No items} =1{1 item} other{{count} items}}",
+  "@itemCount": {
+    "description": "Cart item count summary",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "editNote": "Edit note",
+  "@editNote": {
+    "description": "Edit cart line note dialog title"
+  },
+  "noteHint": "Optional note (e.g. less ice)",
+  "@noteHint": {
+    "description": "Hint for optional cart line note input"
   }
 }

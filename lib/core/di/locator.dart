@@ -5,6 +5,7 @@ import '../network/api_client.dart';
 import '../storage/preferences_service.dart';
 import '../storage/secure_storage_service.dart';
 import '../../features/menu/data/menu_repository.dart';
+import '../../features/transaction/data/transaction_repository.dart';
 
 /// Global service locator. Use `locator<T>()` to resolve singletons anywhere.
 final GetIt locator = GetIt.instance;
@@ -35,5 +36,9 @@ Future<void> setupLocator() async {
 
   locator.registerLazySingleton<MenuRepository>(
     () => MenuRepository(locator<ApiClient>()),
+  );
+
+  locator.registerLazySingleton<TransactionRepository>(
+    () => TransactionRepository(locator<ApiClient>()),
   );
 }

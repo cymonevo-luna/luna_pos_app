@@ -10,6 +10,7 @@ import '../../features/menu/menu_page.dart';
 import '../../features/placeholder/coming_soon_page.dart';
 import '../../features/profile/profile_page.dart';
 import '../../features/settings/settings_page.dart';
+import '../../features/transaction/checkout_page.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/main_scaffold.dart';
 
@@ -25,7 +26,8 @@ enum AppRoute {
   messages('/messages'),
   profile('/profile'),
   settings('/settings'),
-  details('/details');
+  details('/details'),
+  checkout('/checkout');
 
   const AppRoute(this.path);
   final String path;
@@ -174,6 +176,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       name: AppRoute.details.name,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const _DetailsPage(),
+    ),
+    GoRoute(
+      path: AppRoute.checkout.path,
+      name: AppRoute.checkout.name,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const CheckoutPage(),
     ),
   ],
     errorBuilder: (context, state) => Scaffold(

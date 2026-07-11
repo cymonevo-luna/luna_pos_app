@@ -189,4 +189,33 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get retry => 'Coba lagi';
+
+  @override
+  String get checkout => 'Checkout';
+
+  @override
+  String get orderSummary => 'Ringkasan pesanan';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get cashTendered => 'Uang diterima';
+
+  @override
+  String get changeAmount => 'Kembalian';
+
+  @override
+  String get completeSale => 'Selesaikan penjualan';
+
+  @override
+  String get saleComplete => 'Penjualan selesai';
+
+  @override
+  String saleCompleteMessage(String amount) {
+    return 'Kembalian: $amount';
+  }
+
+  @override
+  String get ok => 'OK';
 }

@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_template/features/menu/models/pos_menu.dart';
-import 'package:flutter_template/features/order/order_controller.dart';
+import 'package:luna_pos/features/menu/models/pos_menu.dart';
+import 'package:luna_pos/features/order/order_controller.dart';
 
 void main() {
   late ProviderContainer container;

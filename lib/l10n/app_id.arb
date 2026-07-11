@@ -59,5 +59,14 @@
   "menu": "Menu",
   "refreshMenu": "Muat ulang menu",
   "noMenuItemsAvailable": "Tidak ada item menu tersedia",
-  "retry": "Coba lagi"
+  "retry": "Coba lagi",
+  "checkout": "Checkout",
+  "orderSummary": "Ringkasan pesanan",
+  "total": "Total",
+  "cashTendered": "Uang diterima",
+  "changeAmount": "Kembalian",
+  "completeSale": "Selesaikan penjualan",
+  "saleComplete": "Penjualan selesai",
+  "saleCompleteMessage": "Kembalian: {amount}",
+  "ok": "OK"
 }

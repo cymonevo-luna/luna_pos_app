@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_template/core/formatting/currency_formatter.dart';
+import 'package:luna_pos/core/formatting/currency_formatter.dart';
 
 void main() {
   test('formatRupiah formats whole IDR amounts', () {

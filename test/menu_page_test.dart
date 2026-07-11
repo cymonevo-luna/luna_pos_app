@@ -3,16 +3,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:flutter_template/app.dart';
-import 'package:flutter_template/core/config/app_config.dart';
-import 'package:flutter_template/core/di/locator.dart';
-import 'package:flutter_template/core/network/api_client.dart';
-import 'package:flutter_template/core/storage/preferences_service.dart';
-import 'package:flutter_template/core/storage/secure_storage_service.dart';
-import 'package:flutter_template/features/auth/login_page.dart';
-import 'package:flutter_template/features/menu/data/menu_repository.dart';
-import 'package:flutter_template/features/menu/menu_page.dart';
-import 'package:flutter_template/features/menu/widgets/menu_item_card.dart';
+import 'package:luna_pos/app.dart';
+import 'package:luna_pos/core/config/app_config.dart';
+import 'package:luna_pos/core/di/locator.dart';
+import 'package:luna_pos/core/network/api_client.dart';
+import 'package:luna_pos/core/storage/preferences_service.dart';
+import 'package:luna_pos/core/storage/secure_storage_service.dart';
+import 'package:luna_pos/features/auth/login_page.dart';
+import 'package:luna_pos/features/menu/data/menu_repository.dart';
+import 'package:luna_pos/features/menu/menu_page.dart';
+import 'package:luna_pos/features/menu/widgets/menu_item_card.dart';
 
 import 'helpers/auth_harness.dart';
 
@@ -104,7 +104,7 @@ void main() {
     expect(find.text('Out of stock'), findsWidgets);
   });
 
-  testWidgets('in-stock item can be selected and out-of-stock cannot',
+  testWidgets('in-stock item increments cart and out-of-stock cannot',
       (WidgetTester tester) async {
     secure.store[SecureKeys.authToken] = 'acc';
     secure.store[SecureKeys.userId] = 'u1';
@@ -138,7 +138,7 @@ void main() {
         matching: find.byType(MenuItemCard),
       ),
     );
-    expect(inStockCard.selected, isTrue);
+    expect(inStockCard.quantity, 1);
 
     await tester.tap(find.text('Empty Stock'));
     await tester.pumpAndSettle();
@@ -149,7 +149,7 @@ void main() {
         matching: find.byType(MenuItemCard),
       ),
     );
-    expect(outOfStockCard.selected, isFalse);
+    expect(outOfStockCard.quantity, 0);
 
     final inStockCardAfter = tester.widget<MenuItemCard>(
       find.ancestor(
@@ -157,7 +157,7 @@ void main() {
         matching: find.byType(MenuItemCard),
       ),
     );
-    expect(inStockCardAfter.selected, isTrue);
+    expect(inStockCardAfter.quantity, 1);
   });
 
   testWidgets('menu fetch error shows retry control', (WidgetTester tester) async {

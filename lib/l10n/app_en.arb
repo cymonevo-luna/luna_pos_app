@@ -71,5 +71,23 @@
   "menu": "Menu",
   "refreshMenu": "Refresh menu",
   "noMenuItemsAvailable": "No menu items available",
-  "retry": "Retry"
+  "retry": "Retry",
+  "checkout": "Checkout",
+  "orderSummary": "Order summary",
+  "total": "Total",
+  "cashTendered": "Cash tendered",
+  "changeAmount": "Change",
+  "completeSale": "Complete sale",
+  "saleComplete": "Sale complete",
+  "saleCompleteMessage": "Change due: {amount}",
+  "@saleCompleteMessage": {
+    "description": "Success message after completing an offline sale",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "Rp 9.000"
+      }
+    }
+  },
+  "ok": "OK"
 }

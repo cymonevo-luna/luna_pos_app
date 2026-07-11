@@ -10,6 +10,7 @@ import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/widgets.dart';
 import 'menu_controller.dart';
 import 'models/pos_menu.dart';
+import 'widgets/cart_summary_bar.dart';
 import 'widgets/menu_item_card.dart';
 
 class MenuPage extends ConsumerStatefulWidget {
@@ -65,10 +66,30 @@ class _MenuPageState extends ConsumerState<MenuPage> {
         state: menu,
         onRetry: () => ref.read(menuProvider.notifier).retry(),
         onRefresh: () => ref.read(menuProvider.notifier).refresh(),
-        onToggle: (item) => ref.read(menuProvider.notifier).toggleSelection(item),
+        onAddToCart: (item) => ref.read(menuProvider.notifier).addToCart(item),
+        onIncrement: (item) => ref.read(menuProvider.notifier).addToCart(item),
+        onDecrement: (item) {
+          final quantity = menu.cart[item.id]?.quantity ?? 0;
+          if (quantity <= 1) {
+            ref.read(menuProvider.notifier).removeFromCart(item.id);
+          } else {
+            ref.read(menuProvider.notifier).updateCartQuantity(
+                  item.id,
+                  quantity - 1,
+                );
+          }
+        },
         emptyLabel: l10n.noMenuItemsAvailable,
         retryLabel: l10n.retry,
       ),
+      bottomNavigationBar: menu.hasCartItems
+          ? CartSummaryBar(
+              itemCount: menu.cartItemCount,
+              subtotal: menu.cartSubtotal,
+              checkoutLabel: l10n.checkout,
+              onCheckout: () => context.pushNamed(AppRoute.checkout.name),
+            )
+          : null,
     );
   }
 }
@@ -78,7 +99,9 @@ class _MenuBody extends StatelessWidget {
     required this.state,
     required this.onRetry,
     required this.onRefresh,
-    required this.onToggle,
+    required this.onAddToCart,
+    required this.onIncrement,
+    required this.onDecrement,
     required this.emptyLabel,
     required this.retryLabel,
   });
@@ -86,7 +109,9 @@ class _MenuBody extends StatelessWidget {
   final MenuState state;
   final VoidCallback onRetry;
   final Future<void> Function() onRefresh;
-  final void Function(POSMenuItem item) onToggle;
+  final void Function(POSMenuItem item) onAddToCart;
+  final void Function(POSMenuItem item) onIncrement;
+  final void Function(POSMenuItem item) onDecrement;
   final String emptyLabel;
   final String retryLabel;
 
@@ -143,10 +168,17 @@ class _MenuBody extends StatelessWidget {
                     ),
                     itemBuilder: (context, index) {
                       final item = category.menus[index];
+                      final quantity = state.cart[item.id]?.quantity ?? 0;
                       return MenuItemCard(
                         item: item,
-                        selected: state.selectedItemId == item.id,
-                        onTap: () => onToggle(item),
+                        quantity: quantity,
+                        onTap: () => onAddToCart(item),
+                        onIncrement: item.isInStock
+                            ? () => onIncrement(item)
+                            : null,
+                        onDecrement: quantity > 0
+                            ? () => onDecrement(item)
+                            : null,
                       );
                     },
                   ),

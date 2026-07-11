@@ -189,4 +189,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retry => 'Retry';
+
+  @override
+  String get checkout => 'Checkout';
+
+  @override
+  String get orderSummary => 'Order summary';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get cashTendered => 'Cash tendered';
+
+  @override
+  String get changeAmount => 'Change';
+
+  @override
+  String get completeSale => 'Complete sale';
+
+  @override
+  String get saleComplete => 'Sale complete';
+
+  @override
+  String saleCompleteMessage(String amount) {
+    return 'Change due: $amount';
+  }
+
+  @override
+  String get ok => 'OK';
 }

@@ -2,10 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 
-import 'package:flutter_template/core/di/locator.dart';
-import 'package:flutter_template/core/network/api_client.dart';
-import 'package:flutter_template/features/menu/data/menu_repository.dart';
-import 'package:flutter_template/features/menu/menu_controller.dart';
+import 'package:luna_pos/core/di/locator.dart';
+import 'package:luna_pos/core/network/api_client.dart';
+import 'package:luna_pos/features/menu/data/menu_repository.dart';
+import 'package:luna_pos/features/menu/menu_controller.dart';
 
 import 'helpers/auth_harness.dart';
 
@@ -74,7 +74,7 @@ void main() {
     expect(response.categories.first.menus.first.sellPrice, 8000);
   });
 
-  test('menu controller loads menus and toggles in-stock selection', () async {
+  test('menu controller loads menus and adds in-stock items to cart', () async {
     adapter.onGet(
       '/api/v1/pos/menus',
       (server) => server.reply(200, sampleMenusResponse()),
@@ -95,14 +95,15 @@ void main() {
     final inStock = loaded.data!.categories.first.menus.first;
     final outOfStock = loaded.data!.categories.first.menus.last;
 
-    container.read(menuProvider.notifier).toggleSelection(inStock);
-    expect(container.read(menuProvider).selectedItemId, 'm1');
+    container.read(menuProvider.notifier).addToCart(inStock);
+    expect(container.read(menuProvider).cart['m1']?.quantity, 1);
+    expect(container.read(menuProvider).cartItemCount, 1);
 
-    container.read(menuProvider.notifier).toggleSelection(inStock);
-    expect(container.read(menuProvider).selectedItemId, isNull);
+    container.read(menuProvider.notifier).addToCart(inStock);
+    expect(container.read(menuProvider).cart['m1']?.quantity, 2);
 
-    container.read(menuProvider.notifier).toggleSelection(outOfStock);
-    expect(container.read(menuProvider).selectedItemId, isNull);
+    container.read(menuProvider.notifier).addToCart(outOfStock);
+    expect(container.read(menuProvider).cart.containsKey('m2'), isFalse);
   });
 
   test('menu controller surfaces API errors', () async {

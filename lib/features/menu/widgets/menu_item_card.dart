@@ -12,20 +12,25 @@ class MenuItemCard extends StatelessWidget {
   const MenuItemCard({
     super.key,
     required this.item,
-    required this.selected,
+    required this.quantity,
     required this.onTap,
+    this.onIncrement,
+    this.onDecrement,
   });
 
   final POSMenuItem item;
-  final bool selected;
+  final int quantity;
   final VoidCallback onTap;
+  final VoidCallback? onIncrement;
+  final VoidCallback? onDecrement;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final tokens = context.tokens;
     final inStock = item.isInStock;
-    final borderColor = selected
+    final inCart = quantity > 0;
+    final borderColor = inCart
         ? colors.primary
         : (inStock ? Colors.transparent : tokens.border);
 
@@ -33,16 +38,16 @@ class MenuItemCard extends StatelessWidget {
       opacity: inStock ? 1 : 0.55,
       child: AppCard(
         onTap: inStock ? onTap : null,
-        elevated: !selected,
+        elevated: !inCart,
         padding: EdgeInsets.zero,
         borderRadius: AppRadius.brLg,
-        color: selected ? colors.primaryContainer.withValues(alpha: 0.35) : null,
+        color: inCart ? colors.primaryContainer.withValues(alpha: 0.35) : null,
         child: DecoratedBox(
           decoration: BoxDecoration(
             borderRadius: AppRadius.brLg,
             border: Border.all(
               color: borderColor,
-              width: selected ? 2 : 1,
+              width: inCart ? 2 : 1,
             ),
           ),
           child: Column(
@@ -64,6 +69,12 @@ class MenuItemCard extends StatelessWidget {
                       top: AppSpacing.sm,
                       right: AppSpacing.sm,
                       child: _OutOfStockBadge(),
+                    ),
+                  if (inCart)
+                    Positioned(
+                      top: AppSpacing.sm,
+                      left: AppSpacing.sm,
+                      child: _QuantityBadge(quantity: quantity),
                     ),
                 ],
               ),
@@ -89,12 +100,104 @@ class MenuItemCard extends StatelessWidget {
                           : 'Out of stock',
                       muted: true,
                     ),
+                    if (inStock && inCart && onIncrement != null) ...[
+                      const VGap(AppSpacing.sm),
+                      _QuantityControls(
+                        quantity: quantity,
+                        onIncrement: onIncrement!,
+                        onDecrement: onDecrement,
+                      ),
+                    ],
                   ],
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _QuantityBadge extends StatelessWidget {
+  const _QuantityBadge({required this.quantity});
+
+  final int quantity;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.primary,
+        borderRadius: AppRadius.brSm,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.xs,
+        ),
+        child: AppText.label(
+          '$quantity',
+          color: colors.onPrimary,
+        ),
+      ),
+    );
+  }
+}
+
+class _QuantityControls extends StatelessWidget {
+  const _QuantityControls({
+    required this.quantity,
+    required this.onIncrement,
+    this.onDecrement,
+  });
+
+  final int quantity;
+  final VoidCallback onIncrement;
+  final VoidCallback? onDecrement;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        _QuantityButton(
+          icon: Icons.remove,
+          onPressed: onDecrement,
+        ),
+        Expanded(
+          child: Center(
+            child: AppText.label('$quantity'),
+          ),
+        ),
+        _QuantityButton(
+          icon: Icons.add,
+          onPressed: onIncrement,
+        ),
+      ],
+    );
+  }
+}
+
+class _QuantityButton extends StatelessWidget {
+  const _QuantityButton({
+    required this.icon,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 32,
+      height: 32,
+      child: IconButton(
+        padding: EdgeInsets.zero,
+        visualDensity: VisualDensity.compact,
+        onPressed: onPressed,
+        icon: Icon(icon, size: 18),
       ),
     );
   }

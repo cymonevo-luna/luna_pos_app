@@ -457,6 +457,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retry;
+
+  /// No description provided for @checkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout'**
+  String get checkout;
+
+  /// No description provided for @orderSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Order summary'**
+  String get orderSummary;
+
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @cashTendered.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash tendered'**
+  String get cashTendered;
+
+  /// No description provided for @changeAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get changeAmount;
+
+  /// No description provided for @completeSale.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete sale'**
+  String get completeSale;
+
+  /// No description provided for @saleComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale complete'**
+  String get saleComplete;
+
+  /// Success message after completing an offline sale
+  ///
+  /// In en, this message translates to:
+  /// **'Change due: {amount}'**
+  String saleCompleteMessage(String amount);
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
 }
 
 class _AppLocalizationsDelegate

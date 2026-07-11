@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_template/core/config/app_config.dart';
+import 'package:luna_pos/core/config/app_config.dart';
 
-import 'package:flutter_template/core/utils/photo_url_resolver.dart';
+import 'package:luna_pos/core/utils/photo_url_resolver.dart';
 
 void main() {
   setUpAll(() async {

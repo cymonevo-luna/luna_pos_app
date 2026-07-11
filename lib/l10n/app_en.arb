@@ -71,5 +71,65 @@
   "menu": "Menu",
   "refreshMenu": "Refresh menu",
   "noMenuItemsAvailable": "No menu items available",
-  "retry": "Retry"
+  "retry": "Retry",
+  "checkout": "Checkout",
+  "@checkout": {
+    "description": "Checkout screen title"
+  },
+  "payment": "Payment",
+  "@payment": {
+    "description": "Payment screen title"
+  },
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Confirm checkout and proceed to payment"
+  },
+  "complete": "Complete",
+  "@complete": {
+    "description": "Complete payment button label"
+  },
+  "amountDue": "Amount due",
+  "@amountDue": {
+    "description": "Total amount due on the payment screen"
+  },
+  "cashReceived": "Cash received",
+  "@cashReceived": {
+    "description": "Cash received input label"
+  },
+  "change": "Change",
+  "@change": {
+    "description": "Change amount returned to customer"
+  },
+  "insufficientPayment": "Insufficient payment",
+  "@insufficientPayment": {
+    "description": "Shown when cash received is less than amount due"
+  },
+  "paymentSuccess": "Payment completed successfully",
+  "@paymentSuccess": {
+    "description": "SnackBar shown after successful payment"
+  },
+  "grandTotal": "Grand total",
+  "@grandTotal": {
+    "description": "Checkout order grand total label"
+  },
+  "quantityLabel": "Qty",
+  "@quantityLabel": {
+    "description": "Abbreviated quantity label on checkout line items"
+  },
+  "noteLabel": "Note",
+  "@noteLabel": {
+    "description": "Note label on checkout line items"
+  },
+  "unitPrice": "Unit price",
+  "@unitPrice": {
+    "description": "Unit price label on checkout line items"
+  },
+  "lineTotal": "Line total",
+  "@lineTotal": {
+    "description": "Line total label on checkout line items"
+  },
+  "noNote": "—",
+  "@noNote": {
+    "description": "Placeholder when a cart line has no note"
+  }
 }

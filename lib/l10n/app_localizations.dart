@@ -457,6 +457,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retry;
+
+  /// Checkout screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout'**
+  String get checkout;
+
+  /// Payment screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get payment;
+
+  /// Confirm checkout and proceed to payment
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// Complete payment button label
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get complete;
+
+  /// Total amount due on the payment screen
+  ///
+  /// In en, this message translates to:
+  /// **'Amount due'**
+  String get amountDue;
+
+  /// Cash received input label
+  ///
+  /// In en, this message translates to:
+  /// **'Cash received'**
+  String get cashReceived;
+
+  /// Change amount returned to customer
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get change;
+
+  /// Shown when cash received is less than amount due
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient payment'**
+  String get insufficientPayment;
+
+  /// SnackBar shown after successful payment
+  ///
+  /// In en, this message translates to:
+  /// **'Payment completed successfully'**
+  String get paymentSuccess;
+
+  /// Checkout order grand total label
+  ///
+  /// In en, this message translates to:
+  /// **'Grand total'**
+  String get grandTotal;
+
+  /// Abbreviated quantity label on checkout line items
+  ///
+  /// In en, this message translates to:
+  /// **'Qty'**
+  String get quantityLabel;
+
+  /// Note label on checkout line items
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get noteLabel;
+
+  /// Unit price label on checkout line items
+  ///
+  /// In en, this message translates to:
+  /// **'Unit price'**
+  String get unitPrice;
+
+  /// Line total label on checkout line items
+  ///
+  /// In en, this message translates to:
+  /// **'Line total'**
+  String get lineTotal;
+
+  /// Placeholder when a cart line has no note
+  ///
+  /// In en, this message translates to:
+  /// **'—'**
+  String get noNote;
 }
 
 class _AppLocalizationsDelegate

@@ -189,4 +189,49 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get retry => 'Coba lagi';
+
+  @override
+  String get checkout => 'Checkout';
+
+  @override
+  String get payment => 'Pembayaran';
+
+  @override
+  String get confirm => 'Konfirmasi';
+
+  @override
+  String get complete => 'Selesai';
+
+  @override
+  String get amountDue => 'Jumlah tagihan';
+
+  @override
+  String get cashReceived => 'Uang diterima';
+
+  @override
+  String get change => 'Kembalian';
+
+  @override
+  String get insufficientPayment => 'Pembayaran kurang';
+
+  @override
+  String get paymentSuccess => 'Pembayaran berhasil';
+
+  @override
+  String get grandTotal => 'Total keseluruhan';
+
+  @override
+  String get quantityLabel => 'Jml';
+
+  @override
+  String get noteLabel => 'Catatan';
+
+  @override
+  String get unitPrice => 'Harga satuan';
+
+  @override
+  String get lineTotal => 'Total baris';
+
+  @override
+  String get noNote => '—';
 }

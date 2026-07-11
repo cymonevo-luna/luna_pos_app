@@ -1,5 +1,5 @@
-import 'package:flutter_template/core/network/api_client.dart';
-import 'package:flutter_template/core/storage/secure_storage_service.dart';
+import 'package:luna_pos/core/network/api_client.dart';
+import 'package:luna_pos/core/storage/secure_storage_service.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 
 /// In-memory [SecureStorageService] for tests: overrides the primitive

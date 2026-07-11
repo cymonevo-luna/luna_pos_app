@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// The application title
   ///
   /// In en, this message translates to:
-  /// **'App Template'**
+  /// **'Luna POS'**
   String get appTitle;
 
   /// No description provided for @appTagline.

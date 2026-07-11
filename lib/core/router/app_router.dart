@@ -7,6 +7,9 @@ import '../../features/auth/login_page.dart';
 import '../../features/auth/register_page.dart';
 import '../../features/auth/splash_page.dart';
 import '../../features/menu/menu_page.dart';
+import '../../features/order/checkout_page.dart';
+import '../../features/order/order_controller.dart';
+import '../../features/order/payment_page.dart';
 import '../../features/placeholder/coming_soon_page.dart';
 import '../../features/profile/profile_page.dart';
 import '../../features/settings/settings_page.dart';
@@ -25,7 +28,9 @@ enum AppRoute {
   messages('/messages'),
   profile('/profile'),
   settings('/settings'),
-  details('/details');
+  details('/details'),
+  checkout('/checkout'),
+  payment('/payment');
 
   const AppRoute(this.path);
   final String path;
@@ -46,6 +51,27 @@ class _AuthRefreshListenable extends ChangeNotifier {
     _subscription.close();
     super.dispose();
   }
+}
+
+String? _orderRedirect(Ref ref, GoRouterState state) {
+  final location = state.matchedLocation;
+  final isCheckoutOrPayment =
+      location == AppRoute.checkout.path || location == AppRoute.payment.path;
+
+  if (!isCheckoutOrPayment) return null;
+
+  final order = ref.read(orderProvider);
+  if (order.lines.isEmpty) {
+    return AppRoute.home.path;
+  }
+
+  return null;
+}
+
+String? _redirect(Ref ref, GoRouterState state) {
+  final authResult = _authRedirect(ref, state);
+  if (authResult != null) return authResult;
+  return _orderRedirect(ref, state);
 }
 
 String? _authRedirect(Ref ref, GoRouterState state) {
@@ -81,7 +107,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoute.splash.path,
     refreshListenable: refresh,
-    redirect: (context, state) => _authRedirect(ref, state),
+    redirect: (context, state) => _redirect(ref, state),
     routes: [
     GoRoute(
       path: AppRoute.splash.path,
@@ -174,6 +200,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       name: AppRoute.details.name,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const _DetailsPage(),
+    ),
+    GoRoute(
+      path: AppRoute.checkout.path,
+      name: AppRoute.checkout.name,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const CheckoutPage(),
+    ),
+    GoRoute(
+      path: AppRoute.payment.path,
+      name: AppRoute.payment.name,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const PaymentPage(),
     ),
   ],
     errorBuilder: (context, state) => Scaffold(

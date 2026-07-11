@@ -59,5 +59,20 @@
   "menu": "Menu",
   "refreshMenu": "Muat ulang menu",
   "noMenuItemsAvailable": "Tidak ada item menu tersedia",
-  "retry": "Coba lagi"
+  "retry": "Coba lagi",
+  "checkout": "Checkout",
+  "payment": "Pembayaran",
+  "confirm": "Konfirmasi",
+  "complete": "Selesai",
+  "amountDue": "Jumlah tagihan",
+  "cashReceived": "Uang diterima",
+  "change": "Kembalian",
+  "insufficientPayment": "Pembayaran kurang",
+  "paymentSuccess": "Pembayaran berhasil",
+  "grandTotal": "Total keseluruhan",
+  "quantityLabel": "Jml",
+  "noteLabel": "Catatan",
+  "unitPrice": "Harga satuan",
+  "lineTotal": "Total baris",
+  "noNote": "—"
 }

@@ -2,10 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 
-import 'package:flutter_template/core/di/locator.dart';
-import 'package:flutter_template/core/network/api_client.dart';
-import 'package:flutter_template/features/menu/data/menu_repository.dart';
-import 'package:flutter_template/features/menu/menu_controller.dart';
+import 'package:luna_pos/core/di/locator.dart';
+import 'package:luna_pos/core/network/api_client.dart';
+import 'package:luna_pos/features/menu/data/menu_repository.dart';
+import 'package:luna_pos/features/menu/menu_controller.dart';
 
 import 'helpers/auth_harness.dart';
 

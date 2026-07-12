@@ -379,4 +379,30 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get notAuthorizedMessage =>
       'Anda tidak memiliki izin untuk melihat transaksi. Silakan keluar dan gunakan akun kasir.';
+
+  @override
+  String get stock => 'Stok';
+
+  @override
+  String get purchases => 'Pembelian';
+
+  @override
+  String get stockNew => 'Item stok baru';
+
+  @override
+  String get stockEdit => 'Ubah item stok';
+
+  @override
+  String get purchasesNew => 'Pembelian baru';
+
+  @override
+  String get purchaseDetail => 'Detail pembelian';
+
+  @override
+  String get posAccessDenied =>
+      'Akun ini tidak memiliki akses POS atau operasional';
+
+  @override
+  String get procurementAccessDenied =>
+      'Anda tidak memiliki izin untuk mengakses fitur pengadaan.';
 }

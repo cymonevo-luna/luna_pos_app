@@ -72,9 +72,45 @@ void main() {
     expect(ok, isFalse);
     final state = container.read(authProvider);
     expect(state.status, isNot(AuthStatus.authenticated));
-    expect(state.error, kCashierAccessDeniedMessage);
+    expect(state.error, kPosAccessDeniedMessage);
     expect(secure.store[SecureKeys.authToken], isNull);
     expect(secure.store[SecureKeys.userJson], isNull);
+  });
+
+  test('admin-only login is rejected without storing tokens', () async {
+    stubDedicatedAccountLogin(adapter, TestAccountRole.admin, userId: 'adm');
+
+    final ok = await container.read(authProvider.notifier).login(
+          email: TestAccounts.adminEmail,
+          password: TestAccounts.password,
+        );
+
+    expect(ok, isFalse);
+    final state = container.read(authProvider);
+    expect(state.status, isNot(AuthStatus.authenticated));
+    expect(state.error, kPosAccessDeniedMessage);
+    expect(secure.store[SecureKeys.authToken], isNull);
+    expect(secure.store[SecureKeys.userJson], isNull);
+  });
+
+  test('operational-only login persists the session and authenticates', () async {
+    stubDedicatedAccountLogin(
+      adapter,
+      TestAccountRole.operational,
+      userId: 'op-user',
+    );
+
+    final ok = await container.read(authProvider.notifier).login(
+          email: TestAccounts.operationalEmail,
+          password: TestAccounts.password,
+        );
+
+    expect(ok, isTrue);
+    final state = container.read(authProvider);
+    expect(state.status, AuthStatus.authenticated);
+    expect(state.user?.roles, contains('operational'));
+    expect(state.user?.roles, isNot(contains('cashier')));
+    expect(secure.store[SecureKeys.authToken], 'acc');
   });
 
   test('multi-role cashier login succeeds', () async {

@@ -17,9 +17,12 @@ enum AuthStatus { unknown, authenticated, unauthenticated }
 const kSessionExpiredMessage =
     'Your session has expired. Please sign in again.';
 
-/// Returned when login succeeds but the account lacks POS cashier access.
-const kCashierAccessDeniedMessage =
-    'This account does not have POS cashier access';
+/// Returned when login succeeds but the account lacks POS or operational access.
+const kPosAccessDeniedMessage =
+    'This account does not have POS or operational access';
+
+/// Backward-compatible alias for access-denied messaging in tests and UI.
+const kCashierAccessDeniedMessage = kPosAccessDeniedMessage;
 
 /// Snapshot of the current auth session.
 class AuthState {
@@ -58,15 +61,15 @@ class AuthState {
   }
 }
 
-class _CashierAccessDenied implements Exception {
-  const _CashierAccessDenied();
+class _PosAccessDenied implements Exception {
+  const _PosAccessDenied();
 }
 
 /// Owns the auth session against the go_template backend
 /// (`/api/v1/auth/*` + `/api/v1/users/{id}`). Restores any saved session on
 /// startup and exposes login / register / logout actions.
 ///
-/// Only users with the `cashier` role may establish a POS session.
+/// Only users with the `cashier` or `operational` role may establish a session.
 class AuthController extends Notifier<AuthState> {
   SecureStorageService get _secure => locator<SecureStorageService>();
   ApiClient get _api => locator<ApiClient>();
@@ -97,7 +100,7 @@ class AuthController extends Notifier<AuthState> {
 
       try {
         final user = await _fetchUser(userId);
-        if (!user.hasCashierAccess) {
+        if (!user.canAccessPosApp) {
           await _clearSession();
           state = state.copyWith(status: AuthStatus.unauthenticated);
           return;
@@ -112,7 +115,7 @@ class AuthController extends Notifier<AuthState> {
       } on ApiException catch (e) {
         if (e.type == ApiErrorType.unauthorized && await _tryRefresh()) {
           final user = await _fetchUser(userId);
-          if (!user.hasCashierAccess) {
+          if (!user.canAccessPosApp) {
             await _clearSession();
             state = state.copyWith(status: AuthStatus.unauthenticated);
             return;
@@ -145,10 +148,10 @@ class AuthController extends Notifier<AuthState> {
         busy: false,
       );
       return true;
-    } on _CashierAccessDenied {
+    } on _PosAccessDenied {
       state = state.copyWith(
         busy: false,
-        error: kCashierAccessDeniedMessage,
+        error: kPosAccessDeniedMessage,
       );
       return false;
     } on ApiException catch (e) {
@@ -179,10 +182,10 @@ class AuthController extends Notifier<AuthState> {
         busy: false,
       );
       return true;
-    } on _CashierAccessDenied {
+    } on _PosAccessDenied {
       state = state.copyWith(
         busy: false,
-        error: kCashierAccessDeniedMessage,
+        error: kPosAccessDeniedMessage,
       );
       return false;
     } on ApiException catch (e) {
@@ -218,8 +221,8 @@ class AuthController extends Notifier<AuthState> {
     final merchant =
         Merchant.fromJson((data['merchant'] as Map).cast<String, dynamic>());
 
-    if (!user.hasCashierAccess) {
-      throw const _CashierAccessDenied();
+    if (!user.canAccessPosApp) {
+      throw const _PosAccessDenied();
     }
 
     await _persistSession(

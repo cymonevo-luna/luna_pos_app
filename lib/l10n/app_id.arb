@@ -117,5 +117,13 @@
   "filterByDate": "Filter tanggal",
   "clearDateFilter": "Hapus filter tanggal",
   "notAuthorized": "Tidak diizinkan",
-  "notAuthorizedMessage": "Anda tidak memiliki izin untuk melihat transaksi. Silakan keluar dan gunakan akun kasir."
+  "notAuthorizedMessage": "Anda tidak memiliki izin untuk melihat transaksi. Silakan keluar dan gunakan akun kasir.",
+  "stock": "Stok",
+  "purchases": "Pembelian",
+  "stockNew": "Item stok baru",
+  "stockEdit": "Ubah item stok",
+  "purchasesNew": "Pembelian baru",
+  "purchaseDetail": "Detail pembelian",
+  "posAccessDenied": "Akun ini tidak memiliki akses POS atau operasional",
+  "procurementAccessDenied": "Anda tidak memiliki izin untuk mengakses fitur pengadaan."
 }

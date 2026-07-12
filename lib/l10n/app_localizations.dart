@@ -805,6 +805,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You do not have permission to view transactions. Please sign out and use a cashier account.'**
   String get notAuthorizedMessage;
+
+  /// Stock management tab and screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Stock'**
+  String get stock;
+
+  /// Purchase orders tab and screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases'**
+  String get purchases;
+
+  /// Create stock item screen title
+  ///
+  /// In en, this message translates to:
+  /// **'New stock item'**
+  String get stockNew;
+
+  /// Edit stock item screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit stock item'**
+  String get stockEdit;
+
+  /// Create purchase order screen title
+  ///
+  /// In en, this message translates to:
+  /// **'New purchase'**
+  String get purchasesNew;
+
+  /// Purchase order detail screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase details'**
+  String get purchaseDetail;
+
+  /// Shown when login succeeds but the user lacks cashier and operational roles
+  ///
+  /// In en, this message translates to:
+  /// **'This account does not have POS or operational access'**
+  String get posAccessDenied;
+
+  /// Shown when an authenticated user without operational role opens stock or purchases
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to access procurement features.'**
+  String get procurementAccessDenied;
 }
 
 class _AppLocalizationsDelegate

@@ -40,7 +40,7 @@ Override for CI with `--dart-define` (e.g. `TEST_CASHIER_EMAIL`, `TEST_ACCOUNT_P
 
 ## Forbidden in test automation
 
-- Do **not** call `POST /api/v1/auth/register` in Tester Agent or integration
+- Do **not** call the user registration API in Tester Agent or integration
   test flows.
 - Do **not** generate random emails or create throwaway users per run.
 - Do **not** complete the in-app signup/register screen during automated tests.
@@ -53,6 +53,8 @@ available in the production app and may still be covered by mocked unit tests.
 Use `test/helpers/auth_harness.dart` for unit/widget tests and
 `integration_test/helpers/harness.dart` for Tester Agent / integration flows:
 
+- `loginAsTestRole(api, secure, TestAccountRole.cashier)` — login-only API helper
+  in `lib/testing/test_auth.dart`
 - `stubDedicatedAccountLogin(adapter, TestAccountRole.cashier)` — mock login API
 - `seedAuthenticatedTestAccount(secure, adapter, TestAccountRole.cashier)` —
   pre-seed session + profile stub

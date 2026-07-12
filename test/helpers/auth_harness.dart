@@ -34,11 +34,12 @@ class FakeSecureStorage extends SecureStorageService {
 void stubDedicatedAccountLogin(
   DioAdapter adapter,
   TestAccountRole role, {
-  String userId = 'test-user',
+  String? userId,
   String accessToken = 'acc',
   String refreshToken = 'ref',
 }) {
   final email = TestAccounts.emailFor(role);
+  final resolvedUserId = userId ?? TestAccounts.userIdFor(role);
   adapter.onPost(
     '/api/v1/auth/login',
     (server) => server.reply(200, {
@@ -50,7 +51,7 @@ void stubDedicatedAccountLogin(
           'expires_in': 900,
         },
         'user': {
-          'id': userId,
+          'id': resolvedUserId,
           'email': email,
           'name': _displayNameFor(role),
           'role': TestAccounts.apiRoleFor(role),
@@ -66,18 +67,19 @@ void seedAuthenticatedTestAccount(
   FakeSecureStorage secure,
   DioAdapter adapter,
   TestAccountRole role, {
-  String userId = 'test-user',
+  String? userId,
   String accessToken = 'acc',
 }) {
+  final resolvedUserId = userId ?? TestAccounts.userIdFor(role);
   secure.store[SecureKeys.authToken] = accessToken;
-  secure.store[SecureKeys.userId] = userId;
+  secure.store[SecureKeys.userId] = resolvedUserId;
 
   adapter.onGet(
-    '/api/v1/users/$userId',
+    '/api/v1/users/$resolvedUserId',
     (server) => server.reply(200, {
       'success': true,
       'data': {
-        'id': userId,
+        'id': resolvedUserId,
         'email': TestAccounts.emailFor(role),
         'name': _displayNameFor(role),
         'role': TestAccounts.apiRoleFor(role),

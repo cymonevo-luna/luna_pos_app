@@ -50,11 +50,26 @@ available in the production app and may still be covered by mocked unit tests.
 
 ## Test helpers
 
-Use `test/helpers/auth_harness.dart`:
+Use `test/helpers/auth_harness.dart` for unit/widget tests and
+`integration_test/helpers/harness.dart` for Tester Agent / integration flows:
 
 - `stubDedicatedAccountLogin(adapter, TestAccountRole.cashier)` — mock login API
 - `seedAuthenticatedTestAccount(secure, adapter, TestAccountRole.cashier)` —
   pre-seed session + profile stub
+
+Run role-based automation (VM / CI — no device required):
+
+```bash
+flutter test test/integration/
+```
+
+On a connected device or desktop target:
+
+```bash
+flutter test integration_test/ -d linux
+flutter test integration_test/dedicated_account_login_test.dart
+flutter test integration_test/cashier_pos_flow_test.dart
+```
 
 ## API target
 

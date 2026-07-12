@@ -9,6 +9,9 @@ abstract final class AppConfig {
   static Future<void> load() => dotenv.load(fileName: '.env');
 
   static String get apiBaseUrl {
+    const fromDefine = String.fromEnvironment('API_BASE_URL');
+    if (fromDefine.isNotEmpty) return fromDefine;
+
     try {
       return dotenv.maybeGet('API_BASE_URL') ?? 'https://api.example.com';
     } catch (_) {

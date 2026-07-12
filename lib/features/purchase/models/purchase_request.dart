@@ -46,6 +46,13 @@ num _quantityFromJson(dynamic value) {
   throw FormatException('Invalid quantity: $value');
 }
 
+int? _nullableIntFromJson(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value.toInt();
+  if (value is String) return int.parse(value);
+  throw FormatException('Invalid int: $value');
+}
+
 @freezed
 abstract class PurchaseRequestItem with _$PurchaseRequestItem {
   const factory PurchaseRequestItem({
@@ -53,6 +60,8 @@ abstract class PurchaseRequestItem with _$PurchaseRequestItem {
     @JsonKey(name: 'food_supply_title') String? foodSupplyTitle,
     @JsonKey(fromJson: _quantityFromJson) required num quantity,
     String? unit,
+    @JsonKey(name: 'unit_price', fromJson: _nullableIntFromJson) int? unitPrice,
+    @JsonKey(name: 'line_total', fromJson: _nullableIntFromJson) int? lineTotal,
   }) = _PurchaseRequestItem;
 
   factory PurchaseRequestItem.fromJson(Map<String, dynamic> json) =>
@@ -65,10 +74,14 @@ abstract class PurchaseRequestDetail with _$PurchaseRequestDetail {
     required String id,
     @JsonKey(name: 'supplier_id') required String supplierId,
     @JsonKey(name: 'supplier_name') required String supplierName,
+    @JsonKey(name: 'supplier_contact_info') String? supplierContactInfo,
     required PurchaseRequestStatus status,
     @JsonKey(name: 'total_estimated_amount') int? totalEstimatedAmount,
     @Default([]) List<PurchaseRequestItem> items,
     String? notes,
+    @JsonKey(name: 'paid_proof_url') String? paidProofUrl,
+    @JsonKey(name: 'delivered_proof_url') String? deliveredProofUrl,
+    @JsonKey(name: 'created_by_username') String? createdByUsername,
     @JsonKey(
       name: 'created_at',
       fromJson: _nullableDateTimeFromJson,

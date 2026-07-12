@@ -296,7 +296,7 @@ as DateTime?,
 /// @nodoc
 mixin _$PurchaseRequestItem {
 
-@JsonKey(name: 'food_supply_id') String get foodSupplyId;@JsonKey(name: 'food_supply_title') String? get foodSupplyTitle;@JsonKey(fromJson: _quantityFromJson) num get quantity; String? get unit;
+@JsonKey(name: 'food_supply_id') String get foodSupplyId;@JsonKey(name: 'food_supply_title') String? get foodSupplyTitle;@JsonKey(fromJson: _quantityFromJson) num get quantity; String? get unit;@JsonKey(name: 'unit_price', fromJson: _nullableIntFromJson) int? get unitPrice;@JsonKey(name: 'line_total', fromJson: _nullableIntFromJson) int? get lineTotal;
 /// Create a copy of PurchaseRequestItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -309,16 +309,16 @@ $PurchaseRequestItemCopyWith<PurchaseRequestItem> get copyWith => _$PurchaseRequ
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PurchaseRequestItem&&(identical(other.foodSupplyId, foodSupplyId) || other.foodSupplyId == foodSupplyId)&&(identical(other.foodSupplyTitle, foodSupplyTitle) || other.foodSupplyTitle == foodSupplyTitle)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.unit, unit) || other.unit == unit));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PurchaseRequestItem&&(identical(other.foodSupplyId, foodSupplyId) || other.foodSupplyId == foodSupplyId)&&(identical(other.foodSupplyTitle, foodSupplyTitle) || other.foodSupplyTitle == foodSupplyTitle)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.unit, unit) || other.unit == unit)&&(identical(other.unitPrice, unitPrice) || other.unitPrice == unitPrice)&&(identical(other.lineTotal, lineTotal) || other.lineTotal == lineTotal));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,foodSupplyId,foodSupplyTitle,quantity,unit);
+int get hashCode => Object.hash(runtimeType,foodSupplyId,foodSupplyTitle,quantity,unit,unitPrice,lineTotal);
 
 @override
 String toString() {
-  return 'PurchaseRequestItem(foodSupplyId: $foodSupplyId, foodSupplyTitle: $foodSupplyTitle, quantity: $quantity, unit: $unit)';
+  return 'PurchaseRequestItem(foodSupplyId: $foodSupplyId, foodSupplyTitle: $foodSupplyTitle, quantity: $quantity, unit: $unit, unitPrice: $unitPrice, lineTotal: $lineTotal)';
 }
 
 
@@ -329,7 +329,7 @@ abstract mixin class $PurchaseRequestItemCopyWith<$Res>  {
   factory $PurchaseRequestItemCopyWith(PurchaseRequestItem value, $Res Function(PurchaseRequestItem) _then) = _$PurchaseRequestItemCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'food_supply_id') String foodSupplyId,@JsonKey(name: 'food_supply_title') String? foodSupplyTitle,@JsonKey(fromJson: _quantityFromJson) num quantity, String? unit
+@JsonKey(name: 'food_supply_id') String foodSupplyId,@JsonKey(name: 'food_supply_title') String? foodSupplyTitle,@JsonKey(fromJson: _quantityFromJson) num quantity, String? unit,@JsonKey(name: 'unit_price', fromJson: _nullableIntFromJson) int? unitPrice,@JsonKey(name: 'line_total', fromJson: _nullableIntFromJson) int? lineTotal
 });
 
 
@@ -346,13 +346,15 @@ class _$PurchaseRequestItemCopyWithImpl<$Res>
 
 /// Create a copy of PurchaseRequestItem
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? foodSupplyId = null,Object? foodSupplyTitle = freezed,Object? quantity = null,Object? unit = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? foodSupplyId = null,Object? foodSupplyTitle = freezed,Object? quantity = null,Object? unit = freezed,Object? unitPrice = freezed,Object? lineTotal = freezed,}) {
   return _then(_self.copyWith(
 foodSupplyId: null == foodSupplyId ? _self.foodSupplyId : foodSupplyId // ignore: cast_nullable_to_non_nullable
 as String,foodSupplyTitle: freezed == foodSupplyTitle ? _self.foodSupplyTitle : foodSupplyTitle // ignore: cast_nullable_to_non_nullable
 as String?,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
 as num,unit: freezed == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,unitPrice: freezed == unitPrice ? _self.unitPrice : unitPrice // ignore: cast_nullable_to_non_nullable
+as int?,lineTotal: freezed == lineTotal ? _self.lineTotal : lineTotal // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -437,10 +439,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'food_supply_id')  String foodSupplyId, @JsonKey(name: 'food_supply_title')  String? foodSupplyTitle, @JsonKey(fromJson: _quantityFromJson)  num quantity,  String? unit)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'food_supply_id')  String foodSupplyId, @JsonKey(name: 'food_supply_title')  String? foodSupplyTitle, @JsonKey(fromJson: _quantityFromJson)  num quantity,  String? unit, @JsonKey(name: 'unit_price', fromJson: _nullableIntFromJson)  int? unitPrice, @JsonKey(name: 'line_total', fromJson: _nullableIntFromJson)  int? lineTotal)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PurchaseRequestItem() when $default != null:
-return $default(_that.foodSupplyId,_that.foodSupplyTitle,_that.quantity,_that.unit);case _:
+return $default(_that.foodSupplyId,_that.foodSupplyTitle,_that.quantity,_that.unit,_that.unitPrice,_that.lineTotal);case _:
   return orElse();
 
 }
@@ -458,10 +460,10 @@ return $default(_that.foodSupplyId,_that.foodSupplyTitle,_that.quantity,_that.un
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'food_supply_id')  String foodSupplyId, @JsonKey(name: 'food_supply_title')  String? foodSupplyTitle, @JsonKey(fromJson: _quantityFromJson)  num quantity,  String? unit)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'food_supply_id')  String foodSupplyId, @JsonKey(name: 'food_supply_title')  String? foodSupplyTitle, @JsonKey(fromJson: _quantityFromJson)  num quantity,  String? unit, @JsonKey(name: 'unit_price', fromJson: _nullableIntFromJson)  int? unitPrice, @JsonKey(name: 'line_total', fromJson: _nullableIntFromJson)  int? lineTotal)  $default,) {final _that = this;
 switch (_that) {
 case _PurchaseRequestItem():
-return $default(_that.foodSupplyId,_that.foodSupplyTitle,_that.quantity,_that.unit);case _:
+return $default(_that.foodSupplyId,_that.foodSupplyTitle,_that.quantity,_that.unit,_that.unitPrice,_that.lineTotal);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -478,10 +480,10 @@ return $default(_that.foodSupplyId,_that.foodSupplyTitle,_that.quantity,_that.un
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'food_supply_id')  String foodSupplyId, @JsonKey(name: 'food_supply_title')  String? foodSupplyTitle, @JsonKey(fromJson: _quantityFromJson)  num quantity,  String? unit)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'food_supply_id')  String foodSupplyId, @JsonKey(name: 'food_supply_title')  String? foodSupplyTitle, @JsonKey(fromJson: _quantityFromJson)  num quantity,  String? unit, @JsonKey(name: 'unit_price', fromJson: _nullableIntFromJson)  int? unitPrice, @JsonKey(name: 'line_total', fromJson: _nullableIntFromJson)  int? lineTotal)?  $default,) {final _that = this;
 switch (_that) {
 case _PurchaseRequestItem() when $default != null:
-return $default(_that.foodSupplyId,_that.foodSupplyTitle,_that.quantity,_that.unit);case _:
+return $default(_that.foodSupplyId,_that.foodSupplyTitle,_that.quantity,_that.unit,_that.unitPrice,_that.lineTotal);case _:
   return null;
 
 }
@@ -493,13 +495,15 @@ return $default(_that.foodSupplyId,_that.foodSupplyTitle,_that.quantity,_that.un
 @JsonSerializable()
 
 class _PurchaseRequestItem implements PurchaseRequestItem {
-  const _PurchaseRequestItem({@JsonKey(name: 'food_supply_id') required this.foodSupplyId, @JsonKey(name: 'food_supply_title') this.foodSupplyTitle, @JsonKey(fromJson: _quantityFromJson) required this.quantity, this.unit});
+  const _PurchaseRequestItem({@JsonKey(name: 'food_supply_id') required this.foodSupplyId, @JsonKey(name: 'food_supply_title') this.foodSupplyTitle, @JsonKey(fromJson: _quantityFromJson) required this.quantity, this.unit, @JsonKey(name: 'unit_price', fromJson: _nullableIntFromJson) this.unitPrice, @JsonKey(name: 'line_total', fromJson: _nullableIntFromJson) this.lineTotal});
   factory _PurchaseRequestItem.fromJson(Map<String, dynamic> json) => _$PurchaseRequestItemFromJson(json);
 
 @override@JsonKey(name: 'food_supply_id') final  String foodSupplyId;
 @override@JsonKey(name: 'food_supply_title') final  String? foodSupplyTitle;
 @override@JsonKey(fromJson: _quantityFromJson) final  num quantity;
 @override final  String? unit;
+@override@JsonKey(name: 'unit_price', fromJson: _nullableIntFromJson) final  int? unitPrice;
+@override@JsonKey(name: 'line_total', fromJson: _nullableIntFromJson) final  int? lineTotal;
 
 /// Create a copy of PurchaseRequestItem
 /// with the given fields replaced by the non-null parameter values.
@@ -514,16 +518,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PurchaseRequestItem&&(identical(other.foodSupplyId, foodSupplyId) || other.foodSupplyId == foodSupplyId)&&(identical(other.foodSupplyTitle, foodSupplyTitle) || other.foodSupplyTitle == foodSupplyTitle)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.unit, unit) || other.unit == unit));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PurchaseRequestItem&&(identical(other.foodSupplyId, foodSupplyId) || other.foodSupplyId == foodSupplyId)&&(identical(other.foodSupplyTitle, foodSupplyTitle) || other.foodSupplyTitle == foodSupplyTitle)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.unit, unit) || other.unit == unit)&&(identical(other.unitPrice, unitPrice) || other.unitPrice == unitPrice)&&(identical(other.lineTotal, lineTotal) || other.lineTotal == lineTotal));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,foodSupplyId,foodSupplyTitle,quantity,unit);
+int get hashCode => Object.hash(runtimeType,foodSupplyId,foodSupplyTitle,quantity,unit,unitPrice,lineTotal);
 
 @override
 String toString() {
-  return 'PurchaseRequestItem(foodSupplyId: $foodSupplyId, foodSupplyTitle: $foodSupplyTitle, quantity: $quantity, unit: $unit)';
+  return 'PurchaseRequestItem(foodSupplyId: $foodSupplyId, foodSupplyTitle: $foodSupplyTitle, quantity: $quantity, unit: $unit, unitPrice: $unitPrice, lineTotal: $lineTotal)';
 }
 
 
@@ -534,7 +538,7 @@ abstract mixin class _$PurchaseRequestItemCopyWith<$Res> implements $PurchaseReq
   factory _$PurchaseRequestItemCopyWith(_PurchaseRequestItem value, $Res Function(_PurchaseRequestItem) _then) = __$PurchaseRequestItemCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'food_supply_id') String foodSupplyId,@JsonKey(name: 'food_supply_title') String? foodSupplyTitle,@JsonKey(fromJson: _quantityFromJson) num quantity, String? unit
+@JsonKey(name: 'food_supply_id') String foodSupplyId,@JsonKey(name: 'food_supply_title') String? foodSupplyTitle,@JsonKey(fromJson: _quantityFromJson) num quantity, String? unit,@JsonKey(name: 'unit_price', fromJson: _nullableIntFromJson) int? unitPrice,@JsonKey(name: 'line_total', fromJson: _nullableIntFromJson) int? lineTotal
 });
 
 
@@ -551,13 +555,15 @@ class __$PurchaseRequestItemCopyWithImpl<$Res>
 
 /// Create a copy of PurchaseRequestItem
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? foodSupplyId = null,Object? foodSupplyTitle = freezed,Object? quantity = null,Object? unit = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? foodSupplyId = null,Object? foodSupplyTitle = freezed,Object? quantity = null,Object? unit = freezed,Object? unitPrice = freezed,Object? lineTotal = freezed,}) {
   return _then(_PurchaseRequestItem(
 foodSupplyId: null == foodSupplyId ? _self.foodSupplyId : foodSupplyId // ignore: cast_nullable_to_non_nullable
 as String,foodSupplyTitle: freezed == foodSupplyTitle ? _self.foodSupplyTitle : foodSupplyTitle // ignore: cast_nullable_to_non_nullable
 as String?,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
 as num,unit: freezed == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,unitPrice: freezed == unitPrice ? _self.unitPrice : unitPrice // ignore: cast_nullable_to_non_nullable
+as int?,lineTotal: freezed == lineTotal ? _self.lineTotal : lineTotal // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -568,7 +574,7 @@ as String?,
 /// @nodoc
 mixin _$PurchaseRequestDetail {
 
- String get id;@JsonKey(name: 'supplier_id') String get supplierId;@JsonKey(name: 'supplier_name') String get supplierName; PurchaseRequestStatus get status;@JsonKey(name: 'total_estimated_amount') int? get totalEstimatedAmount; List<PurchaseRequestItem> get items; String? get notes;@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? get createdAt;
+ String get id;@JsonKey(name: 'supplier_id') String get supplierId;@JsonKey(name: 'supplier_name') String get supplierName;@JsonKey(name: 'supplier_contact_info') String? get supplierContactInfo; PurchaseRequestStatus get status;@JsonKey(name: 'total_estimated_amount') int? get totalEstimatedAmount; List<PurchaseRequestItem> get items; String? get notes;@JsonKey(name: 'paid_proof_url') String? get paidProofUrl;@JsonKey(name: 'delivered_proof_url') String? get deliveredProofUrl;@JsonKey(name: 'created_by_username') String? get createdByUsername;@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? get createdAt;
 /// Create a copy of PurchaseRequestDetail
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -581,16 +587,16 @@ $PurchaseRequestDetailCopyWith<PurchaseRequestDetail> get copyWith => _$Purchase
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PurchaseRequestDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.supplierId, supplierId) || other.supplierId == supplierId)&&(identical(other.supplierName, supplierName) || other.supplierName == supplierName)&&(identical(other.status, status) || other.status == status)&&(identical(other.totalEstimatedAmount, totalEstimatedAmount) || other.totalEstimatedAmount == totalEstimatedAmount)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PurchaseRequestDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.supplierId, supplierId) || other.supplierId == supplierId)&&(identical(other.supplierName, supplierName) || other.supplierName == supplierName)&&(identical(other.supplierContactInfo, supplierContactInfo) || other.supplierContactInfo == supplierContactInfo)&&(identical(other.status, status) || other.status == status)&&(identical(other.totalEstimatedAmount, totalEstimatedAmount) || other.totalEstimatedAmount == totalEstimatedAmount)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.paidProofUrl, paidProofUrl) || other.paidProofUrl == paidProofUrl)&&(identical(other.deliveredProofUrl, deliveredProofUrl) || other.deliveredProofUrl == deliveredProofUrl)&&(identical(other.createdByUsername, createdByUsername) || other.createdByUsername == createdByUsername)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,supplierId,supplierName,status,totalEstimatedAmount,const DeepCollectionEquality().hash(items),notes,createdAt);
+int get hashCode => Object.hash(runtimeType,id,supplierId,supplierName,supplierContactInfo,status,totalEstimatedAmount,const DeepCollectionEquality().hash(items),notes,paidProofUrl,deliveredProofUrl,createdByUsername,createdAt);
 
 @override
 String toString() {
-  return 'PurchaseRequestDetail(id: $id, supplierId: $supplierId, supplierName: $supplierName, status: $status, totalEstimatedAmount: $totalEstimatedAmount, items: $items, notes: $notes, createdAt: $createdAt)';
+  return 'PurchaseRequestDetail(id: $id, supplierId: $supplierId, supplierName: $supplierName, supplierContactInfo: $supplierContactInfo, status: $status, totalEstimatedAmount: $totalEstimatedAmount, items: $items, notes: $notes, paidProofUrl: $paidProofUrl, deliveredProofUrl: $deliveredProofUrl, createdByUsername: $createdByUsername, createdAt: $createdAt)';
 }
 
 
@@ -601,7 +607,7 @@ abstract mixin class $PurchaseRequestDetailCopyWith<$Res>  {
   factory $PurchaseRequestDetailCopyWith(PurchaseRequestDetail value, $Res Function(PurchaseRequestDetail) _then) = _$PurchaseRequestDetailCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'supplier_id') String supplierId,@JsonKey(name: 'supplier_name') String supplierName, PurchaseRequestStatus status,@JsonKey(name: 'total_estimated_amount') int? totalEstimatedAmount, List<PurchaseRequestItem> items, String? notes,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt
+ String id,@JsonKey(name: 'supplier_id') String supplierId,@JsonKey(name: 'supplier_name') String supplierName,@JsonKey(name: 'supplier_contact_info') String? supplierContactInfo, PurchaseRequestStatus status,@JsonKey(name: 'total_estimated_amount') int? totalEstimatedAmount, List<PurchaseRequestItem> items, String? notes,@JsonKey(name: 'paid_proof_url') String? paidProofUrl,@JsonKey(name: 'delivered_proof_url') String? deliveredProofUrl,@JsonKey(name: 'created_by_username') String? createdByUsername,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt
 });
 
 
@@ -618,15 +624,19 @@ class _$PurchaseRequestDetailCopyWithImpl<$Res>
 
 /// Create a copy of PurchaseRequestDetail
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? supplierId = null,Object? supplierName = null,Object? status = null,Object? totalEstimatedAmount = freezed,Object? items = null,Object? notes = freezed,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? supplierId = null,Object? supplierName = null,Object? supplierContactInfo = freezed,Object? status = null,Object? totalEstimatedAmount = freezed,Object? items = null,Object? notes = freezed,Object? paidProofUrl = freezed,Object? deliveredProofUrl = freezed,Object? createdByUsername = freezed,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,supplierId: null == supplierId ? _self.supplierId : supplierId // ignore: cast_nullable_to_non_nullable
 as String,supplierName: null == supplierName ? _self.supplierName : supplierName // ignore: cast_nullable_to_non_nullable
-as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,supplierContactInfo: freezed == supplierContactInfo ? _self.supplierContactInfo : supplierContactInfo // ignore: cast_nullable_to_non_nullable
+as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as PurchaseRequestStatus,totalEstimatedAmount: freezed == totalEstimatedAmount ? _self.totalEstimatedAmount : totalEstimatedAmount // ignore: cast_nullable_to_non_nullable
 as int?,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
 as List<PurchaseRequestItem>,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
+as String?,paidProofUrl: freezed == paidProofUrl ? _self.paidProofUrl : paidProofUrl // ignore: cast_nullable_to_non_nullable
+as String?,deliveredProofUrl: freezed == deliveredProofUrl ? _self.deliveredProofUrl : deliveredProofUrl // ignore: cast_nullable_to_non_nullable
+as String?,createdByUsername: freezed == createdByUsername ? _self.createdByUsername : createdByUsername // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -713,10 +723,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'supplier_id')  String supplierId, @JsonKey(name: 'supplier_name')  String supplierName,  PurchaseRequestStatus status, @JsonKey(name: 'total_estimated_amount')  int? totalEstimatedAmount,  List<PurchaseRequestItem> items,  String? notes, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'supplier_id')  String supplierId, @JsonKey(name: 'supplier_name')  String supplierName, @JsonKey(name: 'supplier_contact_info')  String? supplierContactInfo,  PurchaseRequestStatus status, @JsonKey(name: 'total_estimated_amount')  int? totalEstimatedAmount,  List<PurchaseRequestItem> items,  String? notes, @JsonKey(name: 'paid_proof_url')  String? paidProofUrl, @JsonKey(name: 'delivered_proof_url')  String? deliveredProofUrl, @JsonKey(name: 'created_by_username')  String? createdByUsername, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PurchaseRequestDetail() when $default != null:
-return $default(_that.id,_that.supplierId,_that.supplierName,_that.status,_that.totalEstimatedAmount,_that.items,_that.notes,_that.createdAt);case _:
+return $default(_that.id,_that.supplierId,_that.supplierName,_that.supplierContactInfo,_that.status,_that.totalEstimatedAmount,_that.items,_that.notes,_that.paidProofUrl,_that.deliveredProofUrl,_that.createdByUsername,_that.createdAt);case _:
   return orElse();
 
 }
@@ -734,10 +744,10 @@ return $default(_that.id,_that.supplierId,_that.supplierName,_that.status,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'supplier_id')  String supplierId, @JsonKey(name: 'supplier_name')  String supplierName,  PurchaseRequestStatus status, @JsonKey(name: 'total_estimated_amount')  int? totalEstimatedAmount,  List<PurchaseRequestItem> items,  String? notes, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'supplier_id')  String supplierId, @JsonKey(name: 'supplier_name')  String supplierName, @JsonKey(name: 'supplier_contact_info')  String? supplierContactInfo,  PurchaseRequestStatus status, @JsonKey(name: 'total_estimated_amount')  int? totalEstimatedAmount,  List<PurchaseRequestItem> items,  String? notes, @JsonKey(name: 'paid_proof_url')  String? paidProofUrl, @JsonKey(name: 'delivered_proof_url')  String? deliveredProofUrl, @JsonKey(name: 'created_by_username')  String? createdByUsername, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _PurchaseRequestDetail():
-return $default(_that.id,_that.supplierId,_that.supplierName,_that.status,_that.totalEstimatedAmount,_that.items,_that.notes,_that.createdAt);case _:
+return $default(_that.id,_that.supplierId,_that.supplierName,_that.supplierContactInfo,_that.status,_that.totalEstimatedAmount,_that.items,_that.notes,_that.paidProofUrl,_that.deliveredProofUrl,_that.createdByUsername,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -754,10 +764,10 @@ return $default(_that.id,_that.supplierId,_that.supplierName,_that.status,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'supplier_id')  String supplierId, @JsonKey(name: 'supplier_name')  String supplierName,  PurchaseRequestStatus status, @JsonKey(name: 'total_estimated_amount')  int? totalEstimatedAmount,  List<PurchaseRequestItem> items,  String? notes, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'supplier_id')  String supplierId, @JsonKey(name: 'supplier_name')  String supplierName, @JsonKey(name: 'supplier_contact_info')  String? supplierContactInfo,  PurchaseRequestStatus status, @JsonKey(name: 'total_estimated_amount')  int? totalEstimatedAmount,  List<PurchaseRequestItem> items,  String? notes, @JsonKey(name: 'paid_proof_url')  String? paidProofUrl, @JsonKey(name: 'delivered_proof_url')  String? deliveredProofUrl, @JsonKey(name: 'created_by_username')  String? createdByUsername, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _PurchaseRequestDetail() when $default != null:
-return $default(_that.id,_that.supplierId,_that.supplierName,_that.status,_that.totalEstimatedAmount,_that.items,_that.notes,_that.createdAt);case _:
+return $default(_that.id,_that.supplierId,_that.supplierName,_that.supplierContactInfo,_that.status,_that.totalEstimatedAmount,_that.items,_that.notes,_that.paidProofUrl,_that.deliveredProofUrl,_that.createdByUsername,_that.createdAt);case _:
   return null;
 
 }
@@ -769,12 +779,13 @@ return $default(_that.id,_that.supplierId,_that.supplierName,_that.status,_that.
 @JsonSerializable()
 
 class _PurchaseRequestDetail implements PurchaseRequestDetail {
-  const _PurchaseRequestDetail({required this.id, @JsonKey(name: 'supplier_id') required this.supplierId, @JsonKey(name: 'supplier_name') required this.supplierName, required this.status, @JsonKey(name: 'total_estimated_amount') this.totalEstimatedAmount, final  List<PurchaseRequestItem> items = const [], this.notes, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) this.createdAt}): _items = items;
+  const _PurchaseRequestDetail({required this.id, @JsonKey(name: 'supplier_id') required this.supplierId, @JsonKey(name: 'supplier_name') required this.supplierName, @JsonKey(name: 'supplier_contact_info') this.supplierContactInfo, required this.status, @JsonKey(name: 'total_estimated_amount') this.totalEstimatedAmount, final  List<PurchaseRequestItem> items = const [], this.notes, @JsonKey(name: 'paid_proof_url') this.paidProofUrl, @JsonKey(name: 'delivered_proof_url') this.deliveredProofUrl, @JsonKey(name: 'created_by_username') this.createdByUsername, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) this.createdAt}): _items = items;
   factory _PurchaseRequestDetail.fromJson(Map<String, dynamic> json) => _$PurchaseRequestDetailFromJson(json);
 
 @override final  String id;
 @override@JsonKey(name: 'supplier_id') final  String supplierId;
 @override@JsonKey(name: 'supplier_name') final  String supplierName;
+@override@JsonKey(name: 'supplier_contact_info') final  String? supplierContactInfo;
 @override final  PurchaseRequestStatus status;
 @override@JsonKey(name: 'total_estimated_amount') final  int? totalEstimatedAmount;
  final  List<PurchaseRequestItem> _items;
@@ -785,6 +796,9 @@ class _PurchaseRequestDetail implements PurchaseRequestDetail {
 }
 
 @override final  String? notes;
+@override@JsonKey(name: 'paid_proof_url') final  String? paidProofUrl;
+@override@JsonKey(name: 'delivered_proof_url') final  String? deliveredProofUrl;
+@override@JsonKey(name: 'created_by_username') final  String? createdByUsername;
 @override@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) final  DateTime? createdAt;
 
 /// Create a copy of PurchaseRequestDetail
@@ -800,16 +814,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PurchaseRequestDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.supplierId, supplierId) || other.supplierId == supplierId)&&(identical(other.supplierName, supplierName) || other.supplierName == supplierName)&&(identical(other.status, status) || other.status == status)&&(identical(other.totalEstimatedAmount, totalEstimatedAmount) || other.totalEstimatedAmount == totalEstimatedAmount)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PurchaseRequestDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.supplierId, supplierId) || other.supplierId == supplierId)&&(identical(other.supplierName, supplierName) || other.supplierName == supplierName)&&(identical(other.supplierContactInfo, supplierContactInfo) || other.supplierContactInfo == supplierContactInfo)&&(identical(other.status, status) || other.status == status)&&(identical(other.totalEstimatedAmount, totalEstimatedAmount) || other.totalEstimatedAmount == totalEstimatedAmount)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.paidProofUrl, paidProofUrl) || other.paidProofUrl == paidProofUrl)&&(identical(other.deliveredProofUrl, deliveredProofUrl) || other.deliveredProofUrl == deliveredProofUrl)&&(identical(other.createdByUsername, createdByUsername) || other.createdByUsername == createdByUsername)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,supplierId,supplierName,status,totalEstimatedAmount,const DeepCollectionEquality().hash(_items),notes,createdAt);
+int get hashCode => Object.hash(runtimeType,id,supplierId,supplierName,supplierContactInfo,status,totalEstimatedAmount,const DeepCollectionEquality().hash(_items),notes,paidProofUrl,deliveredProofUrl,createdByUsername,createdAt);
 
 @override
 String toString() {
-  return 'PurchaseRequestDetail(id: $id, supplierId: $supplierId, supplierName: $supplierName, status: $status, totalEstimatedAmount: $totalEstimatedAmount, items: $items, notes: $notes, createdAt: $createdAt)';
+  return 'PurchaseRequestDetail(id: $id, supplierId: $supplierId, supplierName: $supplierName, supplierContactInfo: $supplierContactInfo, status: $status, totalEstimatedAmount: $totalEstimatedAmount, items: $items, notes: $notes, paidProofUrl: $paidProofUrl, deliveredProofUrl: $deliveredProofUrl, createdByUsername: $createdByUsername, createdAt: $createdAt)';
 }
 
 
@@ -820,7 +834,7 @@ abstract mixin class _$PurchaseRequestDetailCopyWith<$Res> implements $PurchaseR
   factory _$PurchaseRequestDetailCopyWith(_PurchaseRequestDetail value, $Res Function(_PurchaseRequestDetail) _then) = __$PurchaseRequestDetailCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'supplier_id') String supplierId,@JsonKey(name: 'supplier_name') String supplierName, PurchaseRequestStatus status,@JsonKey(name: 'total_estimated_amount') int? totalEstimatedAmount, List<PurchaseRequestItem> items, String? notes,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt
+ String id,@JsonKey(name: 'supplier_id') String supplierId,@JsonKey(name: 'supplier_name') String supplierName,@JsonKey(name: 'supplier_contact_info') String? supplierContactInfo, PurchaseRequestStatus status,@JsonKey(name: 'total_estimated_amount') int? totalEstimatedAmount, List<PurchaseRequestItem> items, String? notes,@JsonKey(name: 'paid_proof_url') String? paidProofUrl,@JsonKey(name: 'delivered_proof_url') String? deliveredProofUrl,@JsonKey(name: 'created_by_username') String? createdByUsername,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt
 });
 
 
@@ -837,15 +851,19 @@ class __$PurchaseRequestDetailCopyWithImpl<$Res>
 
 /// Create a copy of PurchaseRequestDetail
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? supplierId = null,Object? supplierName = null,Object? status = null,Object? totalEstimatedAmount = freezed,Object? items = null,Object? notes = freezed,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? supplierId = null,Object? supplierName = null,Object? supplierContactInfo = freezed,Object? status = null,Object? totalEstimatedAmount = freezed,Object? items = null,Object? notes = freezed,Object? paidProofUrl = freezed,Object? deliveredProofUrl = freezed,Object? createdByUsername = freezed,Object? createdAt = freezed,}) {
   return _then(_PurchaseRequestDetail(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,supplierId: null == supplierId ? _self.supplierId : supplierId // ignore: cast_nullable_to_non_nullable
 as String,supplierName: null == supplierName ? _self.supplierName : supplierName // ignore: cast_nullable_to_non_nullable
-as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,supplierContactInfo: freezed == supplierContactInfo ? _self.supplierContactInfo : supplierContactInfo // ignore: cast_nullable_to_non_nullable
+as String?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as PurchaseRequestStatus,totalEstimatedAmount: freezed == totalEstimatedAmount ? _self.totalEstimatedAmount : totalEstimatedAmount // ignore: cast_nullable_to_non_nullable
 as int?,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
 as List<PurchaseRequestItem>,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
+as String?,paidProofUrl: freezed == paidProofUrl ? _self.paidProofUrl : paidProofUrl // ignore: cast_nullable_to_non_nullable
+as String?,deliveredProofUrl: freezed == deliveredProofUrl ? _self.deliveredProofUrl : deliveredProofUrl // ignore: cast_nullable_to_non_nullable
+as String?,createdByUsername: freezed == createdByUsername ? _self.createdByUsername : createdByUsername // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));

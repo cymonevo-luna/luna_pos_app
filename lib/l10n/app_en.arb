@@ -463,6 +463,38 @@
   "@purchaseSelectCatalogItem": {
     "description": "Title for catalog item picker sheet"
   },
+  "purchaseUpdateStatus": "Update status",
+  "@purchaseUpdateStatus": {
+    "description": "Label for purchase status dropdown on detail screen"
+  },
+  "purchaseTakePhoto": "Take photo",
+  "@purchaseTakePhoto": {
+    "description": "Action to capture proof photo with camera"
+  },
+  "purchaseChooseGallery": "Choose from gallery",
+  "@purchaseChooseGallery": {
+    "description": "Action to pick proof photo from gallery"
+  },
+  "purchaseProofPhotos": "Proof photos",
+  "@purchaseProofPhotos": {
+    "description": "Section title for uploaded proof thumbnails"
+  },
+  "purchaseProofPaid": "Payment proof",
+  "@purchaseProofPaid": {
+    "description": "Label for paid proof thumbnail"
+  },
+  "purchaseProofDelivered": "Delivery proof",
+  "@purchaseProofDelivered": {
+    "description": "Label for delivered proof thumbnail"
+  },
+  "purchaseContactSupplier": "Contact supplier",
+  "@purchaseContactSupplier": {
+    "description": "Button to open WhatsApp chat with supplier"
+  },
+  "purchaseCreatedAt": "Created at",
+  "@purchaseCreatedAt": {
+    "description": "Label for purchase request creation timestamp"
+  },
   "searchStock": "Search supplies",
   "@searchStock": {
     "description": "Search field hint on stock list"

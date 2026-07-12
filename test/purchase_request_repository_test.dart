@@ -126,4 +126,67 @@ void main() {
     expect(created.items, hasLength(1));
     expect(created.items.first.quantity, 1000);
   });
+
+  test('get parses purchase request detail', () async {
+    adapter.onGet(
+      '/api/admin/purchase-requests/pr-1',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'id': 'pr-1',
+          'supplier_id': 'sup-1',
+          'supplier_name': 'Toko Sembako Jaya',
+          'status': 'PAID',
+          'total_estimated_amount': 140000,
+          'paid_proof_url': '/uploads/paid.jpg',
+          'items': [
+            {
+              'food_supply_id': 'fs-1',
+              'food_supply_title': 'Flour',
+              'quantity': '1000',
+              'unit': 'gr',
+              'unit_price': 140,
+              'line_total': 140000,
+            },
+          ],
+        },
+      }),
+    );
+
+    final detail = await locator<PurchaseRequestRepository>().get('pr-1');
+
+    expect(detail.status, PurchaseRequestStatus.paid);
+    expect(detail.paidProofUrl, '/uploads/paid.jpg');
+    expect(detail.items.first.lineTotal, 140000);
+  });
+
+  test('updateStatus patches status with optional proof url', () async {
+    adapter.onPatch(
+      '/api/admin/purchase-requests/pr-1/status',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'id': 'pr-1',
+          'supplier_id': 'sup-1',
+          'supplier_name': 'Toko Sembako Jaya',
+          'status': 'DELIVERED',
+          'delivered_proof_url': '/uploads/delivered.jpg',
+          'items': [],
+        },
+      }),
+      data: {
+        'status': 'DELIVERED',
+        'proof_url': '/uploads/delivered.jpg',
+      },
+    );
+
+    final updated = await locator<PurchaseRequestRepository>().updateStatus(
+      'pr-1',
+      PurchaseRequestStatus.delivered,
+      proofUrl: '/uploads/delivered.jpg',
+    );
+
+    expect(updated.status, PurchaseRequestStatus.delivered);
+    expect(updated.deliveredProofUrl, '/uploads/delivered.jpg');
+  });
 }

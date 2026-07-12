@@ -12,6 +12,7 @@ import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/widgets.dart';
 import 'models/purchase_request.dart';
 import 'purchase_list_controller.dart';
+import 'widgets/purchase_status_badge.dart';
 
 class PurchaseListPage extends ConsumerStatefulWidget {
   const PurchaseListPage({super.key});
@@ -301,7 +302,7 @@ class _PurchaseRequestRow extends StatelessWidget {
                       : '—',
                 ),
               ),
-              _PurchaseStatusBadge(status: item.status),
+              PurchaseStatusBadge(status: item.status),
             ],
           ),
           const VGap(AppSpacing.xs),
@@ -330,61 +331,6 @@ class _PurchaseRequestRow extends StatelessWidget {
             ),
           ],
         ],
-      ),
-    );
-  }
-}
-
-class _PurchaseStatusBadge extends StatelessWidget {
-  const _PurchaseStatusBadge({required this.status});
-
-  final PurchaseRequestStatus status;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final tokens = context.tokens;
-    final colors = context.colors;
-
-    final (label, background, foreground) = switch (status) {
-      PurchaseRequestStatus.pending => (
-          l10n.purchaseStatusPending,
-          colors.surfaceContainerHighest,
-          colors.onSurfaceVariant,
-        ),
-      PurchaseRequestStatus.requested => (
-          l10n.purchaseStatusRequested,
-          colors.primaryContainer,
-          colors.onPrimaryContainer,
-        ),
-      PurchaseRequestStatus.paid => (
-          l10n.purchaseStatusPaid,
-          tokens.warning.withValues(alpha: 0.18),
-          tokens.warning,
-        ),
-      PurchaseRequestStatus.delivered => (
-          l10n.purchaseStatusDelivered,
-          tokens.success.withValues(alpha: 0.18),
-          tokens.success,
-        ),
-    };
-
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.xxs,
-      ),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(AppSpacing.sm),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: foreground,
-          fontWeight: FontWeight.w600,
-          fontSize: 12,
-        ),
       ),
     );
   }

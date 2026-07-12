@@ -1010,6 +1010,54 @@ abstract class AppLocalizations {
   /// **'Select catalog item'**
   String get purchaseSelectCatalogItem;
 
+  /// Label for purchase status dropdown on detail screen
+  ///
+  /// In en, this message translates to:
+  /// **'Update status'**
+  String get purchaseUpdateStatus;
+
+  /// Action to capture proof photo with camera
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get purchaseTakePhoto;
+
+  /// Action to pick proof photo from gallery
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get purchaseChooseGallery;
+
+  /// Section title for uploaded proof thumbnails
+  ///
+  /// In en, this message translates to:
+  /// **'Proof photos'**
+  String get purchaseProofPhotos;
+
+  /// Label for paid proof thumbnail
+  ///
+  /// In en, this message translates to:
+  /// **'Payment proof'**
+  String get purchaseProofPaid;
+
+  /// Label for delivered proof thumbnail
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery proof'**
+  String get purchaseProofDelivered;
+
+  /// Button to open WhatsApp chat with supplier
+  ///
+  /// In en, this message translates to:
+  /// **'Contact supplier'**
+  String get purchaseContactSupplier;
+
+  /// Label for purchase request creation timestamp
+  ///
+  /// In en, this message translates to:
+  /// **'Created at'**
+  String get purchaseCreatedAt;
+
   /// Search field hint on stock list
   ///
   /// In en, this message translates to:

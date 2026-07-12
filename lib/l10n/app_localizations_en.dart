@@ -493,6 +493,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get purchaseSelectCatalogItem => 'Select catalog item';
 
   @override
+  String get purchaseUpdateStatus => 'Update status';
+
+  @override
+  String get purchaseTakePhoto => 'Take photo';
+
+  @override
+  String get purchaseChooseGallery => 'Choose from gallery';
+
+  @override
+  String get purchaseProofPhotos => 'Proof photos';
+
+  @override
+  String get purchaseProofPaid => 'Payment proof';
+
+  @override
+  String get purchaseProofDelivered => 'Delivery proof';
+
+  @override
+  String get purchaseContactSupplier => 'Contact supplier';
+
+  @override
+  String get purchaseCreatedAt => 'Created at';
+
+  @override
   String get searchStock => 'Search supplies';
 
   @override

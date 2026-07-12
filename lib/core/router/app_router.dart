@@ -12,6 +12,7 @@ import '../../features/order/checkout_page.dart';
 import '../../features/order/order_controller.dart';
 import '../../features/placeholder/coming_soon_page.dart';
 import '../../features/purchase/purchase_create_page.dart';
+import '../../features/purchase/purchase_detail_page.dart';
 import '../../features/purchase/purchase_list_page.dart';
 import '../../features/stock/stock_form_sheet.dart';
 import '../../features/stock/stock_list_page.dart';
@@ -249,9 +250,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: ':id',
                     name: AppRoute.purchaseDetail.name,
                     parentNavigatorKey: _rootNavigatorKey,
-                    builder: (context, state) => ComingSoonPage(
-                      title: AppLocalizations.of(context).purchaseDetail,
-                      icon: Icons.receipt_long_outlined,
+                    builder: (context, state) => PurchaseDetailPage(
+                      purchaseId: state.pathParameters['id']!,
                     ),
                   ),
                 ],

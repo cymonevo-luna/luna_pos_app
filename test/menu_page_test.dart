@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Icons, Size;
+import 'package:flutter/material.dart' show Icons, Offset, RenderBox, Size;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
@@ -90,6 +90,112 @@ void main() {
     },
   };
 
+  Map<String, dynamic> denseMenusResponse() => {
+    'success': true,
+    'data': {
+      'categories': [
+        {
+          'id': 'c1',
+          'name': 'Mains',
+          'menus': [
+            {
+              'id': 'm1',
+              'title': 'Nasi Goreng',
+              'description': '',
+              'photo_url': '/static/default-food.png',
+              'available_stock': 3,
+              'sell_price': 35000,
+            },
+            {
+              'id': 'm2',
+              'title': 'Mie Goreng',
+              'description': '',
+              'photo_url': '/static/default-food.png',
+              'available_stock': 5,
+              'sell_price': 30000,
+            },
+            {
+              'id': 'm3',
+              'title': 'Ayam Bakar',
+              'description': '',
+              'photo_url': '/static/default-food.png',
+              'available_stock': 8,
+              'sell_price': 40000,
+            },
+            {
+              'id': 'm4',
+              'title': 'Sate Ayam',
+              'description': '',
+              'photo_url': '/static/default-food.png',
+              'available_stock': 10,
+              'sell_price': 25000,
+            },
+          ],
+        },
+        {
+          'id': 'c2',
+          'name': 'Drinks',
+          'menus': [
+            {
+              'id': 'm5',
+              'title': 'Es Teh',
+              'description': '',
+              'photo_url': '/static/default-food.png',
+              'available_stock': 20,
+              'sell_price': 5000,
+            },
+            {
+              'id': 'm6',
+              'title': 'Es Jeruk',
+              'description': '',
+              'photo_url': '/static/default-food.png',
+              'available_stock': 15,
+              'sell_price': 8000,
+            },
+          ],
+        },
+      ],
+    },
+  };
+
+  Future<void> pumpApp(WidgetTester tester) async {
+    await tester.pumpWidget(const ProviderScope(child: App()));
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> pumpAuthenticatedMenuPage(
+    WidgetTester tester, {
+    required Map<String, dynamic> menusResponse,
+    Size surfaceSize = const Size(360, 640),
+  }) async {
+    secure.store[SecureKeys.authToken] = 'acc';
+    secure.store[SecureKeys.userId] = 'u1';
+
+    adapter
+      ..onGet(
+        '/api/v1/users/u1',
+        (server) => server.reply(200, {
+          'success': true,
+          'data': {
+            'id': 'u1',
+            'email': 'a@b.com',
+            'name': 'Alex',
+            'role': 'user',
+          },
+        }),
+      )
+      ..onGet(
+        '/api/v1/pos/menus',
+        (server) => server.reply(200, menusResponse),
+      );
+
+    await tester.binding.setSurfaceSize(surfaceSize);
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await pumpApp(tester);
+  }
+
   Map<String, dynamic> sampleMenusResponse() => {
     'success': true,
     'data': {
@@ -119,12 +225,6 @@ void main() {
       ],
     },
   };
-
-  Future<void> pumpApp(WidgetTester tester) async {
-    await tester.pumpWidget(const ProviderScope(child: App()));
-    await tester.pump(const Duration(seconds: 2));
-    await tester.pumpAndSettle();
-  }
 
   testWidgets('authenticated user sees menus grouped by category', (
     WidgetTester tester,
@@ -361,6 +461,42 @@ void main() {
 
     expect(find.byType(LoginPage), findsOneWidget);
     expect(find.byType(MenuPage), findsNothing);
+  });
+
+  testWidgets('menu page renders without overflow on phone viewport', (
+    WidgetTester tester,
+  ) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: denseMenusResponse(),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(MenuPage), findsOneWidget);
+    expect(find.text('Nasi Goreng'), findsOneWidget);
+    expect(find.text('Mains'), findsOneWidget);
+  });
+
+  testWidgets('menu page shows at least four cards above the fold on phone', (
+    WidgetTester tester,
+  ) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: denseMenusResponse(),
+    );
+
+    final visibleCards = find
+        .byType(MenuItemCard)
+        .evaluate()
+        .where((element) {
+          final box = element.renderObject! as RenderBox;
+          final topLeft = box.localToGlobal(Offset.zero);
+          final bottom = topLeft.dy + box.size.height;
+          return topLeft.dy >= 0 && bottom <= 640;
+        })
+        .length;
+
+    expect(visibleCards, greaterThanOrEqualTo(4));
   });
 
   testWidgets('menu page renders categories in API order', (

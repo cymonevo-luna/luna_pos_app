@@ -185,9 +185,9 @@ class _MenuBody extends StatelessWidget {
                     itemCount: category.menus.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: crossAxisCount,
-                      mainAxisSpacing: AppSpacing.sm,
-                      crossAxisSpacing: AppSpacing.sm,
-                      childAspectRatio: 0.68,
+                      mainAxisSpacing: AppSpacing.xs,
+                      crossAxisSpacing: AppSpacing.xs,
+                      childAspectRatio: 0.92,
                     ),
                     itemBuilder: (context, index) {
                       final item = category.menus[index];

@@ -194,19 +194,79 @@ class AppLocalizationsEn extends AppLocalizations {
   String get checkout => 'Checkout';
 
   @override
-  String get orderSummary => 'Order summary';
+  String get payment => 'Payment';
 
   @override
-  String get total => 'Total';
+  String get confirm => 'Confirm';
 
   @override
-  String get cashTendered => 'Cash tendered';
+  String get complete => 'Complete';
 
   @override
-  String get changeAmount => 'Change';
+  String get amountDue => 'Amount due';
 
   @override
-  String get completeSale => 'Complete sale';
+  String get cashReceived => 'Cash received';
+
+  @override
+  String get change => 'Change';
+
+  @override
+  String get insufficientPayment => 'Insufficient payment';
+
+  @override
+  String get paymentSuccess => 'Payment completed successfully';
+
+  @override
+  String get grandTotal => 'Grand total';
+
+  @override
+  String get quantityLabel => 'Qty';
+
+  @override
+  String get noteLabel => 'Note';
+
+  @override
+  String get unitPrice => 'Unit price';
+
+  @override
+  String get lineTotal => 'Line total';
+
+  @override
+  String get noNote => '—';
+
+  @override
+  String get cart => 'Cart';
+
+  @override
+  String get addToCart => 'Add to cart';
+
+  @override
+  String get emptyCart => 'Your cart is empty';
+
+  @override
+  String get clearCart => 'Clear cart';
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String itemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+      zero: 'No items',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get editNote => 'Edit note';
+
+  @override
+  String get noteHint => 'Optional note (e.g. less ice)';
 
   @override
   String get saleComplete => 'Sale complete';

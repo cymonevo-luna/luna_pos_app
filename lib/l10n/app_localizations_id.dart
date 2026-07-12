@@ -194,19 +194,79 @@ class AppLocalizationsId extends AppLocalizations {
   String get checkout => 'Checkout';
 
   @override
-  String get orderSummary => 'Ringkasan pesanan';
+  String get payment => 'Pembayaran';
 
   @override
-  String get total => 'Total';
+  String get confirm => 'Konfirmasi';
 
   @override
-  String get cashTendered => 'Uang diterima';
+  String get complete => 'Selesai';
 
   @override
-  String get changeAmount => 'Kembalian';
+  String get amountDue => 'Jumlah tagihan';
 
   @override
-  String get completeSale => 'Selesaikan penjualan';
+  String get cashReceived => 'Uang diterima';
+
+  @override
+  String get change => 'Kembalian';
+
+  @override
+  String get insufficientPayment => 'Pembayaran kurang';
+
+  @override
+  String get paymentSuccess => 'Pembayaran berhasil';
+
+  @override
+  String get grandTotal => 'Total keseluruhan';
+
+  @override
+  String get quantityLabel => 'Jml';
+
+  @override
+  String get noteLabel => 'Catatan';
+
+  @override
+  String get unitPrice => 'Harga satuan';
+
+  @override
+  String get lineTotal => 'Total baris';
+
+  @override
+  String get noNote => '—';
+
+  @override
+  String get cart => 'Keranjang';
+
+  @override
+  String get addToCart => 'Tambah ke keranjang';
+
+  @override
+  String get emptyCart => 'Keranjangmu kosong';
+
+  @override
+  String get clearCart => 'Kosongkan keranjang';
+
+  @override
+  String get remove => 'Hapus';
+
+  @override
+  String itemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count item',
+      one: '1 item',
+      zero: 'Tidak ada item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get editNote => 'Ubah catatan';
+
+  @override
+  String get noteHint => 'Catatan opsional (mis. es sedikit)';
 
   @override
   String get saleComplete => 'Penjualan selesai';

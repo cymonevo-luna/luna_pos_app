@@ -29,6 +29,56 @@ void main() {
     container.dispose();
   });
 
+  Map<String, dynamic> orderedCategoriesResponse() => {
+        'success': true,
+        'data': {
+          'categories': [
+            {
+              'id': 'c2',
+              'name': 'Desserts',
+              'menus': [
+                {
+                  'id': 'm-dessert',
+                  'title': 'Pudding',
+                  'description': '',
+                  'photo_url': '/static/default-food.png',
+                  'available_stock': 5,
+                  'sell_price': 15000,
+                },
+              ],
+            },
+            {
+              'id': 'c3',
+              'name': 'Appetizers',
+              'menus': [
+                {
+                  'id': 'm-appetizer',
+                  'title': 'Spring Rolls',
+                  'description': '',
+                  'photo_url': '/static/default-food.png',
+                  'available_stock': 10,
+                  'sell_price': 20000,
+                },
+              ],
+            },
+            {
+              'id': 'c1',
+              'name': 'Mains',
+              'menus': [
+                {
+                  'id': 'm-main',
+                  'title': 'Nasi Goreng',
+                  'description': '',
+                  'photo_url': '/static/default-food.png',
+                  'available_stock': 3,
+                  'sell_price': 35000,
+                },
+              ],
+            },
+          ],
+        },
+      };
+
   Map<String, dynamic> sampleMenusResponse() => {
         'success': true,
         'data': {
@@ -59,6 +109,20 @@ void main() {
         },
       };
 
+  test('fetchPOSMenus preserves API category order', () async {
+    adapter.onGet(
+      '/api/v1/pos/menus',
+      (server) => server.reply(200, orderedCategoriesResponse()),
+    );
+
+    final response = await locator<MenuRepository>().fetchPOSMenus();
+
+    expect(
+      response.categories.map((category) => category.name).toList(),
+      ['Desserts', 'Appetizers', 'Mains'],
+    );
+  });
+
   test('fetchPOSMenus parses categories and menu items', () async {
     adapter.onGet(
       '/api/v1/pos/menus',
@@ -74,7 +138,7 @@ void main() {
     expect(response.categories.first.menus.first.sellPrice, 8000);
   });
 
-  test('menu controller loads menus and adds in-stock items to cart', () async {
+  test('menu controller loads menus and toggles in-stock selection', () async {
     adapter.onGet(
       '/api/v1/pos/menus',
       (server) => server.reply(200, sampleMenusResponse()),
@@ -95,15 +159,14 @@ void main() {
     final inStock = loaded.data!.categories.first.menus.first;
     final outOfStock = loaded.data!.categories.first.menus.last;
 
-    container.read(menuProvider.notifier).addToCart(inStock);
-    expect(container.read(menuProvider).cart['m1']?.quantity, 1);
-    expect(container.read(menuProvider).cartItemCount, 1);
+    container.read(menuProvider.notifier).toggleSelection(inStock);
+    expect(container.read(menuProvider).selectedItemId, 'm1');
 
-    container.read(menuProvider.notifier).addToCart(inStock);
-    expect(container.read(menuProvider).cart['m1']?.quantity, 2);
+    container.read(menuProvider.notifier).toggleSelection(inStock);
+    expect(container.read(menuProvider).selectedItemId, isNull);
 
-    container.read(menuProvider.notifier).addToCart(outOfStock);
-    expect(container.read(menuProvider).cart.containsKey('m2'), isFalse);
+    container.read(menuProvider.notifier).toggleSelection(outOfStock);
+    expect(container.read(menuProvider).selectedItemId, isNull);
   });
 
   test('menu controller surfaces API errors', () async {

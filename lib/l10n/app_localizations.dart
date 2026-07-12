@@ -458,43 +458,145 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get retry;
 
-  /// No description provided for @checkout.
+  /// Checkout screen title
   ///
   /// In en, this message translates to:
   /// **'Checkout'**
   String get checkout;
 
-  /// No description provided for @orderSummary.
+  /// Payment screen title
   ///
   /// In en, this message translates to:
-  /// **'Order summary'**
-  String get orderSummary;
+  /// **'Payment'**
+  String get payment;
 
-  /// No description provided for @total.
+  /// Confirm checkout and proceed to payment
   ///
   /// In en, this message translates to:
-  /// **'Total'**
-  String get total;
+  /// **'Confirm'**
+  String get confirm;
 
-  /// No description provided for @cashTendered.
+  /// Complete payment button label
   ///
   /// In en, this message translates to:
-  /// **'Cash tendered'**
-  String get cashTendered;
+  /// **'Complete'**
+  String get complete;
 
-  /// No description provided for @changeAmount.
+  /// Total amount due on the payment screen
+  ///
+  /// In en, this message translates to:
+  /// **'Amount due'**
+  String get amountDue;
+
+  /// Cash received input label
+  ///
+  /// In en, this message translates to:
+  /// **'Cash received'**
+  String get cashReceived;
+
+  /// Change amount returned to customer
   ///
   /// In en, this message translates to:
   /// **'Change'**
-  String get changeAmount;
+  String get change;
 
-  /// No description provided for @completeSale.
+  /// Shown when cash received is less than amount due
   ///
   /// In en, this message translates to:
-  /// **'Complete sale'**
-  String get completeSale;
+  /// **'Insufficient payment'**
+  String get insufficientPayment;
 
-  /// No description provided for @saleComplete.
+  /// SnackBar shown after successful payment
+  ///
+  /// In en, this message translates to:
+  /// **'Payment completed successfully'**
+  String get paymentSuccess;
+
+  /// Checkout order grand total label
+  ///
+  /// In en, this message translates to:
+  /// **'Grand total'**
+  String get grandTotal;
+
+  /// Abbreviated quantity label on checkout line items
+  ///
+  /// In en, this message translates to:
+  /// **'Qty'**
+  String get quantityLabel;
+
+  /// Note label on checkout line items
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get noteLabel;
+
+  /// Unit price label on checkout line items
+  ///
+  /// In en, this message translates to:
+  /// **'Unit price'**
+  String get unitPrice;
+
+  /// Line total label on checkout line items
+  ///
+  /// In en, this message translates to:
+  /// **'Line total'**
+  String get lineTotal;
+
+  /// Placeholder when a cart line has no note
+  ///
+  /// In en, this message translates to:
+  /// **'—'**
+  String get noNote;
+
+  /// Cart screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Cart'**
+  String get cart;
+
+  /// Add menu item to cart button label
+  ///
+  /// In en, this message translates to:
+  /// **'Add to cart'**
+  String get addToCart;
+
+  /// Message shown when the cart has no items
+  ///
+  /// In en, this message translates to:
+  /// **'Your cart is empty'**
+  String get emptyCart;
+
+  /// Clear all items from the cart
+  ///
+  /// In en, this message translates to:
+  /// **'Clear cart'**
+  String get clearCart;
+
+  /// Remove a line from the cart
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// Cart item count summary
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No items} =1{1 item} other{{count} items}}'**
+  String itemCount(int count);
+
+  /// Edit cart line note dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit note'**
+  String get editNote;
+
+  /// Hint for optional cart line note input
+  ///
+  /// In en, this message translates to:
+  /// **'Optional note (e.g. less ice)'**
+  String get noteHint;
+
+  /// Title shown after a successful offline sale
   ///
   /// In en, this message translates to:
   /// **'Sale complete'**
@@ -506,7 +608,7 @@ abstract class AppLocalizations {
   /// **'Change due: {amount}'**
   String saleCompleteMessage(String amount);
 
-  /// No description provided for @ok.
+  /// Dismiss confirmation dialog
   ///
   /// In en, this message translates to:
   /// **'OK'**

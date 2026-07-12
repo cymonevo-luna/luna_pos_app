@@ -73,12 +73,107 @@
   "noMenuItemsAvailable": "No menu items available",
   "retry": "Retry",
   "checkout": "Checkout",
-  "orderSummary": "Order summary",
-  "total": "Total",
-  "cashTendered": "Cash tendered",
-  "changeAmount": "Change",
-  "completeSale": "Complete sale",
+  "@checkout": {
+    "description": "Checkout screen title"
+  },
+  "payment": "Payment",
+  "@payment": {
+    "description": "Payment screen title"
+  },
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Confirm checkout and proceed to payment"
+  },
+  "complete": "Complete",
+  "@complete": {
+    "description": "Complete payment button label"
+  },
+  "amountDue": "Amount due",
+  "@amountDue": {
+    "description": "Total amount due on the payment screen"
+  },
+  "cashReceived": "Cash received",
+  "@cashReceived": {
+    "description": "Cash received input label"
+  },
+  "change": "Change",
+  "@change": {
+    "description": "Change amount returned to customer"
+  },
+  "insufficientPayment": "Insufficient payment",
+  "@insufficientPayment": {
+    "description": "Shown when cash received is less than amount due"
+  },
+  "paymentSuccess": "Payment completed successfully",
+  "@paymentSuccess": {
+    "description": "SnackBar shown after successful payment"
+  },
+  "grandTotal": "Grand total",
+  "@grandTotal": {
+    "description": "Checkout order grand total label"
+  },
+  "quantityLabel": "Qty",
+  "@quantityLabel": {
+    "description": "Abbreviated quantity label on checkout line items"
+  },
+  "noteLabel": "Note",
+  "@noteLabel": {
+    "description": "Note label on checkout line items"
+  },
+  "unitPrice": "Unit price",
+  "@unitPrice": {
+    "description": "Unit price label on checkout line items"
+  },
+  "lineTotal": "Line total",
+  "@lineTotal": {
+    "description": "Line total label on checkout line items"
+  },
+  "noNote": "—",
+  "@noNote": {
+    "description": "Placeholder when a cart line has no note"
+  },
+  "cart": "Cart",
+  "@cart": {
+    "description": "Cart screen title"
+  },
+  "addToCart": "Add to cart",
+  "@addToCart": {
+    "description": "Add menu item to cart button label"
+  },
+  "emptyCart": "Your cart is empty",
+  "@emptyCart": {
+    "description": "Message shown when the cart has no items"
+  },
+  "clearCart": "Clear cart",
+  "@clearCart": {
+    "description": "Clear all items from the cart"
+  },
+  "remove": "Remove",
+  "@remove": {
+    "description": "Remove a line from the cart"
+  },
+  "itemCount": "{count, plural, =0{No items} =1{1 item} other{{count} items}}",
+  "@itemCount": {
+    "description": "Cart item count summary",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "editNote": "Edit note",
+  "@editNote": {
+    "description": "Edit cart line note dialog title"
+  },
+  "noteHint": "Optional note (e.g. less ice)",
+  "@noteHint": {
+    "description": "Hint for optional cart line note input"
+  },
   "saleComplete": "Sale complete",
+  "@saleComplete": {
+    "description": "Title shown after a successful offline sale"
+  },
   "saleCompleteMessage": "Change due: {amount}",
   "@saleCompleteMessage": {
     "description": "Success message after completing an offline sale",
@@ -89,5 +184,8 @@
       }
     }
   },
-  "ok": "OK"
+  "ok": "OK",
+  "@ok": {
+    "description": "Dismiss confirmation dialog"
+  }
 }

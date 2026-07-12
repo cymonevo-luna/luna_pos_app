@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:luna_pos/features/receipt/models/receipt_data.dart';
 import 'package:luna_pos/features/receipt/models/receipt_line_item.dart';
-import 'package:luna_pos/features/receipt/models/store_settings.dart';
+import 'package:luna_pos/features/store_settings/models/store_settings.dart';
 import 'package:luna_pos/features/receipt/models/transaction_response.dart';
 import 'package:luna_pos/features/receipt/receipt_builder.dart';
 import 'package:luna_pos/features/user/models/user.dart';

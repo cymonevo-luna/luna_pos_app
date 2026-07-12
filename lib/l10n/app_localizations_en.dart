@@ -318,4 +318,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ok => 'OK';
+
+  @override
+  String get subtotal => 'Subtotal';
+
+  @override
+  String get discount => 'Discount';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get confirmAndPrint => 'Confirm & Print';
+
+  @override
+  String get printAgain => 'Print again';
+
+  @override
+  String get printFailedWarning =>
+      'Receipt could not be printed. You can retry or continue.';
+
+  @override
+  String get invalidDiscount => 'Discount cannot exceed subtotal';
+
+  @override
+  String transactionIdLabel(String id) {
+    return 'Transaction ID: $id';
+  }
 }

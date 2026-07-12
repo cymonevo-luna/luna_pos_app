@@ -8,16 +8,130 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_tokens.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/widgets.dart';
+import 'checkout_controller.dart';
 import 'models/order_line_item.dart';
 import 'order_controller.dart';
 
-class CheckoutPage extends ConsumerWidget {
+class CheckoutPage extends ConsumerStatefulWidget {
   const CheckoutPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CheckoutPage> createState() => _CheckoutPageState();
+}
+
+class _CheckoutPageState extends ConsumerState<CheckoutPage> {
+  final _discountController = TextEditingController(text: '0');
+  final _cashController = TextEditingController();
+
+  @override
+  void dispose() {
+    _discountController.dispose();
+    _cashController.dispose();
+    super.dispose();
+  }
+
+  int get _discountAmount => parseIdrAmount(_discountController.text);
+  int get _cashTendered => parseIdrAmount(_cashController.text);
+
+  Future<void> _confirmAndPrint(AppLocalizations l10n) async {
+    final result = await ref.read(checkoutProvider.notifier).confirmAndPrint(
+          discountAmount: _discountAmount,
+          cashTendered: _cashTendered,
+        );
+
+    if (!mounted || result == null) return;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        final dialogL10n = AppLocalizations.of(dialogContext);
+        return AlertDialog(
+          title: Text(dialogL10n.saleComplete),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(dialogL10n.transactionIdLabel(result.transactionId)),
+              const VGap(AppSpacing.sm),
+              Text(
+                dialogL10n.saleCompleteMessage(
+                  formatRupiah(result.changeAmount),
+                ),
+              ),
+              if (!result.printSucceeded) ...[
+                const VGap(AppSpacing.sm),
+                Text(
+                  result.printError ?? dialogL10n.printFailedWarning,
+                  style: TextStyle(color: Theme.of(dialogContext).colorScheme.error),
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            if (!result.printSucceeded)
+              TextButton(
+                onPressed: () async {
+                  final printed =
+                      await ref.read(checkoutProvider.notifier).retryPrint();
+                  if (!dialogContext.mounted) return;
+                  if (printed) {
+                    Navigator.of(dialogContext).pop();
+                  } else {
+                    ScaffoldMessenger.of(dialogContext).showSnackBar(
+                      SnackBar(content: Text(dialogL10n.printFailedWarning)),
+                    );
+                  }
+                },
+                child: Text(dialogL10n.printAgain),
+              ),
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(dialogL10n.ok),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (!mounted) return;
+    context.goNamed(AppRoute.home.name);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final order = ref.watch(orderProvider);
+    final checkout = ref.watch(checkoutProvider);
+    final subtotalAmount = order.grandTotal;
+    final discountValid = isDiscountValid(
+      discountAmount: _discountAmount,
+      subtotalAmount: subtotalAmount,
+    );
+    final totalAmount = calculateCheckoutTotal(
+      subtotalAmount: subtotalAmount,
+      discountAmount: _discountAmount,
+    );
+    final sufficient = isPaymentSufficient(
+      cashReceived: _cashTendered,
+      grandTotal: totalAmount,
+    );
+    final changeAmount = calculatePaymentChange(
+      cashReceived: _cashTendered,
+      grandTotal: totalAmount,
+    );
+    final canConfirm = order.lines.isNotEmpty &&
+        discountValid &&
+        sufficient &&
+        !checkout.submitting;
+
+    ref.listen(checkoutProvider, (previous, next) {
+      if (next.error != null && next.error != previous?.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(next.error!)),
+        );
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -27,23 +141,91 @@ class CheckoutPage extends ConsumerWidget {
       body: Column(
         children: [
           Expanded(
-            child: ListView.separated(
+            child: ListView(
               padding: AppSpacing.screenPadding,
-              itemCount: order.lines.length,
-              separatorBuilder: (_, _) => const VGap(AppSpacing.sm),
-              itemBuilder: (context, index) {
-                return _CheckoutLineCard(
-                  line: order.lines[index],
-                  l10n: l10n,
-                );
-              },
+              children: [
+                ...order.lines.map(
+                  (line) => Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    child: _CheckoutLineCard(line: line, l10n: l10n),
+                  ),
+                ),
+                const VGap(AppSpacing.md),
+                _SummaryRow(
+                  label: l10n.subtotal,
+                  value: formatRupiah(subtotalAmount),
+                ),
+                const VGap(AppSpacing.md),
+                AppTextField(
+                  fieldKey: const Key('discount_field'),
+                  label: l10n.discount,
+                  hint: '0',
+                  controller: _discountController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [IdrWholeNumberInputFormatter()],
+                  onChanged: (_) => setState(() {}),
+                ),
+                if (_discountAmount > 0 && !discountValid) ...[
+                  const VGap(AppSpacing.xs),
+                  AppText.body(
+                    l10n.invalidDiscount,
+                    color: context.colors.error,
+                  ),
+                ],
+                const VGap(AppSpacing.md),
+                _SummaryRow(
+                  label: l10n.total,
+                  value: formatRupiah(totalAmount),
+                  emphasized: true,
+                ),
+                const VGap(AppSpacing.lg),
+                AppTextField(
+                  fieldKey: const Key('cash_tendered_field'),
+                  label: l10n.cashReceived,
+                  hint: '0',
+                  controller: _cashController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [IdrWholeNumberInputFormatter()],
+                  onChanged: (_) => setState(() {}),
+                ),
+                if (_cashTendered > 0) ...[
+                  const VGap(AppSpacing.sm),
+                  AppText.body(
+                    formatRupiah(_cashTendered),
+                    muted: true,
+                    align: TextAlign.end,
+                  ),
+                ],
+                const VGap(AppSpacing.md),
+                if (_cashTendered > 0 && !sufficient)
+                  AppText.body(
+                    l10n.insufficientPayment,
+                    color: context.colors.error,
+                    align: TextAlign.center,
+                  )
+                else if (_cashTendered >= totalAmount)
+                  _SummaryRow(
+                    label: l10n.change,
+                    value: formatRupiah(changeAmount),
+                    emphasized: true,
+                  ),
+              ],
             ),
           ),
-          _CheckoutFooter(
-            grandTotal: order.grandTotal,
-            confirmLabel: l10n.confirm,
-            grandTotalLabel: l10n.grandTotal,
-            onConfirm: () => context.pushNamed(AppRoute.payment.name),
+          Material(
+            elevation: 8,
+            color: context.colors.surface,
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: AppSpacing.screenPadding,
+                child: AppButton(
+                  l10n.confirmAndPrint,
+                  loading: checkout.submitting,
+                  onPressed: canConfirm ? () => _confirmAndPrint(l10n) : null,
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -73,11 +255,6 @@ class _CheckoutLineCard extends StatelessWidget {
           _LineDetailRow(label: l10n.quantityLabel, value: '${line.quantity}'),
           const VGap(AppSpacing.xs),
           _LineDetailRow(label: l10n.noteLabel, value: note),
-          const VGap(AppSpacing.xs),
-          _LineDetailRow(
-            label: l10n.unitPrice,
-            value: formatRupiah(line.sellPrice),
-          ),
           const VGap(AppSpacing.xs),
           _LineDetailRow(
             label: l10n.lineTotal,
@@ -123,48 +300,33 @@ class _LineDetailRow extends StatelessWidget {
   }
 }
 
-class _CheckoutFooter extends StatelessWidget {
-  const _CheckoutFooter({
-    required this.grandTotal,
-    required this.grandTotalLabel,
-    required this.confirmLabel,
-    required this.onConfirm,
+class _SummaryRow extends StatelessWidget {
+  const _SummaryRow({
+    required this.label,
+    required this.value,
+    this.emphasized = false,
   });
 
-  final int grandTotal;
-  final String grandTotalLabel;
-  final String confirmLabel;
-  final VoidCallback onConfirm;
+  final String label;
+  final String value;
+  final bool emphasized;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      elevation: 8,
-      color: context.colors.surface,
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: AppSpacing.screenPadding,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                children: [
-                  Expanded(child: AppText.title(grandTotalLabel)),
-                  AppText.title(
-                    formatRupiah(grandTotal),
-                    color: context.colors.primary,
-                    weight: FontWeight.w700,
-                  ),
-                ],
-              ),
-              const VGap(AppSpacing.md),
-              AppButton(confirmLabel, onPressed: onConfirm),
-            ],
+    return Row(
+      children: [
+        Expanded(
+          child: AppText.title(
+            label,
+            weight: emphasized ? FontWeight.w700 : null,
           ),
         ),
-      ),
+        AppText.title(
+          value,
+          color: emphasized ? context.colors.primary : null,
+          weight: emphasized ? FontWeight.w700 : null,
+        ),
+      ],
     );
   }
 }

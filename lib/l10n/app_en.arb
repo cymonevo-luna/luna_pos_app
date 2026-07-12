@@ -239,5 +239,43 @@
   "ok": "OK",
   "@ok": {
     "description": "Dismiss confirmation dialog"
+  },
+  "subtotal": "Subtotal",
+  "@subtotal": {
+    "description": "Order subtotal before discount"
+  },
+  "discount": "Discount",
+  "@discount": {
+    "description": "Discount amount input label"
+  },
+  "total": "Total",
+  "@total": {
+    "description": "Final total after discount"
+  },
+  "confirmAndPrint": "Confirm & Print",
+  "@confirmAndPrint": {
+    "description": "Complete checkout and print receipt"
+  },
+  "printAgain": "Print again",
+  "@printAgain": {
+    "description": "Retry printing the receipt"
+  },
+  "printFailedWarning": "Receipt could not be printed. You can retry or continue.",
+  "@printFailedWarning": {
+    "description": "Warning when sale succeeded but printing failed"
+  },
+  "invalidDiscount": "Discount cannot exceed subtotal",
+  "@invalidDiscount": {
+    "description": "Validation error for discount input"
+  },
+  "transactionIdLabel": "Transaction ID: {id}",
+  "@transactionIdLabel": {
+    "description": "Shows the created transaction id after checkout",
+    "placeholders": {
+      "id": {
+        "type": "String",
+        "example": "tx-123"
+      }
+    }
   }
 }

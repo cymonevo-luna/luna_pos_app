@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:luna_pos/features/order/models/order_line_item.dart';
-import 'package:luna_pos/features/transaction/payment_controller.dart';
+import 'package:luna_pos/features/transaction/transaction_mapper.dart';
 
 void main() {
   test('buildTransactionItems maps order lines to line item snapshots', () {

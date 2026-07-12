@@ -318,4 +318,31 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get ok => 'OK';
+
+  @override
+  String get subtotal => 'Subtotal';
+
+  @override
+  String get discount => 'Diskon';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get confirmAndPrint => 'Konfirmasi & Cetak';
+
+  @override
+  String get printAgain => 'Cetak ulang';
+
+  @override
+  String get printFailedWarning =>
+      'Struk tidak dapat dicetak. Anda dapat mencoba lagi atau melanjutkan.';
+
+  @override
+  String get invalidDiscount => 'Diskon tidak boleh melebihi subtotal';
+
+  @override
+  String transactionIdLabel(String id) {
+    return 'ID Transaksi: $id';
+  }
 }

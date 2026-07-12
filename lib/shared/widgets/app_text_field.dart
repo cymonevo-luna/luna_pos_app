@@ -15,6 +15,7 @@ import 'app_text.dart';
 class AppTextField extends StatefulWidget {
   const AppTextField({
     super.key,
+    this.fieldKey,
     this.label,
     this.hint,
     this.controller,
@@ -31,6 +32,7 @@ class AppTextField extends StatefulWidget {
   });
 
   final String? label;
+  final Key? fieldKey;
   final String? hint;
   final TextEditingController? controller;
   final IconData? prefixIcon;
@@ -62,6 +64,7 @@ class _AppTextFieldState extends State<AppTextField> {
           const VGap(AppSpacing.xs),
         ],
         TextFormField(
+          key: widget.fieldKey,
           controller: widget.controller,
           obscureText: _obscured,
           keyboardType: widget.keyboardType,

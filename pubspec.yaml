@@ -64,7 +64,9 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
   build_runner: ^2.15.0
-  freezed: ^3.2.6-dev.1
+  # Pinned to the stable release: the 3.2.6-dev.1 prerelease drags in a
+  # bleeding-edge analyzer whose FreezedGenerator deadlocks during codegen.
+  freezed: 3.2.5
   json_serializable: ^6.14.0
   http_mock_adapter: ^0.6.1
 

@@ -162,13 +162,15 @@ void main() {
       printer.dispose();
     });
 
-    test('add item, checkout, confirm persists transaction via POST 201', () async {
+    test('add item, checkout, proceed with print persists transaction via POST 201',
+        () async {
       seedTwoLineCart();
       await printer.connect('00:11:22:33:44:55');
 
-      final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
+      final result = await container.read(checkoutProvider.notifier).proceed(
             discountAmount: 5000,
             cashTendered: 100000,
+            printReceipt: true,
           );
 
       expect(result, isNotNull);
@@ -177,6 +179,62 @@ void main() {
       expect(result.printSucceeded, isTrue);
       expect(container.read(orderProvider).lines, isEmpty);
       expect(printer.lastPrintedBytes, isNotEmpty);
+    });
+
+    test('proceed without print skips printer and clears cart', () async {
+      seedTwoLineCart();
+
+      final result = await container.read(checkoutProvider.notifier).proceed(
+            discountAmount: 5000,
+            cashTendered: 100000,
+            printReceipt: false,
+          );
+
+      expect(result, isNotNull);
+      expect(result!.transactionId, 'tx-e2e-1');
+      expect(result.changeAmount, 27000);
+      expect(result.printSucceeded, isFalse);
+      expect(result.printError, isNull);
+      expect(container.read(orderProvider).lines, isEmpty);
+      expect(printer.lastPrintedBytes, isNull);
+    });
+
+    test('transaction appears in POS history after proceed', () async {
+      seedTwoLineCart();
+
+      adapter.onGet(
+        '/api/v1/pos/transactions',
+        (server) => server.reply(200, {
+          'success': true,
+          'data': [
+            {
+              'id': 'tx-e2e-1',
+              'method': 'OFFLINE',
+              'amount': 73000,
+              'cashier_username': 'Cashier Test',
+              'transaction_date': '2026-07-12T10:00:00Z',
+            },
+          ],
+          'meta': {'page': 1, 'per_page': 20, 'total': 1},
+        }),
+        queryParameters: {'page': '1', 'per_page': '20'},
+      );
+
+      final result = await container.read(checkoutProvider.notifier).proceed(
+            discountAmount: 5000,
+            cashTendered: 100000,
+            printReceipt: false,
+          );
+
+      expect(result, isNotNull);
+      expect(result!.transactionId, 'tx-e2e-1');
+
+      final history =
+          await locator<TransactionRepository>().fetchTransactions();
+
+      expect(history.items, hasLength(1));
+      expect(history.items.first.id, 'tx-e2e-1');
+      expect(history.items.first.amount, 73000);
     });
   });
 
@@ -227,9 +285,10 @@ void main() {
       seedTwoLineCart();
       await printer.connect('00:11:22:33:44:55');
 
-      final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
+      final result = await container.read(checkoutProvider.notifier).proceed(
             discountAmount: 0,
             cashTendered: 80000,
+            printReceipt: true,
           );
 
       expect(result, isNull);

@@ -252,9 +252,13 @@
   "@total": {
     "description": "Final total after discount"
   },
-  "confirmAndPrint": "Confirm & Print",
-  "@confirmAndPrint": {
-    "description": "Complete checkout and print receipt"
+  "proceed": "Proceed",
+  "@proceed": {
+    "description": "Complete checkout"
+  },
+  "printReceipt": "Print receipt",
+  "@printReceipt": {
+    "description": "Checkbox label to print receipt after checkout"
   },
   "printAgain": "Print again",
   "@printAgain": {

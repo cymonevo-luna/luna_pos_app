@@ -329,7 +329,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get total => 'Total';
 
   @override
-  String get confirmAndPrint => 'Konfirmasi & Cetak';
+  String get proceed => 'Lanjutkan';
+
+  @override
+  String get printReceipt => 'Cetak struk';
 
   @override
   String get printAgain => 'Cetak ulang';

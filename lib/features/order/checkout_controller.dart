@@ -6,6 +6,7 @@ import '../../core/network/api_exception.dart';
 import '../../core/printer/bluetooth_printer_service.dart';
 import '../../core/storage/preferences_service.dart';
 import '../auth/auth_controller.dart';
+import '../user/models/user.dart';
 import '../receipt/models/receipt_data.dart';
 import '../receipt/models/receipt_line_item.dart';
 import '../receipt/models/transaction_response.dart' as receipt;
@@ -80,9 +81,10 @@ class CheckoutController extends Notifier<CheckoutState> {
   @override
   CheckoutState build() => const CheckoutState();
 
-  Future<CheckoutResult?> confirmAndPrint({
+  Future<CheckoutResult?> proceed({
     required int discountAmount,
     required int cashTendered,
+    required bool printReceipt,
   }) async {
     final order = ref.read(orderProvider);
     if (order.lines.isEmpty) return null;
@@ -112,11 +114,11 @@ class CheckoutController extends Notifier<CheckoutState> {
       grandTotal: totalAmount,
     );
 
+    final lines = List<OrderLineItem>.from(order.lines);
+
     state = state.copyWith(submitting: true, clearError: true);
 
     try {
-      final storeSettings =
-          await ref.read(storeSettingsProvider.notifier).loadIfNeeded();
       final cashier = ref.read(authProvider).user;
       if (cashier == null) {
         throw StateError('Cashier must be authenticated to complete checkout');
@@ -124,7 +126,7 @@ class CheckoutController extends Notifier<CheckoutState> {
 
       final request = CreateTransactionRequest(
         method: 'OFFLINE',
-        items: buildTransactionItems(order.lines),
+        items: buildTransactionItems(lines),
         subtotalAmount: subtotalAmount,
         discountAmount: discountAmount,
         amount: totalAmount,
@@ -135,9 +137,59 @@ class CheckoutController extends Notifier<CheckoutState> {
       final response =
           await _transactionRepository.createOfflineTransaction(request);
 
+      ref.read(orderProvider.notifier).clear();
+
+      if (!printReceipt) {
+        state = state.copyWith(
+          submitting: false,
+          clearReceiptBytes: true,
+        );
+        return CheckoutResult(
+          transactionId: response.id,
+          changeAmount: changeAmount,
+          printSucceeded: false,
+        );
+      }
+
+      return await _printReceiptAfterSale(
+        response: response,
+        lines: lines,
+        subtotalAmount: subtotalAmount,
+        discountAmount: discountAmount,
+        totalAmount: totalAmount,
+        cashTendered: cashTendered,
+        changeAmount: changeAmount,
+        cashier: cashier,
+      );
+    } on ApiException catch (error) {
+      state = state.copyWith(submitting: false, error: error.message);
+      return null;
+    } catch (error) {
+      state = state.copyWith(
+        submitting: false,
+        error: error is StateError ? error.message : 'Failed to complete sale',
+      );
+      return null;
+    }
+  }
+
+  Future<CheckoutResult> _printReceiptAfterSale({
+    required TransactionResponse response,
+    required List<OrderLineItem> lines,
+    required int subtotalAmount,
+    required int discountAmount,
+    required int totalAmount,
+    required int cashTendered,
+    required int changeAmount,
+    required User cashier,
+  }) async {
+    try {
+      final storeSettings =
+          await ref.read(storeSettingsProvider.notifier).loadIfNeeded();
+
       final receiptTxn = _buildReceiptTransaction(
         response: response,
-        lines: order.lines,
+        lines: lines,
         subtotalAmount: subtotalAmount,
         discountAmount: discountAmount,
         totalAmount: totalAmount,
@@ -156,8 +208,6 @@ class CheckoutController extends Notifier<CheckoutState> {
 
       final printResult = await _printReceipt(receiptBytes);
 
-      ref.read(orderProvider.notifier).clear();
-
       state = state.copyWith(
         submitting: false,
         lastReceiptBytes: receiptBytes,
@@ -169,15 +219,19 @@ class CheckoutController extends Notifier<CheckoutState> {
         printSucceeded: printResult.succeeded,
         printError: printResult.error,
       );
-    } on ApiException catch (error) {
-      state = state.copyWith(submitting: false, error: error.message);
-      return null;
     } catch (error) {
       state = state.copyWith(
         submitting: false,
-        error: error is StateError ? error.message : 'Failed to complete sale',
+        clearReceiptBytes: true,
       );
-      return null;
+      return CheckoutResult(
+        transactionId: response.id,
+        changeAmount: changeAmount,
+        printSucceeded: false,
+        printError: error is ApiException
+            ? error.message
+            : 'Receipt could not be printed.',
+      );
     }
   }
 

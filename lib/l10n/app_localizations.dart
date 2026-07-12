@@ -710,11 +710,17 @@ abstract class AppLocalizations {
   /// **'Total'**
   String get total;
 
-  /// Complete checkout and print receipt
+  /// Complete checkout
   ///
   /// In en, this message translates to:
-  /// **'Confirm & Print'**
-  String get confirmAndPrint;
+  /// **'Proceed'**
+  String get proceed;
+
+  /// Checkbox label to print receipt after checkout
+  ///
+  /// In en, this message translates to:
+  /// **'Print receipt'**
+  String get printReceipt;
 
   /// Retry printing the receipt
   ///

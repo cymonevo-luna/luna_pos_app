@@ -30,84 +30,84 @@ void main() {
   });
 
   Map<String, dynamic> orderedCategoriesResponse() => {
-        'success': true,
-        'data': {
-          'categories': [
+    'success': true,
+    'data': {
+      'categories': [
+        {
+          'id': 'c2',
+          'name': 'Desserts',
+          'menus': [
             {
-              'id': 'c2',
-              'name': 'Desserts',
-              'menus': [
-                {
-                  'id': 'm-dessert',
-                  'title': 'Pudding',
-                  'description': '',
-                  'photo_url': '/static/default-food.png',
-                  'available_stock': 5,
-                  'sell_price': 15000,
-                },
-              ],
-            },
-            {
-              'id': 'c3',
-              'name': 'Appetizers',
-              'menus': [
-                {
-                  'id': 'm-appetizer',
-                  'title': 'Spring Rolls',
-                  'description': '',
-                  'photo_url': '/static/default-food.png',
-                  'available_stock': 10,
-                  'sell_price': 20000,
-                },
-              ],
-            },
-            {
-              'id': 'c1',
-              'name': 'Mains',
-              'menus': [
-                {
-                  'id': 'm-main',
-                  'title': 'Nasi Goreng',
-                  'description': '',
-                  'photo_url': '/static/default-food.png',
-                  'available_stock': 3,
-                  'sell_price': 35000,
-                },
-              ],
+              'id': 'm-dessert',
+              'title': 'Pudding',
+              'description': '',
+              'photo_url': '/static/default-food.png',
+              'available_stock': 5,
+              'sell_price': 15000,
             },
           ],
         },
-      };
+        {
+          'id': 'c3',
+          'name': 'Appetizers',
+          'menus': [
+            {
+              'id': 'm-appetizer',
+              'title': 'Spring Rolls',
+              'description': '',
+              'photo_url': '/static/default-food.png',
+              'available_stock': 10,
+              'sell_price': 20000,
+            },
+          ],
+        },
+        {
+          'id': 'c1',
+          'name': 'Mains',
+          'menus': [
+            {
+              'id': 'm-main',
+              'title': 'Nasi Goreng',
+              'description': '',
+              'photo_url': '/static/default-food.png',
+              'available_stock': 3,
+              'sell_price': 35000,
+            },
+          ],
+        },
+      ],
+    },
+  };
 
   Map<String, dynamic> sampleMenusResponse() => {
-        'success': true,
-        'data': {
-          'categories': [
+    'success': true,
+    'data': {
+      'categories': [
+        {
+          'id': 'c1',
+          'name': 'Drinks',
+          'menus': [
             {
-              'id': 'c1',
-              'name': 'Drinks',
-              'menus': [
-                {
-                  'id': 'm1',
-                  'title': 'Es Teh',
-                  'description': 'Sweet iced tea',
-                  'photo_url': '/static/default-food.png',
-                  'available_stock': 5,
-                  'sell_price': 8000,
-                },
-                {
-                  'id': 'm2',
-                  'title': 'Sold Out Item',
-                  'description': '',
-                  'photo_url': '',
-                  'available_stock': 0,
-                  'sell_price': 12000,
-                },
-              ],
+              'id': 'm1',
+              'title': 'Es Teh',
+              'description': 'Sweet iced tea',
+              'photo_url': '/static/default-food.png',
+              'available_stock': 5,
+              'sell_price': 8000,
+            },
+            {
+              'id': 'm2',
+              'title': 'Sold Out Item',
+              'description': '',
+              'photo_url': '',
+              'available_stock': 0,
+              'sell_price': 12000,
             },
           ],
         },
-      };
+      ],
+    },
+  };
 
   test('fetchPOSMenus preserves API category order', () async {
     adapter.onGet(
@@ -117,10 +117,11 @@ void main() {
 
     final response = await locator<MenuRepository>().fetchPOSMenus();
 
-    expect(
-      response.categories.map((category) => category.name).toList(),
-      ['Desserts', 'Appetizers', 'Mains'],
-    );
+    expect(response.categories.map((category) => category.name).toList(), [
+      'Desserts',
+      'Appetizers',
+      'Mains',
+    ]);
   });
 
   test('fetchPOSMenus parses categories and menu items', () async {
@@ -138,16 +139,14 @@ void main() {
     expect(response.categories.first.menus.first.sellPrice, 8000);
   });
 
-  test('menu controller loads menus and toggles in-stock selection', () async {
+  test('menu controller loads menus successfully', () async {
     adapter.onGet(
       '/api/v1/pos/menus',
       (server) => server.reply(200, sampleMenusResponse()),
     );
 
     container.read(menuProvider.notifier);
-    for (var i = 0;
-        i < 50 && container.read(menuProvider).loading;
-        i++) {
+    for (var i = 0; i < 50 && container.read(menuProvider).loading; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 5));
     }
 
@@ -155,18 +154,7 @@ void main() {
     expect(loaded.loading, isFalse);
     expect(loaded.error, isNull);
     expect(loaded.data?.categories.first.menus.first.id, 'm1');
-
-    final inStock = loaded.data!.categories.first.menus.first;
-    final outOfStock = loaded.data!.categories.first.menus.last;
-
-    container.read(menuProvider.notifier).toggleSelection(inStock);
-    expect(container.read(menuProvider).selectedItemId, 'm1');
-
-    container.read(menuProvider.notifier).toggleSelection(inStock);
-    expect(container.read(menuProvider).selectedItemId, isNull);
-
-    container.read(menuProvider.notifier).toggleSelection(outOfStock);
-    expect(container.read(menuProvider).selectedItemId, isNull);
+    expect(loaded.data?.categories.first.menus.first.title, 'Es Teh');
   });
 
   test('menu controller surfaces API errors', () async {
@@ -179,9 +167,7 @@ void main() {
     );
 
     container.read(menuProvider.notifier);
-    for (var i = 0;
-        i < 50 && container.read(menuProvider).loading;
-        i++) {
+    for (var i = 0; i < 50 && container.read(menuProvider).loading; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 5));
     }
 

@@ -626,6 +626,18 @@ abstract class AppLocalizations {
   /// **'Add to cart'**
   String get addToCart;
 
+  /// Confirm adding an item from the menu bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// Running order total on the menu page bottom bar
+  ///
+  /// In en, this message translates to:
+  /// **'Order total'**
+  String get orderTotal;
+
   /// Message shown when the cart has no items
   ///
   /// In en, this message translates to:

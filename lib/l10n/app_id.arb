@@ -88,6 +88,8 @@
   "testPrint": "Cetak uji",
   "cart": "Keranjang",
   "addToCart": "Tambah ke keranjang",
+  "add": "Tambah",
+  "orderTotal": "Total pesanan",
   "emptyCart": "Keranjangmu kosong",
   "clearCart": "Kosongkan keranjang",
   "remove": "Hapus",

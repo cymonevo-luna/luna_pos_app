@@ -6,7 +6,7 @@ part 'pos_menu.g.dart';
 @freezed
 abstract class POSMenusResponse with _$POSMenusResponse {
   const factory POSMenusResponse({
-  @JsonKey(defaultValue: <POSCategoryGroup>[])
+    @JsonKey(defaultValue: <POSCategoryGroup>[])
     required List<POSCategoryGroup> categories,
   }) = _POSMenusResponse;
 

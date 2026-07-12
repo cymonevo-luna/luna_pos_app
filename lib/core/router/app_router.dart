@@ -11,6 +11,8 @@ import '../../features/order/cart_page.dart';
 import '../../features/order/checkout_page.dart';
 import '../../features/order/order_controller.dart';
 import '../../features/placeholder/coming_soon_page.dart';
+import '../../features/transaction/transaction_detail_page.dart';
+import '../../features/transaction/transaction_history_page.dart';
 import '../../features/profile/profile_page.dart';
 import '../../features/settings/settings_page.dart';
 import '../../l10n/app_localizations.dart';
@@ -23,14 +25,15 @@ enum AppRoute {
   login('/login'),
   register('/register'),
   home('/home'),
-  tasks('/tasks'),
+  transactionHistory('/transactions'),
   calendar('/calendar'),
   messages('/messages'),
   profile('/profile'),
   settings('/settings'),
   details('/details'),
   cart('/cart'),
-  checkout('/checkout');
+  checkout('/checkout'),
+  transactionDetail('/transactions/:id');
 
   const AppRoute(this.path);
   final String path;
@@ -144,12 +147,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: AppRoute.tasks.path,
-              name: AppRoute.tasks.name,
-              builder: (context, state) => ComingSoonPage(
-                title: AppLocalizations.of(context).tasks,
-                icon: Icons.check_box_outlined,
-              ),
+              path: AppRoute.transactionHistory.path,
+              name: AppRoute.transactionHistory.name,
+              builder: (context, state) => const TransactionHistoryPage(),
             ),
           ],
         ),
@@ -211,6 +211,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       name: AppRoute.checkout.name,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const CheckoutPage(),
+    ),
+    GoRoute(
+      path: AppRoute.transactionDetail.path,
+      name: AppRoute.transactionDetail.name,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => TransactionDetailPage(
+        transactionId: state.pathParameters['id']!,
+      ),
     ),
   ],
     errorBuilder: (context, state) => Scaffold(

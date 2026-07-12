@@ -345,4 +345,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String transactionIdLabel(String id) {
     return 'Transaction ID: $id';
   }
+
+  @override
+  String get transactionHistory => 'History';
+
+  @override
+  String get transactionDetails => 'Transaction details';
+
+  @override
+  String get noTransactions => 'No transactions yet';
+
+  @override
+  String get paymentMethod => 'Payment';
+
+  @override
+  String get paymentMethodOffline => 'Cash';
+
+  @override
+  String get cashier => 'Cashier';
+
+  @override
+  String get filterByDate => 'Filter by date';
+
+  @override
+  String get clearDateFilter => 'Clear date filter';
+
+  @override
+  String get notAuthorized => 'Not authorized';
+
+  @override
+  String get notAuthorizedMessage =>
+      'You do not have permission to view transactions. Please sign out and use a cashier account.';
 }

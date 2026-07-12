@@ -97,4 +97,105 @@ void main() {
     expect(response.cashTendered, 60000);
     expect(response.changeAmount, 9000);
   });
+
+  test('fetchTransactions parses paginated list', () async {
+    adapter.onGet(
+      '/api/v1/pos/transactions',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': [
+          {
+            'id': 'tx-1',
+            'method': 'OFFLINE',
+            'amount': 25000,
+            'cashier_username': 'Cashier Test',
+            'transaction_date': '2026-07-12T10:00:00Z',
+          },
+          {
+            'id': 'tx-2',
+            'method': 'OFFLINE',
+            'amount': 35000,
+            'cashier_username': 'Cashier Test',
+            'transaction_date': '2026-07-11T10:00:00Z',
+          },
+        ],
+        'meta': {'page': 1, 'per_page': 20, 'total': 2},
+      }),
+      queryParameters: {'page': '1', 'per_page': '20'},
+    );
+
+    final response = await locator<TransactionRepository>().fetchTransactions();
+
+    expect(response.items, hasLength(2));
+    expect(response.page, 1);
+    expect(response.total, 2);
+    expect(response.hasMore, isFalse);
+    expect(response.items.first.id, 'tx-1');
+    expect(response.items.first.cashierUsername, 'Cashier Test');
+  });
+
+  test('fetchTransactions forwards date filters', () async {
+    adapter.onGet(
+      '/api/v1/pos/transactions',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': [],
+        'meta': {'page': 1, 'per_page': 20, 'total': 0},
+      }),
+      queryParameters: {
+        'page': '1',
+        'per_page': '20',
+        'date_from': '2026-07-01',
+        'date_to': '2026-07-12',
+      },
+    );
+
+    final response = await locator<TransactionRepository>().fetchTransactions(
+      dateFrom: DateTime(2026, 7, 1),
+      dateTo: DateTime(2026, 7, 12),
+    );
+
+    expect(response.items, isEmpty);
+    expect(response.total, 0);
+  });
+
+  test('fetchTransactionDetail parses line items and totals', () async {
+    adapter.onGet(
+      '/api/v1/pos/transactions/tx-1',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'id': 'tx-1',
+          'method': 'OFFLINE',
+          'items': [
+            {
+              'menu_id': 'm1',
+              'title': 'Nasi Goreng',
+              'quantity': 1,
+              'unit_price': 35000,
+              'line_total': 35000,
+            },
+          ],
+          'subtotal_amount': 35000,
+          'discount_amount': 0,
+          'amount': 35000,
+          'cash_tendered': 50000,
+          'change_amount': 15000,
+          'cashier_username': 'Cashier Test',
+          'transaction_date': '2026-07-12T10:00:00Z',
+        },
+      }),
+    );
+
+    final detail =
+        await locator<TransactionRepository>().fetchTransactionDetail('tx-1');
+
+    expect(detail.id, 'tx-1');
+    expect(detail.items, hasLength(1));
+    expect(detail.items.first.title, 'Nasi Goreng');
+    expect(detail.subtotalAmount, 35000);
+    expect(detail.cashTendered, 50000);
+    expect(detail.changeAmount, 15000);
+    expect(detail.cashierUsername, 'Cashier Test');
+  });
 }

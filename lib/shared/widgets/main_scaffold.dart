@@ -35,9 +35,9 @@ class MainScaffold extends StatelessWidget {
             label: l10n.menu,
           ),
           NavigationDestination(
-            icon: const Icon(Icons.check_box_outlined),
-            selectedIcon: const Icon(Icons.check_box),
-            label: l10n.tasks,
+            icon: const Icon(Icons.receipt_long_outlined),
+            selectedIcon: const Icon(Icons.receipt_long),
+            label: l10n.transactionHistory,
           ),
           NavigationDestination(
             icon: const Icon(Icons.calendar_today_outlined),

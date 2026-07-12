@@ -106,5 +106,15 @@
   "printAgain": "Cetak ulang",
   "printFailedWarning": "Struk tidak dapat dicetak. Anda dapat mencoba lagi atau melanjutkan.",
   "invalidDiscount": "Diskon tidak boleh melebihi subtotal",
-  "transactionIdLabel": "ID Transaksi: {id}"
+  "transactionIdLabel": "ID Transaksi: {id}",
+  "transactionHistory": "Riwayat",
+  "transactionDetails": "Detail transaksi",
+  "noTransactions": "Belum ada transaksi",
+  "paymentMethod": "Pembayaran",
+  "paymentMethodOffline": "Tunai",
+  "cashier": "Kasir",
+  "filterByDate": "Filter tanggal",
+  "clearDateFilter": "Hapus filter tanggal",
+  "notAuthorized": "Tidak diizinkan",
+  "notAuthorizedMessage": "Anda tidak memiliki izin untuk melihat transaksi. Silakan keluar dan gunakan akun kasir."
 }

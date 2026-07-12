@@ -277,5 +277,45 @@
         "example": "tx-123"
       }
     }
+  },
+  "transactionHistory": "History",
+  "@transactionHistory": {
+    "description": "Transaction history bottom navigation label and screen title"
+  },
+  "transactionDetails": "Transaction details",
+  "@transactionDetails": {
+    "description": "Transaction detail screen title"
+  },
+  "noTransactions": "No transactions yet",
+  "@noTransactions": {
+    "description": "Empty state when the cashier has no transaction history"
+  },
+  "paymentMethod": "Payment",
+  "@paymentMethod": {
+    "description": "Payment method label on transaction rows"
+  },
+  "paymentMethodOffline": "Cash",
+  "@paymentMethodOffline": {
+    "description": "Display label for OFFLINE payment method"
+  },
+  "cashier": "Cashier",
+  "@cashier": {
+    "description": "Cashier name label on transaction rows and detail"
+  },
+  "filterByDate": "Filter by date",
+  "@filterByDate": {
+    "description": "Opens the date range filter picker"
+  },
+  "clearDateFilter": "Clear date filter",
+  "@clearDateFilter": {
+    "description": "Clears the active transaction date range filter"
+  },
+  "notAuthorized": "Not authorized",
+  "@notAuthorized": {
+    "description": "Title when transaction history returns HTTP 403"
+  },
+  "notAuthorizedMessage": "You do not have permission to view transactions. Please sign out and use a cashier account.",
+  "@notAuthorizedMessage": {
+    "description": "Message when transaction history returns HTTP 403"
   }
 }

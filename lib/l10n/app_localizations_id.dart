@@ -345,4 +345,35 @@ class AppLocalizationsId extends AppLocalizations {
   String transactionIdLabel(String id) {
     return 'ID Transaksi: $id';
   }
+
+  @override
+  String get transactionHistory => 'Riwayat';
+
+  @override
+  String get transactionDetails => 'Detail transaksi';
+
+  @override
+  String get noTransactions => 'Belum ada transaksi';
+
+  @override
+  String get paymentMethod => 'Pembayaran';
+
+  @override
+  String get paymentMethodOffline => 'Tunai';
+
+  @override
+  String get cashier => 'Kasir';
+
+  @override
+  String get filterByDate => 'Filter tanggal';
+
+  @override
+  String get clearDateFilter => 'Hapus filter tanggal';
+
+  @override
+  String get notAuthorized => 'Tidak diizinkan';
+
+  @override
+  String get notAuthorizedMessage =>
+      'Anda tidak memiliki izin untuk melihat transaksi. Silakan keluar dan gunakan akun kasir.';
 }

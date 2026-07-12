@@ -82,4 +82,48 @@ void main() {
     expect(response.items, isEmpty);
     expect(response.total, 0);
   });
+
+  test('create posts purchase request body', () async {
+    adapter.onPost(
+      PurchaseRequestRepository.listPath,
+      (server) => server.reply(201, {
+        'success': true,
+        'data': {
+          'id': 'pr-new',
+          'supplier_id': 'sup-1',
+          'supplier_name': 'Toko Sembako Jaya',
+          'status': 'PENDING',
+          'total_estimated_amount': 140000,
+          'items': [
+            {
+              'food_supply_id': 'fs-1',
+              'food_supply_title': 'Flour',
+              'quantity': '1000',
+              'unit': 'gr',
+            },
+          ],
+        },
+      }),
+      data: {
+        'supplier_id': 'sup-1',
+        'items': [
+          {'food_supply_id': 'fs-1', 'quantity': '1000'},
+        ],
+        'notes': 'weekly restock',
+      },
+    );
+
+    final created = await locator<PurchaseRequestRepository>().create(
+      supplierId: 'sup-1',
+      items: const [
+        PurchaseLineCreateInput(foodSupplyId: 'fs-1', quantity: 1000),
+      ],
+      notes: 'weekly restock',
+    );
+
+    expect(created.id, 'pr-new');
+    expect(created.status, PurchaseRequestStatus.pending);
+    expect(created.items, hasLength(1));
+    expect(created.items.first.quantity, 1000);
+  });
 }

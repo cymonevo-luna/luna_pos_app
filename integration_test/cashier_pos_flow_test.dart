@@ -6,12 +6,14 @@ import 'helpers/harness.dart';
 
 /// Cashier/POS automation: dedicated login then menu load (no registration).
 void main() {
-  testWidgets('cashier POS flow uses dedicated account login', (tester) async {
+  testWidgets('POS sale flow regression after cashier login', (tester) async {
     final harness = await setUpIntegrationHarness();
     harness
       ..forbidRegistration()
       ..stubLoginForRole(TestAccountRole.cashier)
-      ..stubSampleMenu();
+      ..stubSampleMenu()
+      ..stubStoreSettings()
+      ..stubCreateTransaction();
 
     await harness.pumpApp(tester);
     await harness.loginViaUi(tester, TestAccountRole.cashier);

@@ -5,6 +5,7 @@ import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:luna_pos/app.dart';
+import 'package:luna_pos/core/auth/session_guard.dart';
 import 'package:luna_pos/core/config/app_config.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
@@ -33,6 +34,7 @@ void main() {
     adapter = mocked.adapter;
     locator
       ..registerSingleton<PreferencesService>(await PreferencesService.create())
+      ..registerSingleton<SessionGuard>(SessionGuard())
       ..registerSingleton<SecureStorageService>(secure)
       ..registerSingleton<ApiClient>(mocked.client)
       ..registerLazySingleton<MenuRepository>(
@@ -181,7 +183,8 @@ void main() {
             'id': 'u1',
             'email': 'a@b.com',
             'name': 'Alex',
-            'role': 'user',
+            'merchant_id': 'merchant-1',
+            'roles': ['cashier'],
           },
         }),
       )
@@ -241,7 +244,8 @@ void main() {
             'id': 'u1',
             'email': 'a@b.com',
             'name': 'Alex',
-            'role': 'user',
+            'merchant_id': 'merchant-1',
+            'roles': ['cashier'],
           },
         }),
       )
@@ -274,7 +278,8 @@ void main() {
             'id': 'u1',
             'email': 'a@b.com',
             'name': 'Alex',
-            'role': 'user',
+            'merchant_id': 'merchant-1',
+            'roles': ['cashier'],
           },
         }),
       )
@@ -316,7 +321,8 @@ void main() {
             'id': 'u1',
             'email': 'a@b.com',
             'name': 'Alex',
-            'role': 'user',
+            'merchant_id': 'merchant-1',
+            'roles': ['cashier'],
           },
         }),
       )
@@ -349,7 +355,8 @@ void main() {
             'id': 'u1',
             'email': 'a@b.com',
             'name': 'Alex',
-            'role': 'user',
+            'merchant_id': 'merchant-1',
+            'roles': ['cashier'],
           },
         }),
       )
@@ -387,7 +394,8 @@ void main() {
             'id': 'u1',
             'email': 'a@b.com',
             'name': 'Alex',
-            'role': 'user',
+            'merchant_id': 'merchant-1',
+            'roles': ['cashier'],
           },
         }),
       )
@@ -427,7 +435,8 @@ void main() {
             'id': 'u1',
             'email': 'a@b.com',
             'name': 'Alex',
-            'role': 'user',
+            'merchant_id': 'merchant-1',
+            'roles': ['cashier'],
           },
         }),
       )
@@ -514,7 +523,8 @@ void main() {
             'id': 'u1',
             'email': 'a@b.com',
             'name': 'Alex',
-            'role': 'user',
+            'merchant_id': 'merchant-1',
+            'roles': ['cashier'],
           },
         }),
       )

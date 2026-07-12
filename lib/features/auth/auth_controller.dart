@@ -1,27 +1,39 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/auth/session_guard.dart';
 import '../../core/di/locator.dart';
 import '../../core/network/api_client.dart';
 import '../../core/network/api_envelope.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/storage/secure_storage_service.dart';
+import '../merchant/models/merchant.dart';
 import '../user/models/user.dart';
 
 /// Authentication status the rest of the app can react to (e.g. the router's
 /// splash gate and logout actions).
 enum AuthStatus { unknown, authenticated, unauthenticated }
 
+/// Shown when a saved session is cleared after a 401/403 from any API call.
+const kSessionExpiredMessage =
+    'Your session has expired. Please sign in again.';
+
+/// Returned when login succeeds but the account lacks POS cashier access.
+const kCashierAccessDeniedMessage =
+    'This account does not have POS cashier access';
+
 /// Snapshot of the current auth session.
 class AuthState {
   const AuthState({
     this.status = AuthStatus.unknown,
     this.user,
+    this.merchant,
     this.busy = false,
     this.error,
   });
 
   final AuthStatus status;
   final User? user;
+  final Merchant? merchant;
 
   /// True while a login/register request is in flight.
   final bool busy;
@@ -32,30 +44,37 @@ class AuthState {
   AuthState copyWith({
     AuthStatus? status,
     User? user,
+    Merchant? merchant,
     bool? busy,
     String? error,
   }) {
     return AuthState(
       status: status ?? this.status,
       user: user ?? this.user,
+      merchant: merchant ?? this.merchant,
       busy: busy ?? this.busy,
       error: error,
     );
   }
 }
 
+class _CashierAccessDenied implements Exception {
+  const _CashierAccessDenied();
+}
+
 /// Owns the auth session against the go_template backend
 /// (`/api/v1/auth/*` + `/api/v1/users/{id}`). Restores any saved session on
 /// startup and exposes login / register / logout actions.
 ///
-/// Any service cloned from this template is wired to the backend out of the box;
-/// only `API_BASE_URL` in `.env` needs to point at the running service.
+/// Only users with the `cashier` role may establish a POS session.
 class AuthController extends Notifier<AuthState> {
   SecureStorageService get _secure => locator<SecureStorageService>();
   ApiClient get _api => locator<ApiClient>();
+  SessionGuard get _sessionGuard => locator<SessionGuard>();
 
   @override
   AuthState build() {
+    _sessionGuard.onExpired = _handleSessionExpired;
     _restore();
     return const AuthState();
   }
@@ -74,14 +93,36 @@ class AuthController extends Notifier<AuthState> {
       }
 
       _api.setAuthToken(token);
+      final storedMerchant = await _secure.readMerchant();
+
       try {
         final user = await _fetchUser(userId);
-        state = state.copyWith(status: AuthStatus.authenticated, user: user);
+        if (!user.hasCashierAccess) {
+          await _clearSession();
+          state = state.copyWith(status: AuthStatus.unauthenticated);
+          return;
+        }
+        await _secure.writeUser(user);
+        state = state.copyWith(
+          status: AuthStatus.authenticated,
+          user: user,
+          merchant: storedMerchant,
+        );
         return;
       } on ApiException catch (e) {
         if (e.type == ApiErrorType.unauthorized && await _tryRefresh()) {
           final user = await _fetchUser(userId);
-          state = state.copyWith(status: AuthStatus.authenticated, user: user);
+          if (!user.hasCashierAccess) {
+            await _clearSession();
+            state = state.copyWith(status: AuthStatus.unauthenticated);
+            return;
+          }
+          await _secure.writeUser(user);
+          state = state.copyWith(
+            status: AuthStatus.authenticated,
+            user: user,
+            merchant: storedMerchant,
+          );
           return;
         }
       }
@@ -96,13 +137,20 @@ class AuthController extends Notifier<AuthState> {
   Future<bool> login({required String email, required String password}) async {
     state = state.copyWith(busy: true, error: null);
     try {
-      final user = await _loginRequest(email: email, password: password);
+      final result = await _loginRequest(email: email, password: password);
       state = state.copyWith(
         status: AuthStatus.authenticated,
-        user: user,
+        user: result.user,
+        merchant: result.merchant,
         busy: false,
       );
       return true;
+    } on _CashierAccessDenied {
+      state = state.copyWith(
+        busy: false,
+        error: kCashierAccessDeniedMessage,
+      );
+      return false;
     } on ApiException catch (e) {
       state = state.copyWith(busy: false, error: _messageFor(e));
       return false;
@@ -123,13 +171,20 @@ class AuthController extends Notifier<AuthState> {
         body: {'name': name, 'email': email, 'password': password},
         decoder: (_) {},
       );
-      final user = await _loginRequest(email: email, password: password);
+      final result = await _loginRequest(email: email, password: password);
       state = state.copyWith(
         status: AuthStatus.authenticated,
-        user: user,
+        user: result.user,
+        merchant: result.merchant,
         busy: false,
       );
       return true;
+    } on _CashierAccessDenied {
+      state = state.copyWith(
+        busy: false,
+        error: kCashierAccessDeniedMessage,
+      );
+      return false;
     } on ApiException catch (e) {
       state = state.copyWith(busy: false, error: _messageFor(e));
       return false;
@@ -141,7 +196,15 @@ class AuthController extends Notifier<AuthState> {
     state = const AuthState(status: AuthStatus.unauthenticated);
   }
 
-  Future<User> _loginRequest({
+  Future<void> _handleSessionExpired() async {
+    await _clearSession();
+    state = const AuthState(
+      status: AuthStatus.unauthenticated,
+      error: kSessionExpiredMessage,
+    );
+  }
+
+  Future<({User user, Merchant merchant})> _loginRequest({
     required String email,
     required String password,
   }) async {
@@ -152,12 +215,20 @@ class AuthController extends Notifier<AuthState> {
     );
     final tokens = (data['tokens'] as Map).cast<String, dynamic>();
     final user = User.fromJson((data['user'] as Map).cast<String, dynamic>());
+    final merchant =
+        Merchant.fromJson((data['merchant'] as Map).cast<String, dynamic>());
+
+    if (!user.hasCashierAccess) {
+      throw const _CashierAccessDenied();
+    }
+
     await _persistSession(
       access: tokens['access_token'] as String,
       refresh: tokens['refresh_token'] as String?,
-      userId: user.id,
+      user: user,
+      merchant: merchant,
     );
-    return user;
+    return (user: user, merchant: merchant);
   }
 
   Future<User> _fetchUser(String id) {
@@ -190,11 +261,14 @@ class AuthController extends Notifier<AuthState> {
   Future<void> _persistSession({
     required String access,
     String? refresh,
-    required String userId,
+    required User user,
+    required Merchant merchant,
   }) async {
     await _secure.writeToken(access);
     if (refresh != null) await _secure.writeRefreshToken(refresh);
-    await _secure.writeUserId(userId);
+    await _secure.writeUserId(user.id);
+    await _secure.writeUser(user);
+    await _secure.writeMerchant(merchant);
     _api.setAuthToken(access);
   }
 
@@ -203,6 +277,8 @@ class AuthController extends Notifier<AuthState> {
     await _secure.deleteToken();
     await _secure.deleteRefreshToken();
     await _secure.deleteUserId();
+    await _secure.deleteUser();
+    await _secure.deleteMerchant();
   }
 
   /// Prefers the server-provided error message from the envelope, falling back

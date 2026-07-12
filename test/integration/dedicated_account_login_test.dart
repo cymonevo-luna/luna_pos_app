@@ -1,11 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/testing/test_accounts.dart';
 
 import '../../integration_test/helpers/harness.dart';
 
-/// Role-based Tester Agent smoke paths runnable via `flutter test test/integration/`.
+/// POS cashier auth checklist runnable via `flutter test test/integration/`.
 void main() {
-  group('dedicated account login automation', () {
+  group('cashier role login checklist', () {
     late IntegrationTestHarness harness;
 
     setUp(() async {
@@ -13,19 +14,11 @@ void main() {
       harness.forbidRegistration();
     });
 
-    testWidgets('admin logs in without registration', (tester) async {
-      harness
-        ..stubLoginForRole(TestAccountRole.admin)
-        ..stubEmptyMenu();
-
-      await harness.pumpApp(tester);
-      await harness.loginViaUi(tester, TestAccountRole.admin);
-      await harness.expectAuthenticatedHome(tester);
-
-      expect(TestAccounts.emailFor(TestAccountRole.admin), TestAccounts.adminEmail);
+    tearDown(() async {
+      await locator.reset();
     });
 
-    testWidgets('cashier logs in without registration', (tester) async {
+    testWidgets('cashier login succeeds', (tester) async {
       harness
         ..stubLoginForRole(TestAccountRole.cashier)
         ..stubEmptyMenu();
@@ -33,41 +26,27 @@ void main() {
       await harness.pumpApp(tester);
       await harness.loginViaUi(tester, TestAccountRole.cashier);
       await harness.expectAuthenticatedHome(tester);
-
-      expect(
-        TestAccounts.emailFor(TestAccountRole.cashier),
-        TestAccounts.cashierEmail,
-      );
     });
 
-    testWidgets('manager logs in without registration', (tester) async {
-      harness
-        ..stubLoginForRole(TestAccountRole.manager)
-        ..stubEmptyMenu();
+    testWidgets('manager-only login rejected', (tester) async {
+      harness.stubLoginForRole(TestAccountRole.manager);
 
       await harness.pumpApp(tester);
       await harness.loginViaUi(tester, TestAccountRole.manager);
-      await harness.expectAuthenticatedHome(tester);
-
-      expect(
-        TestAccounts.emailFor(TestAccountRole.manager),
-        TestAccounts.managerEmail,
-      );
+      await harness.expectLoginRejected(tester);
     });
 
-    testWidgets('operational logs in without registration', (tester) async {
+    testWidgets('multi-role cashier login succeeds', (tester) async {
       harness
-        ..stubLoginForRole(TestAccountRole.operational)
+        ..stubLoginForRole(
+          TestAccountRole.cashier,
+          additionalRoles: const ['operational'],
+        )
         ..stubEmptyMenu();
 
       await harness.pumpApp(tester);
-      await harness.loginViaUi(tester, TestAccountRole.operational);
+      await harness.loginViaUi(tester, TestAccountRole.cashier);
       await harness.expectAuthenticatedHome(tester);
-
-      expect(
-        TestAccounts.emailFor(TestAccountRole.operational),
-        TestAccounts.operationalEmail,
-      );
     });
   });
 }

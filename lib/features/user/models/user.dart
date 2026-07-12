@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'user.freezed.dart';
 part 'user.g.dart';
 
-/// Example immutable model generated with freezed + json_serializable.
+/// Immutable user profile from the merchant auth API.
 ///
 /// Run codegen after changing this file:
 /// `dart run build_runner build --delete-conflicting-outputs`
@@ -13,9 +13,16 @@ abstract class User with _$User {
     required String id,
     required String name,
     required String email,
+    @JsonKey(name: 'merchant_id') required String merchantId,
+    @Default(<String>[]) List<String> roles,
     String? avatarUrl,
-    String? role,
   }) = _User;
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
+}
+
+extension UserRoleAccess on User {
+  static const cashierRole = 'cashier';
+
+  bool get hasCashierAccess => roles.contains(cashierRole);
 }

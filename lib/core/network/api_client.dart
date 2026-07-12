@@ -24,7 +24,7 @@ class ApiClient {
     Map<String, dynamic>? headers,
     Duration connectTimeout = const Duration(seconds: 20),
     Duration receiveTimeout = const Duration(seconds: 20),
-    this.onUnauthorized,
+    this.onSessionExpired,
   }) : _dio = Dio(
           BaseOptions(
             baseUrl: baseUrl,
@@ -43,7 +43,8 @@ class ApiClient {
           handler.next(options);
         },
         onError: (e, handler) {
-          if (e.response?.statusCode == 401) onUnauthorized?.call();
+          final code = e.response?.statusCode;
+          if (code == 401 || code == 403) onSessionExpired?.call();
           handler.next(e);
         },
       ),
@@ -60,8 +61,8 @@ class ApiClient {
   final Dio _dio;
   String? _authToken;
 
-  /// Called when the server returns 401 (e.g. to trigger logout).
-  final VoidCallback? onUnauthorized;
+  /// Called when the server returns 401/403 (e.g. to trigger logout).
+  final VoidCallback? onSessionExpired;
 
   /// Escape hatch for advanced Dio usage (uploads, custom options, etc.).
   Dio get raw => _dio;

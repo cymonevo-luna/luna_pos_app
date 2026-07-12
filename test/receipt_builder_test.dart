@@ -133,6 +133,8 @@ void main() {
         id: 'u1',
         name: 'Ani',
         email: 'ani@example.com',
+        merchantId: 'merchant-1',
+        roles: ['cashier'],
       ),
     );
 

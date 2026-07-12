@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 
+import '../auth/session_guard.dart';
 import '../config/app_config.dart';
 import '../network/api_client.dart';
 import '../printer/bluetooth_printer_service.dart';
@@ -17,17 +18,17 @@ final GetIt locator = GetIt.instance;
 Future<void> setupLocator() async {
   // Storage.
   final prefs = await PreferencesService.create();
+  final sessionGuard = SessionGuard();
   locator
     ..registerSingleton<PreferencesService>(prefs)
-    ..registerSingleton<SecureStorageService>(SecureStorageService());
+    ..registerSingleton<SecureStorageService>(SecureStorageService())
+    ..registerSingleton<SessionGuard>(sessionGuard);
 
-  // Networking. Clears the token on 401 so the app can route to login.
+  // Networking. Clears the session on 401/403 so the app can route to login.
   final secureStorage = locator<SecureStorageService>();
   final apiClient = ApiClient(
     baseUrl: AppConfig.apiBaseUrl,
-    onUnauthorized: () async {
-      await secureStorage.deleteToken();
-    },
+    onSessionExpired: () => sessionGuard.notifyExpired(),
   );
 
   // Restore a previously saved auth token (if any) onto the client.

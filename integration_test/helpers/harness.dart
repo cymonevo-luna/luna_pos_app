@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:luna_pos/app.dart';
+import 'package:luna_pos/core/auth/session_guard.dart';
 import 'package:luna_pos/core/config/app_config.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
 import 'package:luna_pos/core/storage/preferences_service.dart';
 import 'package:luna_pos/core/storage/secure_storage_service.dart';
+import 'package:luna_pos/features/auth/auth_controller.dart';
 import 'package:luna_pos/features/auth/login_page.dart';
 import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
@@ -38,12 +40,35 @@ class FakeSecureStorage extends SecureStorageService {
   return (client: client, adapter: adapter);
 }
 
+Map<String, dynamic> _loginUserPayload(
+  TestAccountRole role, {
+  required String userId,
+  required String email,
+  List<String> additionalRoles = const [],
+}) =>
+    {
+      'id': userId,
+      'email': email,
+      'name': _displayNameFor(role),
+      'merchant_id': TestAccounts.testMerchantId,
+      'roles': TestAccounts.apiRolesFor(
+        role,
+        additionalRoles: additionalRoles,
+      ),
+    };
+
+Map<String, dynamic> _merchantPayload() => {
+      'id': TestAccounts.testMerchantId,
+      'name': TestAccounts.testMerchantName,
+    };
+
 void stubDedicatedAccountLogin(
   DioAdapter adapter,
   TestAccountRole role, {
   String userId = 'test-user',
   String accessToken = 'acc',
   String refreshToken = 'ref',
+  List<String> additionalRoles = const [],
 }) {
   final email = TestAccounts.emailFor(role);
   adapter.onPost(
@@ -56,12 +81,13 @@ void stubDedicatedAccountLogin(
           'refresh_token': refreshToken,
           'expires_in': 900,
         },
-        'user': {
-          'id': userId,
-          'email': email,
-          'name': _displayNameFor(role),
-          'role': TestAccounts.apiRoleFor(role),
-        },
+        'user': _loginUserPayload(
+          role,
+          userId: userId,
+          email: email,
+          additionalRoles: additionalRoles,
+        ),
+        'merchant': _merchantPayload(),
       },
     }),
     data: {'email': email, 'password': TestAccounts.password},
@@ -76,10 +102,12 @@ Future<IntegrationTestHarness> setUpIntegrationHarness() async {
   await locator.reset();
 
   final secure = FakeSecureStorage();
+  final sessionGuard = SessionGuard();
   final mocked = buildMockedApiClient();
   locator
     ..registerSingleton<PreferencesService>(await PreferencesService.create())
     ..registerSingleton<SecureStorageService>(secure)
+    ..registerSingleton<SessionGuard>(sessionGuard)
     ..registerSingleton<ApiClient>(mocked.client)
     ..registerLazySingleton<MenuRepository>(
       () => MenuRepository(locator<ApiClient>()),
@@ -112,18 +140,26 @@ class IntegrationTestHarness {
     );
   }
 
-  void stubLoginForRole(TestAccountRole role) {
-    stubDedicatedAccountLogin(adapter, role, userId: '${role.name}-user');
+  void stubLoginForRole(
+    TestAccountRole role, {
+    List<String> additionalRoles = const [],
+  }) {
+    stubDedicatedAccountLogin(
+      adapter,
+      role,
+      userId: '${role.name}-user',
+      additionalRoles: additionalRoles,
+    );
     adapter.onGet(
       '/api/v1/users/${role.name}-user',
       (server) => server.reply(200, {
         'success': true,
-        'data': {
-          'id': '${role.name}-user',
-          'email': TestAccounts.emailFor(role),
-          'name': _displayNameFor(role),
-          'role': TestAccounts.apiRoleFor(role),
-        },
+        'data': _loginUserPayload(
+          role,
+          userId: '${role.name}-user',
+          email: TestAccounts.emailFor(role),
+          additionalRoles: additionalRoles,
+        ),
       }),
     );
   }
@@ -165,10 +201,55 @@ class IntegrationTestHarness {
     );
   }
 
+  void stubCreateTransaction() {
+    adapter.onPost(
+      '/api/v1/pos/transactions',
+      (server) => server.reply(201, {
+        'success': true,
+        'data': {
+          'id': 'tx-1',
+          'method': 'OFFLINE',
+          'amount': 35000,
+          'subtotal_amount': 35000,
+          'tax_amount': 0,
+          'discount_amount': 0,
+          'items': [
+            {
+              'menu_id': 'm1',
+              'title': 'Nasi Goreng',
+              'quantity': 1,
+              'unit_price': 35000,
+              'line_total': 35000,
+            },
+          ],
+          'receipt_number': 'RCP-001',
+          'created_at': '2026-07-12T10:00:00Z',
+        },
+      }),
+    );
+  }
+
+  void stubStoreSettings() {
+    adapter.onGet(
+      '/api/v1/pos/store-settings',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'brand_name': 'Luna Coffee',
+          'branch_name': 'Test Branch',
+          'branch_address': 'Jl. Test 1',
+          'branch_phone': '021-0000000',
+          'thank_you_note': 'Terima kasih!',
+        },
+      }),
+    );
+  }
+
   Future<void> pumpApp(WidgetTester tester) async {
     await tester.pumpWidget(const ProviderScope(child: App()));
     await tester.pump(const Duration(seconds: 2));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 1700));
+    await tester.pump(const Duration(milliseconds: 300));
   }
 
   Future<void> loginViaUi(
@@ -186,13 +267,22 @@ class IntegrationTestHarness {
 
     final l10n = AppLocalizationsEn();
     await tester.tap(find.widgetWithText(FilledButton, l10n.login));
-    await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 1700));
+    await tester.pump(const Duration(milliseconds: 500));
   }
 
   Future<void> expectAuthenticatedHome(WidgetTester tester) async {
     expect(find.byType(MenuPage), findsOneWidget);
     final l10n = AppLocalizationsEn();
     expect(find.text(l10n.menu), findsWidgets);
+  }
+
+  Future<void> expectLoginRejected(WidgetTester tester) async {
+    expect(find.byType(LoginPage), findsOneWidget);
+    expect(find.byType(MenuPage), findsNothing);
+    expect(find.text(kCashierAccessDeniedMessage), findsOneWidget);
   }
 }
 

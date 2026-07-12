@@ -30,6 +30,28 @@ class FakeSecureStorage extends SecureStorageService {
   return (client: client, adapter: adapter);
 }
 
+Map<String, dynamic> _loginUserPayload(
+  TestAccountRole role, {
+  required String userId,
+  required String email,
+  List<String> additionalRoles = const [],
+}) =>
+    {
+      'id': userId,
+      'email': email,
+      'name': _displayNameFor(role),
+      'merchant_id': TestAccounts.testMerchantId,
+      'roles': TestAccounts.apiRolesFor(
+        role,
+        additionalRoles: additionalRoles,
+      ),
+    };
+
+Map<String, dynamic> _merchantPayload() => {
+      'id': TestAccounts.testMerchantId,
+      'name': TestAccounts.testMerchantName,
+    };
+
 /// Stubs `POST /api/v1/auth/login` for a dedicated [role] test account.
 void stubDedicatedAccountLogin(
   DioAdapter adapter,
@@ -37,6 +59,7 @@ void stubDedicatedAccountLogin(
   String userId = 'test-user',
   String accessToken = 'acc',
   String refreshToken = 'ref',
+  List<String> additionalRoles = const [],
 }) {
   final email = TestAccounts.emailFor(role);
   adapter.onPost(
@@ -49,12 +72,13 @@ void stubDedicatedAccountLogin(
           'refresh_token': refreshToken,
           'expires_in': 900,
         },
-        'user': {
-          'id': userId,
-          'email': email,
-          'name': _displayNameFor(role),
-          'role': TestAccounts.apiRoleFor(role),
-        },
+        'user': _loginUserPayload(
+          role,
+          userId: userId,
+          email: email,
+          additionalRoles: additionalRoles,
+        ),
+        'merchant': _merchantPayload(),
       },
     }),
     data: {'email': email, 'password': TestAccounts.password},
@@ -68,6 +92,7 @@ void seedAuthenticatedTestAccount(
   TestAccountRole role, {
   String userId = 'test-user',
   String accessToken = 'acc',
+  List<String> additionalRoles = const [],
 }) {
   secure.store[SecureKeys.authToken] = accessToken;
   secure.store[SecureKeys.userId] = userId;
@@ -76,12 +101,12 @@ void seedAuthenticatedTestAccount(
     '/api/v1/users/$userId',
     (server) => server.reply(200, {
       'success': true,
-      'data': {
-        'id': userId,
-        'email': TestAccounts.emailFor(role),
-        'name': _displayNameFor(role),
-        'role': TestAccounts.apiRoleFor(role),
-      },
+      'data': _loginUserPayload(
+        role,
+        userId: userId,
+        email: TestAccounts.emailFor(role),
+        additionalRoles: additionalRoles,
+      ),
     }),
   );
 }

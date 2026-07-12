@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+import '../../features/merchant/models/merchant.dart';
+import '../../features/user/models/user.dart';
 
 /// Encrypted storage for sensitive values (auth tokens, refresh tokens, etc.),
 /// backed by Keychain (iOS) / EncryptedSharedPreferences (Android).
@@ -31,6 +36,28 @@ class SecureStorageService {
   Future<String?> readUserId() => read(SecureKeys.userId);
   Future<void> writeUserId(String id) => write(SecureKeys.userId, id);
   Future<void> deleteUserId() => delete(SecureKeys.userId);
+
+  Future<User?> readUser() async {
+    final raw = await read(SecureKeys.userJson);
+    if (raw == null) return null;
+    return User.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+  }
+
+  Future<void> writeUser(User user) =>
+      write(SecureKeys.userJson, jsonEncode(user.toJson()));
+
+  Future<void> deleteUser() => delete(SecureKeys.userJson);
+
+  Future<Merchant?> readMerchant() async {
+    final raw = await read(SecureKeys.merchantJson);
+    if (raw == null) return null;
+    return Merchant.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+  }
+
+  Future<void> writeMerchant(Merchant merchant) =>
+      write(SecureKeys.merchantJson, jsonEncode(merchant.toJson()));
+
+  Future<void> deleteMerchant() => delete(SecureKeys.merchantJson);
 }
 
 /// Central registry of secure storage keys.
@@ -38,4 +65,6 @@ abstract final class SecureKeys {
   static const String authToken = 'auth_token';
   static const String refreshToken = 'refresh_token';
   static const String userId = 'user_id';
+  static const String userJson = 'user_json';
+  static const String merchantJson = 'merchant_json';
 }

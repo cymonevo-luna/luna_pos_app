@@ -39,5 +39,19 @@ void main() {
         'operational',
       );
     });
+
+    test('apiRolesFor supports multi-role accounts', () {
+      expect(
+        TestAccounts.apiRolesFor(TestAccountRole.cashier),
+        ['cashier'],
+      );
+      expect(
+        TestAccounts.apiRolesFor(
+          TestAccountRole.cashier,
+          additionalRoles: const ['operational'],
+        ),
+        containsAll(['cashier', 'operational']),
+      );
+    });
   });
 }

@@ -36,6 +36,8 @@ class _FakeAuthController extends AuthController {
           id: 'u1',
           name: 'Alex',
           email: 'a@b.com',
+          merchantId: 'merchant-1',
+          roles: ['cashier'],
         ),
       );
 }
@@ -166,7 +168,8 @@ void main() {
             'id': 'u1',
             'email': 'a@b.com',
             'name': 'Alex',
-            'role': 'user',
+            'merchant_id': 'merchant-1',
+            'roles': ['cashier'],
           },
         }),
       )

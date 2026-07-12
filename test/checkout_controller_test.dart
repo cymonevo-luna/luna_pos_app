@@ -184,4 +184,26 @@ void main() {
       isNotNull,
     );
   });
+
+  test('confirmAndPrint does not POST when store settings fail', () async {
+    seedTwoLineCart();
+    adapter.reset();
+    adapter.onGet(
+      '/api/v1/pos/store-settings',
+      (server) => server.reply(500, {
+        'success': false,
+        'error': {'message': 'settings unavailable'},
+      }),
+    );
+
+    final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
+          discountAmount: 0,
+          cashTendered: 80000,
+        );
+
+    expect(result, isNull);
+    expect(transactionRepository.lastRequest, isNull);
+    expect(container.read(orderProvider).lines, isNotEmpty);
+    expect(container.read(checkoutProvider).error, 'Server error.');
+  });
 }

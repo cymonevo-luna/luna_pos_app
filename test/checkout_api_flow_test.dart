@@ -42,7 +42,7 @@ void main() {
   late DioAdapter adapter;
   late MockBluetoothPrinterService printer;
 
-  setUp(() async {
+  Future<void> setUpHarness() async {
     SharedPreferences.setMockInitialValues({});
     await AppConfig.load();
     await locator.reset();
@@ -62,6 +62,14 @@ void main() {
       )
       ..registerSingleton<BluetoothPrinterService>(printer);
 
+    container = ProviderContainer(
+      overrides: [
+        authProvider.overrideWith(_FakeAuthController.new),
+      ],
+    );
+  }
+
+  void registerStoreSettingsMock() {
     adapter.onGet(
       '/api/v1/pos/store-settings',
       (server) => server.reply(200, {
@@ -75,59 +83,7 @@ void main() {
         },
       }),
     );
-
-    adapter.onPost(
-      '/api/v1/pos/transactions',
-      (server) => server.reply(201, {
-        'success': true,
-        'data': {
-          'id': 'tx-e2e-1',
-          'method': 'OFFLINE',
-          'subtotal_amount': 78000,
-          'discount_amount': 5000,
-          'amount': 73000,
-          'cash_tendered': 100000,
-          'change_amount': 27000,
-        },
-      }),
-      data: {
-        'method': 'OFFLINE',
-        'items': [
-          {
-            'menu_id': 'm1',
-            'title': 'Es Teh',
-            'quantity': 1,
-            'unit_price': 8000,
-            'line_total': 8000,
-            'note': 'less ice',
-          },
-          {
-            'menu_id': 'm2',
-            'title': 'Nasi Goreng',
-            'quantity': 2,
-            'unit_price': 35000,
-            'line_total': 70000,
-          },
-        ],
-        'subtotal_amount': 78000,
-        'discount_amount': 5000,
-        'amount': 73000,
-        'cash_tendered': 100000,
-        'change_amount': 27000,
-      },
-    );
-
-    container = ProviderContainer(
-      overrides: [
-        authProvider.overrideWith(_FakeAuthController.new),
-      ],
-    );
-  });
-
-  tearDown(() {
-    container.dispose();
-    printer.dispose();
-  });
+  }
 
   void seedTwoLineCart() {
     final notifier = container.read(orderProvider.notifier);
@@ -152,43 +108,131 @@ void main() {
     );
   }
 
-  test('add item, checkout, confirm persists transaction via POST 201', () async {
-    seedTwoLineCart();
-    await printer.connect('00:11:22:33:44:55');
+  group('successful checkout API flow', () {
+    setUp(() async {
+      await setUpHarness();
+      registerStoreSettingsMock();
+      adapter.onPost(
+        '/api/v1/pos/transactions',
+        (server) => server.reply(201, {
+          'success': true,
+          'data': {
+            'id': 'tx-e2e-1',
+            'method': 'OFFLINE',
+            'subtotal_amount': 78000,
+            'discount_amount': 5000,
+            'amount': 73000,
+            'cash_tendered': 100000,
+            'change_amount': 27000,
+          },
+        }),
+        data: {
+          'method': 'OFFLINE',
+          'items': [
+            {
+              'menu_id': 'm1',
+              'title': 'Es Teh',
+              'quantity': 1,
+              'unit_price': 8000,
+              'line_total': 8000,
+              'note': 'less ice',
+            },
+            {
+              'menu_id': 'm2',
+              'title': 'Nasi Goreng',
+              'quantity': 2,
+              'unit_price': 35000,
+              'line_total': 70000,
+            },
+          ],
+          'subtotal_amount': 78000,
+          'discount_amount': 5000,
+          'amount': 73000,
+          'cash_tendered': 100000,
+          'change_amount': 27000,
+        },
+      );
+    });
 
-    final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
-          discountAmount: 5000,
-          cashTendered: 100000,
-        );
+    tearDown(() {
+      container.dispose();
+      printer.dispose();
+    });
 
-    expect(result, isNotNull);
-    expect(result!.transactionId, 'tx-e2e-1');
-    expect(result.changeAmount, 27000);
-    expect(result.printSucceeded, isTrue);
-    expect(container.read(orderProvider).lines, isEmpty);
-    expect(printer.lastPrintedBytes, isNotEmpty);
+    test('add item, checkout, confirm persists transaction via POST 201', () async {
+      seedTwoLineCart();
+      await printer.connect('00:11:22:33:44:55');
+
+      final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
+            discountAmount: 5000,
+            cashTendered: 100000,
+          );
+
+      expect(result, isNotNull);
+      expect(result!.transactionId, 'tx-e2e-1');
+      expect(result.changeAmount, 27000);
+      expect(result.printSucceeded, isTrue);
+      expect(container.read(orderProvider).lines, isEmpty);
+      expect(printer.lastPrintedBytes, isNotEmpty);
+    });
   });
 
-  test('checkout does not print when transaction POST fails', () async {
-    seedTwoLineCart();
-    await printer.connect('00:11:22:33:44:55');
+  group('failed transaction POST', () {
+    setUp(() async {
+      await setUpHarness();
+      registerStoreSettingsMock();
+      adapter.onPost(
+        '/api/v1/pos/transactions',
+        (server) => server.reply(500, {
+          'success': false,
+          'error': {'message': 'server error'},
+        }),
+        data: {
+          'method': 'OFFLINE',
+          'items': [
+            {
+              'menu_id': 'm1',
+              'title': 'Es Teh',
+              'quantity': 1,
+              'unit_price': 8000,
+              'line_total': 8000,
+              'note': 'less ice',
+            },
+            {
+              'menu_id': 'm2',
+              'title': 'Nasi Goreng',
+              'quantity': 2,
+              'unit_price': 35000,
+              'line_total': 70000,
+            },
+          ],
+          'subtotal_amount': 78000,
+          'discount_amount': 0,
+          'amount': 78000,
+          'cash_tendered': 80000,
+          'change_amount': 2000,
+        },
+      );
+    });
 
-    adapter.onPost(
-      '/api/v1/pos/transactions',
-      (server) => server.reply(500, {
-        'success': false,
-        'error': {'message': 'server error'},
-      }),
-    );
+    tearDown(() {
+      container.dispose();
+      printer.dispose();
+    });
 
-    final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
-          discountAmount: 0,
-          cashTendered: 80000,
-        );
+    test('checkout does not print when transaction POST fails', () async {
+      seedTwoLineCart();
+      await printer.connect('00:11:22:33:44:55');
 
-    expect(result, isNull);
-    expect(container.read(orderProvider).lines, isNotEmpty);
-    expect(printer.lastPrintedBytes, isNull);
-    expect(container.read(checkoutProvider).error, isNotNull);
+      final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
+            discountAmount: 0,
+            cashTendered: 80000,
+          );
+
+      expect(result, isNull);
+      expect(container.read(orderProvider).lines, isNotEmpty);
+      expect(printer.lastPrintedBytes, isNull);
+      expect(container.read(checkoutProvider).error, 'Server error.');
+    });
   });
 }

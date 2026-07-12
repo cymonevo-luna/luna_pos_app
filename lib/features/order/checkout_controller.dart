@@ -115,6 +115,13 @@ class CheckoutController extends Notifier<CheckoutState> {
     state = state.copyWith(submitting: true, clearError: true);
 
     try {
+      final storeSettings =
+          await ref.read(storeSettingsProvider.notifier).loadIfNeeded();
+      final cashier = ref.read(authProvider).user;
+      if (cashier == null) {
+        throw StateError('Cashier must be authenticated to complete checkout');
+      }
+
       final request = CreateTransactionRequest(
         method: 'OFFLINE',
         items: buildTransactionItems(order.lines),
@@ -127,13 +134,6 @@ class CheckoutController extends Notifier<CheckoutState> {
 
       final response =
           await _transactionRepository.createOfflineTransaction(request);
-
-      final storeSettings =
-          await ref.read(storeSettingsProvider.notifier).loadIfNeeded();
-      final cashier = ref.read(authProvider).user;
-      if (cashier == null) {
-        throw StateError('Cashier must be authenticated to complete checkout');
-      }
 
       final receiptTxn = _buildReceiptTransaction(
         response: response,

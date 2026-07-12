@@ -353,5 +353,45 @@
   "procurementAccessDenied": "You do not have permission to access procurement features.",
   "@procurementAccessDenied": {
     "description": "Shown when an authenticated user without operational role opens stock or purchases"
+  },
+  "searchStock": "Search supplies",
+  "@searchStock": {
+    "description": "Search field hint on stock list"
+  },
+  "addSupply": "Add supply",
+  "@addSupply": {
+    "description": "FAB label to create a food supply"
+  },
+  "noStockItems": "No supplies yet",
+  "@noStockItems": {
+    "description": "Empty state on stock list"
+  },
+  "stockTitleLabel": "Title",
+  "@stockTitleLabel": {
+    "description": "Food supply title field label"
+  },
+  "stockDescriptionLabel": "Description",
+  "@stockDescriptionLabel": {
+    "description": "Food supply description field label"
+  },
+  "stockQuantityLabel": "Stock quantity",
+  "@stockQuantityLabel": {
+    "description": "Food supply quantity field label"
+  },
+  "stockUnitLabel": "Unit",
+  "@stockUnitLabel": {
+    "description": "Food supply unit dropdown label"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save form button label"
+  },
+  "stockTitleTooShort": "Title must be at least 2 characters",
+  "@stockTitleTooShort": {
+    "description": "Validation when food supply title is too short"
+  },
+  "stockQuantityInvalid": "Enter a quantity of 0 or more",
+  "@stockQuantityInvalid": {
+    "description": "Validation when food supply quantity is invalid"
   }
 }

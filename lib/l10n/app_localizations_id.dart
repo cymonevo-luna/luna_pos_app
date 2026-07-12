@@ -405,4 +405,34 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get procurementAccessDenied =>
       'Anda tidak memiliki izin untuk mengakses fitur pengadaan.';
+
+  @override
+  String get searchStock => 'Cari persediaan';
+
+  @override
+  String get addSupply => 'Tambah persediaan';
+
+  @override
+  String get noStockItems => 'Belum ada persediaan';
+
+  @override
+  String get stockTitleLabel => 'Judul';
+
+  @override
+  String get stockDescriptionLabel => 'Deskripsi';
+
+  @override
+  String get stockQuantityLabel => 'Jumlah stok';
+
+  @override
+  String get stockUnitLabel => 'Satuan';
+
+  @override
+  String get save => 'Simpan';
+
+  @override
+  String get stockTitleTooShort => 'Judul minimal 2 karakter';
+
+  @override
+  String get stockQuantityInvalid => 'Masukkan jumlah 0 atau lebih';
 }

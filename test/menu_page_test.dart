@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show Size;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
@@ -14,6 +15,7 @@ import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/features/menu/widgets/menu_item_card.dart';
 import 'package:luna_pos/features/order/order_controller.dart';
+import 'package:luna_pos/shared/widgets/app_section_header.dart';
 
 import 'helpers/auth_harness.dart';
 
@@ -36,6 +38,56 @@ void main() {
         () => MenuRepository(locator<ApiClient>()),
       );
   });
+
+  Map<String, dynamic> orderedCategoriesResponse() => {
+        'success': true,
+        'data': {
+          'categories': [
+            {
+              'id': 'c2',
+              'name': 'Desserts',
+              'menus': [
+                {
+                  'id': 'm-dessert',
+                  'title': 'Pudding',
+                  'description': '',
+                  'photo_url': '/static/default-food.png',
+                  'available_stock': 5,
+                  'sell_price': 15000,
+                },
+              ],
+            },
+            {
+              'id': 'c3',
+              'name': 'Appetizers',
+              'menus': [
+                {
+                  'id': 'm-appetizer',
+                  'title': 'Spring Rolls',
+                  'description': '',
+                  'photo_url': '/static/default-food.png',
+                  'available_stock': 10,
+                  'sell_price': 20000,
+                },
+              ],
+            },
+            {
+              'id': 'c1',
+              'name': 'Mains',
+              'menus': [
+                {
+                  'id': 'm-main',
+                  'title': 'Nasi Goreng',
+                  'description': '',
+                  'photo_url': '/static/default-food.png',
+                  'available_stock': 3,
+                  'sell_price': 35000,
+                },
+              ],
+            },
+          ],
+        },
+      };
 
   Map<String, dynamic> sampleMenusResponse() => {
         'success': true,
@@ -227,5 +279,45 @@ void main() {
 
     expect(find.byType(LoginPage), findsOneWidget);
     expect(find.byType(MenuPage), findsNothing);
+  });
+
+  testWidgets('menu page renders categories in API order',
+      (WidgetTester tester) async {
+    secure.store[SecureKeys.authToken] = 'acc';
+    secure.store[SecureKeys.userId] = 'u1';
+
+    adapter
+      ..onGet(
+        '/api/v1/users/u1',
+        (server) => server.reply(200, {
+          'success': true,
+          'data': {
+            'id': 'u1',
+            'email': 'a@b.com',
+            'name': 'Alex',
+            'role': 'user',
+          },
+        }),
+      )
+      ..onGet(
+        '/api/v1/pos/menus',
+        (server) => server.reply(200, orderedCategoriesResponse()),
+      );
+
+    await tester.binding.setSurfaceSize(const Size(800, 2000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await pumpApp(tester);
+
+    expect(find.byType(MenuPage), findsOneWidget);
+
+    final headers = tester
+        .widgetList<AppSectionHeader>(find.byType(AppSectionHeader))
+        .toList();
+    expect(headers.map((header) => header.title).toList(), [
+      'Desserts',
+      'Appetizers',
+      'Mains',
+    ]);
   });
 }

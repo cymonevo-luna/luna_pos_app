@@ -29,6 +29,56 @@ void main() {
     container.dispose();
   });
 
+  Map<String, dynamic> orderedCategoriesResponse() => {
+        'success': true,
+        'data': {
+          'categories': [
+            {
+              'id': 'c2',
+              'name': 'Desserts',
+              'menus': [
+                {
+                  'id': 'm-dessert',
+                  'title': 'Pudding',
+                  'description': '',
+                  'photo_url': '/static/default-food.png',
+                  'available_stock': 5,
+                  'sell_price': 15000,
+                },
+              ],
+            },
+            {
+              'id': 'c3',
+              'name': 'Appetizers',
+              'menus': [
+                {
+                  'id': 'm-appetizer',
+                  'title': 'Spring Rolls',
+                  'description': '',
+                  'photo_url': '/static/default-food.png',
+                  'available_stock': 10,
+                  'sell_price': 20000,
+                },
+              ],
+            },
+            {
+              'id': 'c1',
+              'name': 'Mains',
+              'menus': [
+                {
+                  'id': 'm-main',
+                  'title': 'Nasi Goreng',
+                  'description': '',
+                  'photo_url': '/static/default-food.png',
+                  'available_stock': 3,
+                  'sell_price': 35000,
+                },
+              ],
+            },
+          ],
+        },
+      };
+
   Map<String, dynamic> sampleMenusResponse() => {
         'success': true,
         'data': {
@@ -58,6 +108,20 @@ void main() {
           ],
         },
       };
+
+  test('fetchPOSMenus preserves API category order', () async {
+    adapter.onGet(
+      '/api/v1/pos/menus',
+      (server) => server.reply(200, orderedCategoriesResponse()),
+    );
+
+    final response = await locator<MenuRepository>().fetchPOSMenus();
+
+    expect(
+      response.categories.map((category) => category.name).toList(),
+      ['Desserts', 'Appetizers', 'Mains'],
+    );
+  });
 
   test('fetchPOSMenus parses categories and menu items', () async {
     adapter.onGet(

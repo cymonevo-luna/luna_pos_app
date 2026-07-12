@@ -132,6 +132,50 @@
   "@noNote": {
     "description": "Placeholder when a cart line has no note"
   },
+  "printer": "Printer",
+  "@printer": {
+    "description": "Printer settings section title"
+  },
+  "bluetoothStatus": "Bluetooth",
+  "@bluetoothStatus": {
+    "description": "Bluetooth status label in printer settings"
+  },
+  "bluetoothOn": "On",
+  "@bluetoothOn": {
+    "description": "Bluetooth enabled status"
+  },
+  "bluetoothOff": "Off",
+  "@bluetoothOff": {
+    "description": "Bluetooth disabled status"
+  },
+  "printerConnectionStatus": "Printer",
+  "@printerConnectionStatus": {
+    "description": "Printer connection status label"
+  },
+  "connected": "Connected",
+  "@connected": {
+    "description": "Printer connected status"
+  },
+  "disconnected": "Disconnected",
+  "@disconnected": {
+    "description": "Printer disconnected status"
+  },
+  "connecting": "Connecting…",
+  "@connecting": {
+    "description": "Printer connecting status"
+  },
+  "scanPairedPrinters": "Scan paired printers",
+  "@scanPairedPrinters": {
+    "description": "Button to refresh paired Bluetooth printers"
+  },
+  "noPairedPrintersPlaceholder": "No paired printers found. Pair a printer in Android Bluetooth settings, then scan again.",
+  "@noPairedPrintersPlaceholder": {
+    "description": "Placeholder when no paired printers are available"
+  },
+  "testPrint": "Test print",
+  "@testPrint": {
+    "description": "Button to print a sample receipt"
+  },
   "cart": "Cart",
   "@cart": {
     "description": "Cart screen title"

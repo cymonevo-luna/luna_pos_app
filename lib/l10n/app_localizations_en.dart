@@ -236,6 +236,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noNote => '—';
 
   @override
+  String get printer => 'Printer';
+
+  @override
+  String get bluetoothStatus => 'Bluetooth';
+
+  @override
+  String get bluetoothOn => 'On';
+
+  @override
+  String get bluetoothOff => 'Off';
+
+  @override
+  String get printerConnectionStatus => 'Printer';
+
+  @override
+  String get connected => 'Connected';
+
+  @override
+  String get disconnected => 'Disconnected';
+
+  @override
+  String get connecting => 'Connecting…';
+
+  @override
+  String get scanPairedPrinters => 'Scan paired printers';
+
+  @override
+  String get noPairedPrintersPlaceholder =>
+      'No paired printers found. Pair a printer in Android Bluetooth settings, then scan again.';
+
+  @override
+  String get testPrint => 'Test print';
+
+  @override
   String get cart => 'Cart';
 
   @override

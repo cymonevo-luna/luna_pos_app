@@ -8,6 +8,7 @@ import '../../core/theme/app_tokens.dart';
 import '../../core/theme/theme_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/widgets.dart';
+import '../printer/printer_settings_section.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -103,6 +104,8 @@ class SettingsPage extends ConsumerWidget {
               ],
             ),
           ),
+          const VGap(AppSpacing.lg),
+          const PrinterSettingsSection(),
         ],
       ),
     );

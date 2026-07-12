@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 
 import '../config/app_config.dart';
 import '../network/api_client.dart';
+import '../printer/bluetooth_printer_service.dart';
 import '../storage/preferences_service.dart';
 import '../storage/secure_storage_service.dart';
 import '../../features/menu/data/menu_repository.dart';
@@ -35,5 +36,9 @@ Future<void> setupLocator() async {
 
   locator.registerLazySingleton<MenuRepository>(
     () => MenuRepository(locator<ApiClient>()),
+  );
+
+  locator.registerSingleton<BluetoothPrinterService>(
+    PrintBluetoothThermalService(),
   );
 }

@@ -236,6 +236,40 @@ class AppLocalizationsId extends AppLocalizations {
   String get noNote => '—';
 
   @override
+  String get printer => 'Printer';
+
+  @override
+  String get bluetoothStatus => 'Bluetooth';
+
+  @override
+  String get bluetoothOn => 'Aktif';
+
+  @override
+  String get bluetoothOff => 'Nonaktif';
+
+  @override
+  String get printerConnectionStatus => 'Printer';
+
+  @override
+  String get connected => 'Terhubung';
+
+  @override
+  String get disconnected => 'Terputus';
+
+  @override
+  String get connecting => 'Menghubungkan…';
+
+  @override
+  String get scanPairedPrinters => 'Pindai printer yang dipasangkan';
+
+  @override
+  String get noPairedPrintersPlaceholder =>
+      'Tidak ada printer yang dipasangkan. Pasangkan printer di pengaturan Bluetooth Android, lalu pindai lagi.';
+
+  @override
+  String get testPrint => 'Cetak uji';
+
+  @override
   String get cart => 'Keranjang';
 
   @override

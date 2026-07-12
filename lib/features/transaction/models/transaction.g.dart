@@ -76,3 +76,58 @@ Map<String, dynamic> _$TransactionResponseToJson(
   'cash_tendered': instance.cashTendered,
   'change_amount': instance.changeAmount,
 };
+
+_TransactionListItem _$TransactionListItemFromJson(Map<String, dynamic> json) =>
+    _TransactionListItem(
+      id: json['id'] as String,
+      method: json['method'] as String,
+      amount: (json['amount'] as num).toInt(),
+      cashierUsername: json['cashier_username'] as String?,
+      transactionDate: _nullableDateTimeFromJson(json['transaction_date']),
+      createdAt: _nullableDateTimeFromJson(json['created_at']),
+    );
+
+Map<String, dynamic> _$TransactionListItemToJson(
+  _TransactionListItem instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'method': instance.method,
+  'amount': instance.amount,
+  'cashier_username': instance.cashierUsername,
+  'transaction_date': instance.transactionDate?.toIso8601String(),
+  'created_at': instance.createdAt?.toIso8601String(),
+};
+
+_TransactionDetail _$TransactionDetailFromJson(Map<String, dynamic> json) =>
+    _TransactionDetail(
+      id: json['id'] as String,
+      method: json['method'] as String,
+      items: (json['items'] as List<dynamic>)
+          .map(
+            (e) => TransactionItemRequest.fromJson(e as Map<String, dynamic>),
+          )
+          .toList(),
+      subtotalAmount: (json['subtotal_amount'] as num).toInt(),
+      discountAmount: (json['discount_amount'] as num?)?.toInt() ?? 0,
+      amount: (json['amount'] as num).toInt(),
+      cashTendered: (json['cash_tendered'] as num?)?.toInt(),
+      changeAmount: (json['change_amount'] as num?)?.toInt() ?? 0,
+      cashierUsername: json['cashier_username'] as String?,
+      transactionDate: _nullableDateTimeFromJson(json['transaction_date']),
+      createdAt: _nullableDateTimeFromJson(json['created_at']),
+    );
+
+Map<String, dynamic> _$TransactionDetailToJson(_TransactionDetail instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'method': instance.method,
+      'items': instance.items,
+      'subtotal_amount': instance.subtotalAmount,
+      'discount_amount': instance.discountAmount,
+      'amount': instance.amount,
+      'cash_tendered': instance.cashTendered,
+      'change_amount': instance.changeAmount,
+      'cashier_username': instance.cashierUsername,
+      'transaction_date': instance.transactionDate?.toIso8601String(),
+      'created_at': instance.createdAt?.toIso8601String(),
+    };

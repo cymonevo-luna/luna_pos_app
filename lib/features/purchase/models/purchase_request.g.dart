@@ -36,3 +36,50 @@ const _$PurchaseRequestStatusEnumMap = {
   PurchaseRequestStatus.paid: 'PAID',
   PurchaseRequestStatus.delivered: 'DELIVERED',
 };
+
+_PurchaseRequestItem _$PurchaseRequestItemFromJson(Map<String, dynamic> json) =>
+    _PurchaseRequestItem(
+      foodSupplyId: json['food_supply_id'] as String,
+      foodSupplyTitle: json['food_supply_title'] as String?,
+      quantity: _quantityFromJson(json['quantity']),
+      unit: json['unit'] as String?,
+    );
+
+Map<String, dynamic> _$PurchaseRequestItemToJson(
+  _PurchaseRequestItem instance,
+) => <String, dynamic>{
+  'food_supply_id': instance.foodSupplyId,
+  'food_supply_title': instance.foodSupplyTitle,
+  'quantity': instance.quantity,
+  'unit': instance.unit,
+};
+
+_PurchaseRequestDetail _$PurchaseRequestDetailFromJson(
+  Map<String, dynamic> json,
+) => _PurchaseRequestDetail(
+  id: json['id'] as String,
+  supplierId: json['supplier_id'] as String,
+  supplierName: json['supplier_name'] as String,
+  status: $enumDecode(_$PurchaseRequestStatusEnumMap, json['status']),
+  totalEstimatedAmount: (json['total_estimated_amount'] as num?)?.toInt(),
+  items:
+      (json['items'] as List<dynamic>?)
+          ?.map((e) => PurchaseRequestItem.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  notes: json['notes'] as String?,
+  createdAt: _nullableDateTimeFromJson(json['created_at']),
+);
+
+Map<String, dynamic> _$PurchaseRequestDetailToJson(
+  _PurchaseRequestDetail instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'supplier_id': instance.supplierId,
+  'supplier_name': instance.supplierName,
+  'status': _$PurchaseRequestStatusEnumMap[instance.status]!,
+  'total_estimated_amount': instance.totalEstimatedAmount,
+  'items': instance.items,
+  'notes': instance.notes,
+  'created_at': instance.createdAt?.toIso8601String(),
+};

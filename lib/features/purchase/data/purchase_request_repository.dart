@@ -1,4 +1,5 @@
 import '../../../core/network/api_client.dart';
+import '../../../core/network/api_envelope.dart';
 import '../../../core/network/paginated_response.dart';
 import '../models/purchase_request.dart';
 
@@ -7,6 +8,7 @@ class PurchaseRequestRepository {
 
   final ApiClient _api;
 
+  static const listPath = '/api/admin/purchase-requests';
   static const defaultPerPage = 20;
 
   Future<PaginatedResponse<PurchaseRequestSummary>> list({
@@ -23,12 +25,38 @@ class PurchaseRequestRepository {
     }
 
     return _api.get<PaginatedResponse<PurchaseRequestSummary>>(
-      '/api/admin/purchase-requests',
+      listPath,
       query: query,
       decoder: (raw) => decodePaginatedEnvelope(
         raw,
         PurchaseRequestSummary.fromJson,
       ),
+    );
+  }
+
+  Future<PurchaseRequestDetail> create({
+    required String supplierId,
+    required List<PurchaseLineCreateInput> items,
+    String? notes,
+  }) {
+    final trimmedNotes = notes?.trim();
+    return _api.post<PurchaseRequestDetail>(
+      listPath,
+      body: {
+        'supplier_id': supplierId,
+        'items': items
+            .map(
+              (item) => {
+                'food_supply_id': item.foodSupplyId,
+                'quantity': item.quantity.toString(),
+              },
+            )
+            .toList(),
+        if (trimmedNotes != null && trimmedNotes.isNotEmpty)
+          'notes': trimmedNotes,
+      },
+      decoder: (raw) =>
+          PurchaseRequestDetail.fromJson(unwrapApiEnvelope(raw)),
     );
   }
 
@@ -39,4 +67,14 @@ class PurchaseRequestRepository {
         PurchaseRequestStatus.paid => 'PAID',
         PurchaseRequestStatus.delivered => 'DELIVERED',
       };
+}
+
+class PurchaseLineCreateInput {
+  const PurchaseLineCreateInput({
+    required this.foodSupplyId,
+    required this.quantity,
+  });
+
+  final String foodSupplyId;
+  final num quantity;
 }

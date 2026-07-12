@@ -448,6 +448,51 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get purchaseSupplierLabel => 'Supplier';
+
+  @override
+  String get purchaseSelectSupplier => 'Select supplier';
+
+  @override
+  String get purchaseSearchSuppliers => 'Search suppliers';
+
+  @override
+  String get purchaseLineItems => 'Line items';
+
+  @override
+  String get purchaseAddItem => 'Add item';
+
+  @override
+  String get purchaseEmptyCatalog => 'This supplier has no catalog prices yet.';
+
+  @override
+  String get purchaseNotesHint => 'Optional notes (max 2000 characters)';
+
+  @override
+  String get purchaseEstimatedTotal => 'Estimated total';
+
+  @override
+  String get purchaseLineTotal => 'Line total';
+
+  @override
+  String get purchaseSubmit => 'Submit request';
+
+  @override
+  String get purchaseSupplierRequired => 'Select a supplier';
+
+  @override
+  String get purchaseAtLeastOneItem => 'Add at least one line item';
+
+  @override
+  String get purchaseDuplicateItemError => 'Each supply can only appear once';
+
+  @override
+  String get purchaseQuantityRequired => 'Enter a quantity greater than 0';
+
+  @override
+  String get purchaseSelectCatalogItem => 'Select catalog item';
+
+  @override
   String get searchStock => 'Search supplies';
 
   @override

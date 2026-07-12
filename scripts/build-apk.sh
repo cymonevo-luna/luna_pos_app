@@ -14,7 +14,9 @@
 # Env overrides:
 #   FLUTTER_BIN            flutter executable (default: flutter on PATH)
 #   SKIP_CODEGEN           set to 1 to skip `dart run build_runner build`
-#   BUILD_RUNNER_TIMEOUT   seconds before codegen is killed (default: 1800)
+#   BUILD_RUNNER_TIMEOUT   seconds before a codegen ATTEMPT is killed (default: 600)
+#   BUILD_RUNNER_ATTEMPTS  codegen attempts before giving up (default: 3); codegen
+#                          intermittently deadlocks and a fresh run clears it
 set -euo pipefail
 
 log() { printf '>> %s\n' "$*" >&2; }
@@ -44,14 +46,66 @@ ensure_build_runner_unlocked() {
 	rm -f "$lock"
 }
 
+# Kill any build_runner/codegen process still running out of THIS repo dir — a
+# deadlocked run the timeout could not fully reap (build_runner spawns child
+# analyzer/frontend_server processes that can outlive the parent and keep holding
+# the single-instance lock). Scoped to REPO_DIR so it never touches other apps.
+kill_stale_build_runner() {
+	local pid cwd
+	for pid in $(pgrep -u "$(id -u)" -f 'build_runner|frontend_server|dartaotruntime' 2>/dev/null || true); do
+		[ -n "$pid" ] || continue
+		[ "$pid" = "$$" ] && continue
+		cwd="$(readlink -f "/proc/$pid/cwd" 2>/dev/null || true)"
+		[ "$cwd" = "$REPO_DIR" ] || continue
+		kill -KILL "$pid" 2>/dev/null || true
+	done
+}
+
+# Codegen (freezed/json_serializable via build_runner) occasionally DEADLOCKS in
+# the analyzer: it makes some progress, then hangs indefinitely until killed
+# (observed on deploy-luna_pos_app #18, which sat idle for the full 30-minute
+# timeout). A fresh invocation almost always clears it (#19 codegen finished the
+# same models in ~16s). So run codegen under a SHORT per-attempt timeout and
+# retry a few times, tearing down the hung run and clearing its lock between
+# attempts. A genuine codegen error (any non-timeout exit) fails fast — retrying
+# it would only repeat the same failure and waste the deploy window.
 run_build_runner() {
-	local timeout_secs="${BUILD_RUNNER_TIMEOUT:-1800}"
-	log "dart run build_runner build (code generation, timeout ${timeout_secs}s)"
-	if command -v timeout >/dev/null 2>&1; then
-		timeout "$timeout_secs" dart run build_runner build --delete-conflicting-outputs >&2
-	else
-		dart run build_runner build --delete-conflicting-outputs >&2
-	fi
+	local attempt_timeout="${BUILD_RUNNER_TIMEOUT:-600}"
+	local attempts="${BUILD_RUNNER_ATTEMPTS:-3}"
+	local n=0 rc=0
+
+	while :; do
+		n=$((n + 1))
+		rc=0
+		log "dart run build_runner build (code generation, attempt ${n}/${attempts}, timeout ${attempt_timeout}s)"
+		# `|| rc=$?` captures the exit code without tripping `set -e` (a bare
+		# failing command would abort the script before we could decide to retry).
+		if command -v timeout >/dev/null 2>&1; then
+			# -k 30: if build_runner ignores SIGTERM, SIGKILL it 30s later so a
+			# deadlocked run cannot survive as an orphan holding the lock.
+			timeout -k 30 "$attempt_timeout" dart run build_runner build --delete-conflicting-outputs >&2 || rc=$?
+		else
+			dart run build_runner build --delete-conflicting-outputs >&2 || rc=$?
+		fi
+
+		[ "$rc" -eq 0 ] && return 0
+
+		# 124 = timed out (SIGTERM); 137 = SIGKILL after -k. Both mean the
+		# deadlock — anything else is a real codegen error, so fail fast.
+		if [ "$rc" -ne 124 ] && [ "$rc" -ne 137 ]; then
+			log "build_runner failed (exit $rc); not a timeout — aborting without retry"
+			return "$rc"
+		fi
+		if [ "$n" -ge "$attempts" ]; then
+			log "build_runner still deadlocking after $n attempt(s) (exit $rc); giving up"
+			return "$rc"
+		fi
+
+		log "build_runner timed out (exit $rc, attempt $n/$attempts); tearing down and retrying ..."
+		kill_stale_build_runner
+		ensure_build_runner_unlocked
+		sleep 3
+	done
 }
 
 BUILD_TYPE="${1:-debug}"

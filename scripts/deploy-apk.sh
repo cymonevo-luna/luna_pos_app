@@ -19,6 +19,13 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
 BUILD_TYPE="${1:-debug}"
 
+# Jenkins deploys reuse a persistent checkout where build_runner intermittently
+# deadlocks on stale .dart_tool/build asset graphs. Generated *.freezed.dart /
+# *.g.dart are committed; skip codegen on deploy and verify they are present.
+export SKIP_CODEGEN=1
+
+"$SCRIPT_DIR/verify-codegen.sh"
+
 echo ">> Deploying APK (build type: $BUILD_TYPE)" >&2
 
 APK_PATH="$("$SCRIPT_DIR/build-apk.sh" "$BUILD_TYPE" | tail -n1)"

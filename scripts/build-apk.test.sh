@@ -18,7 +18,18 @@ WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 mkdir -p "$WORK/scripts" "$WORK/bin"
 cp "$BUILD_APK" "$WORK/scripts/build-apk.sh"
+cp "$SCRIPT_DIR/verify-codegen.sh" "$WORK/scripts/verify-codegen.sh"
+chmod +x "$WORK/scripts/verify-codegen.sh"
 : > "$WORK/.env"
+# Minimal @freezed model so SKIP_CODEGEN verify-codegen.sh passes in the temp repo.
+mkdir -p "$WORK/lib"
+cat > "$WORK/lib/stub.dart" <<'EOF'
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'stub.freezed.dart';
+@freezed
+abstract class Stub with _$Stub { const factory Stub({required int id}) = _Stub; }
+EOF
+: > "$WORK/lib/stub.freezed.dart"
 
 cat > "$WORK/bin/flutter" <<'EOF'
 #!/usr/bin/env bash
@@ -80,6 +91,16 @@ check "fails fast on a real codegen error" "$(run_case)" 1
 # 3. Deadlocks every attempt -> gives up after N attempts (exit 124).
 write_dart_mock hang
 ATTEMPTS=2 check "gives up after exhausting attempts" "$(run_case)" 124
+
+# 4. SKIP_CODEGEN=1 skips dart entirely and verifies committed outputs.
+write_dart_mock error
+rc=0
+PATH="$WORK/bin:$PATH" SKIP_CODEGEN=1 bash "$WORK/scripts/build-apk.sh" debug >"$WORK/out" 2>&1 || rc=$?
+if [ "$rc" -eq 0 ]; then
+	echo "ok   - skips codegen when SKIP_CODEGEN=1"
+else
+	echo "FAIL - skips codegen when SKIP_CODEGEN=1: exit $rc"; sed 's/^/       | /' "$WORK/out"; fails=$((fails + 1))
+fi
 
 if [ "$fails" -gt 0 ]; then
 	echo "$fails test(s) failed"; exit 1

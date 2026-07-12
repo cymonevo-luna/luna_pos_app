@@ -61,14 +61,18 @@ kill_stale_build_runner() {
 	done
 }
 
+# Wipe incremental build_runner state before each attempt. A stale asset graph in
+# .dart_tool/build (common on the Jenkins persistent checkout after a killed run)
+# can hang freezed indefinitely even though a clean tree codegen finishes in ~1m.
+reset_build_runner_cache() {
+	log "dart run build_runner clean (reset incremental codegen cache)"
+	dart run build_runner clean >&2 || true
+	rm -rf "$REPO_DIR/.dart_tool/build"
+}
+
 # Codegen (freezed/json_serializable via build_runner) occasionally DEADLOCKS in
-# the analyzer: it makes some progress, then hangs indefinitely until killed
-# (observed on deploy-luna_pos_app #18, which sat idle for the full 30-minute
-# timeout). A fresh invocation almost always clears it (#19 codegen finished the
-# same models in ~16s). So run codegen under a SHORT per-attempt timeout and
-# retry a few times, tearing down the hung run and clearing its lock between
-# attempts. A genuine codegen error (any non-timeout exit) fails fast — retrying
-# it would only repeat the same failure and waste the deploy window.
+# the analyzer on a corrupted incremental cache. Run under a per-attempt timeout,
+# clean the cache and lock between retries, and fail fast on genuine errors.
 run_build_runner() {
 	local attempt_timeout="${BUILD_RUNNER_TIMEOUT:-600}"
 	local attempts="${BUILD_RUNNER_ATTEMPTS:-3}"
@@ -77,15 +81,17 @@ run_build_runner() {
 	while :; do
 		n=$((n + 1))
 		rc=0
+		reset_build_runner_cache
+		ensure_build_runner_unlocked
 		log "dart run build_runner build (code generation, attempt ${n}/${attempts}, timeout ${attempt_timeout}s)"
 		# `|| rc=$?` captures the exit code without tripping `set -e` (a bare
 		# failing command would abort the script before we could decide to retry).
 		if command -v timeout >/dev/null 2>&1; then
 			# -k 30: if build_runner ignores SIGTERM, SIGKILL it 30s later so a
 			# deadlocked run cannot survive as an orphan holding the lock.
-			timeout -k 30 "$attempt_timeout" dart run build_runner build --delete-conflicting-outputs >&2 || rc=$?
+			timeout -k 30 "$attempt_timeout" dart run build_runner build >&2 || rc=$?
 		else
-			dart run build_runner build --delete-conflicting-outputs >&2 || rc=$?
+			dart run build_runner build >&2 || rc=$?
 		fi
 
 		[ "$rc" -eq 0 ] && return 0
@@ -140,8 +146,10 @@ log "flutter pub get"
 
 # freezed / json_serializable models need generated code before the build.
 if [ "${SKIP_CODEGEN:-0}" != "1" ]; then
-	ensure_build_runner_unlocked
 	run_build_runner
+else
+	log "SKIP_CODEGEN=1; verifying committed generated sources"
+	"$SCRIPT_DIR/verify-codegen.sh"
 fi
 
 log "flutter build apk --$BUILD_TYPE"

@@ -57,6 +57,22 @@ abstract final class TestAccounts {
     final roles = <String>{apiRoleFor(role), ...additionalRoles};
     return roles.toList();
   }
+
+  /// Stable seeded user id from `luna_pos_service` dedicated-accounts migration.
+  static String userIdFor(TestAccountRole role) => switch (role) {
+        TestAccountRole.admin => adminUserId,
+        TestAccountRole.manager => managerUserId,
+        TestAccountRole.cashier => cashierUserId,
+        TestAccountRole.operational => operationalUserId,
+      };
+
+  static const adminUserId = '11111111-1111-4111-8111-111111111101';
+
+  static const managerUserId = '11111111-1111-4111-8111-111111111102';
+
+  static const cashierUserId = '11111111-1111-4111-8111-111111111103';
+
+  static const operationalUserId = '11111111-1111-4111-8111-111111111104';
 }
 
 /// Role-specific dedicated test accounts from `luna_pos_service` seed data.

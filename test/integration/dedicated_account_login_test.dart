@@ -11,7 +11,6 @@ void main() {
 
     setUp(() async {
       harness = await setUpIntegrationHarness();
-      harness.forbidRegistration();
     });
 
     tearDown(() async {

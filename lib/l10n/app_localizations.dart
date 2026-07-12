@@ -613,6 +613,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Test print'**
   String get testPrint;
+
+  /// Cart screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Cart'**
+  String get cart;
+
+  /// Add menu item to cart button label
+  ///
+  /// In en, this message translates to:
+  /// **'Add to cart'**
+  String get addToCart;
+
+  /// Message shown when the cart has no items
+  ///
+  /// In en, this message translates to:
+  /// **'Your cart is empty'**
+  String get emptyCart;
+
+  /// Clear all items from the cart
+  ///
+  /// In en, this message translates to:
+  /// **'Clear cart'**
+  String get clearCart;
+
+  /// Remove a line from the cart
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// Cart item count summary
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No items} =1{1 item} other{{count} items}}'**
+  String itemCount(int count);
+
+  /// Edit cart line note dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit note'**
+  String get editNote;
+
+  /// Hint for optional cart line note input
+  ///
+  /// In en, this message translates to:
+  /// **'Optional note (e.g. less ice)'**
+  String get noteHint;
 }
 
 class _AppLocalizationsDelegate

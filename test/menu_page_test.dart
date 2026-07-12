@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show Size;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
@@ -13,6 +14,8 @@ import 'package:luna_pos/features/auth/login_page.dart';
 import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/features/menu/widgets/menu_item_card.dart';
+import 'package:luna_pos/features/order/order_controller.dart';
+import 'package:luna_pos/shared/widgets/app_section_header.dart';
 
 import 'helpers/auth_harness.dart';
 
@@ -35,6 +38,56 @@ void main() {
         () => MenuRepository(locator<ApiClient>()),
       );
   });
+
+  Map<String, dynamic> orderedCategoriesResponse() => {
+        'success': true,
+        'data': {
+          'categories': [
+            {
+              'id': 'c2',
+              'name': 'Desserts',
+              'menus': [
+                {
+                  'id': 'm-dessert',
+                  'title': 'Pudding',
+                  'description': '',
+                  'photo_url': '/static/default-food.png',
+                  'available_stock': 5,
+                  'sell_price': 15000,
+                },
+              ],
+            },
+            {
+              'id': 'c3',
+              'name': 'Appetizers',
+              'menus': [
+                {
+                  'id': 'm-appetizer',
+                  'title': 'Spring Rolls',
+                  'description': '',
+                  'photo_url': '/static/default-food.png',
+                  'available_stock': 10,
+                  'sell_price': 20000,
+                },
+              ],
+            },
+            {
+              'id': 'c1',
+              'name': 'Mains',
+              'menus': [
+                {
+                  'id': 'm-main',
+                  'title': 'Nasi Goreng',
+                  'description': '',
+                  'photo_url': '/static/default-food.png',
+                  'available_stock': 3,
+                  'sell_price': 35000,
+                },
+              ],
+            },
+          ],
+        },
+      };
 
   Map<String, dynamic> sampleMenusResponse() => {
         'success': true,
@@ -104,7 +157,7 @@ void main() {
     expect(find.text('Out of stock'), findsWidgets);
   });
 
-  testWidgets('in-stock item can be selected and out-of-stock cannot',
+  testWidgets('add item from menu updates cart count',
       (WidgetTester tester) async {
     secure.store[SecureKeys.authToken] = 'acc';
     secure.store[SecureKeys.userId] = 'u1';
@@ -129,19 +182,42 @@ void main() {
 
     await pumpApp(tester);
 
-    await tester.tap(find.text('Nasi Goreng'));
+    await tester.tap(find.text('Add to cart').first);
     await tester.pumpAndSettle();
 
-    final inStockCard = tester.widget<MenuItemCard>(
-      find.ancestor(
-        of: find.text('Nasi Goreng'),
-        matching: find.byType(MenuItemCard),
-      ),
-    );
-    expect(inStockCard.selected, isTrue);
-
-    await tester.tap(find.text('Empty Stock'));
+    await tester.tap(find.text('Add to cart').last);
     await tester.pumpAndSettle();
+
+    final menuPage = tester.element(find.byType(MenuPage));
+    final container = ProviderScope.containerOf(menuPage);
+    expect(container.read(orderProvider).itemCount, 1);
+    expect(find.text('1'), findsOneWidget);
+  });
+
+  testWidgets('out-of-stock item cannot be added to cart',
+      (WidgetTester tester) async {
+    secure.store[SecureKeys.authToken] = 'acc';
+    secure.store[SecureKeys.userId] = 'u1';
+
+    adapter
+      ..onGet(
+        '/api/v1/users/u1',
+        (server) => server.reply(200, {
+          'success': true,
+          'data': {
+            'id': 'u1',
+            'email': 'a@b.com',
+            'name': 'Alex',
+            'role': 'user',
+          },
+        }),
+      )
+      ..onGet(
+        '/api/v1/pos/menus',
+        (server) => server.reply(200, sampleMenusResponse()),
+      );
+
+    await pumpApp(tester);
 
     final outOfStockCard = tester.widget<MenuItemCard>(
       find.ancestor(
@@ -149,15 +225,12 @@ void main() {
         matching: find.byType(MenuItemCard),
       ),
     );
-    expect(outOfStockCard.selected, isFalse);
+    expect(outOfStockCard.item.isInStock, isFalse);
 
-    final inStockCardAfter = tester.widget<MenuItemCard>(
-      find.ancestor(
-        of: find.text('Nasi Goreng'),
-        matching: find.byType(MenuItemCard),
-      ),
-    );
-    expect(inStockCardAfter.selected, isTrue);
+    await tester.tap(find.text('Add to cart').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Qty'), findsNothing);
   });
 
   testWidgets('menu fetch error shows retry control', (WidgetTester tester) async {
@@ -206,5 +279,45 @@ void main() {
 
     expect(find.byType(LoginPage), findsOneWidget);
     expect(find.byType(MenuPage), findsNothing);
+  });
+
+  testWidgets('menu page renders categories in API order',
+      (WidgetTester tester) async {
+    secure.store[SecureKeys.authToken] = 'acc';
+    secure.store[SecureKeys.userId] = 'u1';
+
+    adapter
+      ..onGet(
+        '/api/v1/users/u1',
+        (server) => server.reply(200, {
+          'success': true,
+          'data': {
+            'id': 'u1',
+            'email': 'a@b.com',
+            'name': 'Alex',
+            'role': 'user',
+          },
+        }),
+      )
+      ..onGet(
+        '/api/v1/pos/menus',
+        (server) => server.reply(200, orderedCategoriesResponse()),
+      );
+
+    await tester.binding.setSurfaceSize(const Size(800, 2000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await pumpApp(tester);
+
+    expect(find.byType(MenuPage), findsOneWidget);
+
+    final headers = tester
+        .widgetList<AppSectionHeader>(find.byType(AppSectionHeader))
+        .toList();
+    expect(headers.map((header) => header.title).toList(), [
+      'Desserts',
+      'Appetizers',
+      'Mains',
+    ]);
   });
 }

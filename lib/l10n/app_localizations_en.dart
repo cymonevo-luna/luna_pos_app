@@ -268,4 +268,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get testPrint => 'Test print';
+
+  @override
+  String get cart => 'Cart';
+
+  @override
+  String get addToCart => 'Add to cart';
+
+  @override
+  String get emptyCart => 'Your cart is empty';
+
+  @override
+  String get clearCart => 'Clear cart';
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String itemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+      zero: 'No items',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get editNote => 'Edit note';
+
+  @override
+  String get noteHint => 'Optional note (e.g. less ice)';
 }

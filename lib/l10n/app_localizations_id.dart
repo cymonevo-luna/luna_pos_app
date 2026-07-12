@@ -268,4 +268,37 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get testPrint => 'Cetak uji';
+
+  @override
+  String get cart => 'Keranjang';
+
+  @override
+  String get addToCart => 'Tambah ke keranjang';
+
+  @override
+  String get emptyCart => 'Keranjangmu kosong';
+
+  @override
+  String get clearCart => 'Kosongkan keranjang';
+
+  @override
+  String get remove => 'Hapus';
+
+  @override
+  String itemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count item',
+      one: '1 item',
+      zero: 'Tidak ada item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get editNote => 'Ubah catatan';
+
+  @override
+  String get noteHint => 'Catatan opsional (mis. es sedikit)';
 }

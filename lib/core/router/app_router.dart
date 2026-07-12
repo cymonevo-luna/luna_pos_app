@@ -7,6 +7,7 @@ import '../../features/auth/login_page.dart';
 import '../../features/auth/register_page.dart';
 import '../../features/auth/splash_page.dart';
 import '../../features/menu/menu_page.dart';
+import '../../features/order/cart_page.dart';
 import '../../features/order/checkout_page.dart';
 import '../../features/order/order_controller.dart';
 import '../../features/order/payment_page.dart';
@@ -29,6 +30,7 @@ enum AppRoute {
   profile('/profile'),
   settings('/settings'),
   details('/details'),
+  cart('/cart'),
   checkout('/checkout'),
   payment('/payment');
 
@@ -200,6 +202,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       name: AppRoute.details.name,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const _DetailsPage(),
+    ),
+    GoRoute(
+      path: AppRoute.cart.path,
+      name: AppRoute.cart.name,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const CartPage(),
     ),
     GoRoute(
       path: AppRoute.checkout.path,

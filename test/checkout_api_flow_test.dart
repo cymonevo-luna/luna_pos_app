@@ -80,8 +80,8 @@ void main() {
         'data': {
           'brand_name': 'Luna Cafe',
           'branch_name': 'Cabang Sudirman',
-          'branch_address': 'Jl. Sudirman No. 10',
-          'branch_phone': '021-1234567',
+          'address': 'Jl. Sudirman No. 10',
+          'phone': '021-1234567',
           'thank_you_note': 'Terima kasih!',
         },
       }),

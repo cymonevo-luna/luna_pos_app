@@ -8,8 +8,8 @@ abstract class StoreSettings with _$StoreSettings {
   const factory StoreSettings({
     @JsonKey(name: 'brand_name') required String brandName,
     @JsonKey(name: 'branch_name') required String branchName,
-    @JsonKey(name: 'branch_address') required String branchAddress,
-    @JsonKey(name: 'branch_phone') required String branchPhone,
+    @JsonKey(name: 'address') required String branchAddress,
+    @JsonKey(name: 'phone') required String branchPhone,
     @JsonKey(name: 'thank_you_note')
     @Default('Terima kasih telah berbelanja!')
     String thankYouNote,

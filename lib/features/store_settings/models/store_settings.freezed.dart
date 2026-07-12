@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$StoreSettings {
 
-@JsonKey(name: 'brand_name') String get brandName;@JsonKey(name: 'branch_name') String get branchName;@JsonKey(name: 'branch_address') String get branchAddress;@JsonKey(name: 'branch_phone') String get branchPhone;@JsonKey(name: 'thank_you_note') String get thankYouNote;
+@JsonKey(name: 'brand_name') String get brandName;@JsonKey(name: 'branch_name') String get branchName;@JsonKey(name: 'address') String get branchAddress;@JsonKey(name: 'phone') String get branchPhone;@JsonKey(name: 'thank_you_note') String get thankYouNote;
 /// Create a copy of StoreSettings
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $StoreSettingsCopyWith<$Res>  {
   factory $StoreSettingsCopyWith(StoreSettings value, $Res Function(StoreSettings) _then) = _$StoreSettingsCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'brand_name') String brandName,@JsonKey(name: 'branch_name') String branchName,@JsonKey(name: 'branch_address') String branchAddress,@JsonKey(name: 'branch_phone') String branchPhone,@JsonKey(name: 'thank_you_note') String thankYouNote
+@JsonKey(name: 'brand_name') String brandName,@JsonKey(name: 'branch_name') String branchName,@JsonKey(name: 'address') String branchAddress,@JsonKey(name: 'phone') String branchPhone,@JsonKey(name: 'thank_you_note') String thankYouNote
 });
 
 
@@ -157,7 +157,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'brand_name')  String brandName, @JsonKey(name: 'branch_name')  String branchName, @JsonKey(name: 'branch_address')  String branchAddress, @JsonKey(name: 'branch_phone')  String branchPhone, @JsonKey(name: 'thank_you_note')  String thankYouNote)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'brand_name')  String brandName, @JsonKey(name: 'branch_name')  String branchName, @JsonKey(name: 'address')  String branchAddress, @JsonKey(name: 'phone')  String branchPhone, @JsonKey(name: 'thank_you_note')  String thankYouNote)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _StoreSettings() when $default != null:
 return $default(_that.brandName,_that.branchName,_that.branchAddress,_that.branchPhone,_that.thankYouNote);case _:
@@ -178,7 +178,7 @@ return $default(_that.brandName,_that.branchName,_that.branchAddress,_that.branc
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'brand_name')  String brandName, @JsonKey(name: 'branch_name')  String branchName, @JsonKey(name: 'branch_address')  String branchAddress, @JsonKey(name: 'branch_phone')  String branchPhone, @JsonKey(name: 'thank_you_note')  String thankYouNote)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'brand_name')  String brandName, @JsonKey(name: 'branch_name')  String branchName, @JsonKey(name: 'address')  String branchAddress, @JsonKey(name: 'phone')  String branchPhone, @JsonKey(name: 'thank_you_note')  String thankYouNote)  $default,) {final _that = this;
 switch (_that) {
 case _StoreSettings():
 return $default(_that.brandName,_that.branchName,_that.branchAddress,_that.branchPhone,_that.thankYouNote);case _:
@@ -198,7 +198,7 @@ return $default(_that.brandName,_that.branchName,_that.branchAddress,_that.branc
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'brand_name')  String brandName, @JsonKey(name: 'branch_name')  String branchName, @JsonKey(name: 'branch_address')  String branchAddress, @JsonKey(name: 'branch_phone')  String branchPhone, @JsonKey(name: 'thank_you_note')  String thankYouNote)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'brand_name')  String brandName, @JsonKey(name: 'branch_name')  String branchName, @JsonKey(name: 'address')  String branchAddress, @JsonKey(name: 'phone')  String branchPhone, @JsonKey(name: 'thank_you_note')  String thankYouNote)?  $default,) {final _that = this;
 switch (_that) {
 case _StoreSettings() when $default != null:
 return $default(_that.brandName,_that.branchName,_that.branchAddress,_that.branchPhone,_that.thankYouNote);case _:
@@ -213,13 +213,13 @@ return $default(_that.brandName,_that.branchName,_that.branchAddress,_that.branc
 @JsonSerializable()
 
 class _StoreSettings implements StoreSettings {
-  const _StoreSettings({@JsonKey(name: 'brand_name') required this.brandName, @JsonKey(name: 'branch_name') required this.branchName, @JsonKey(name: 'branch_address') required this.branchAddress, @JsonKey(name: 'branch_phone') required this.branchPhone, @JsonKey(name: 'thank_you_note') this.thankYouNote = 'Terima kasih telah berbelanja!'});
+  const _StoreSettings({@JsonKey(name: 'brand_name') required this.brandName, @JsonKey(name: 'branch_name') required this.branchName, @JsonKey(name: 'address') required this.branchAddress, @JsonKey(name: 'phone') required this.branchPhone, @JsonKey(name: 'thank_you_note') this.thankYouNote = 'Terima kasih telah berbelanja!'});
   factory _StoreSettings.fromJson(Map<String, dynamic> json) => _$StoreSettingsFromJson(json);
 
 @override@JsonKey(name: 'brand_name') final  String brandName;
 @override@JsonKey(name: 'branch_name') final  String branchName;
-@override@JsonKey(name: 'branch_address') final  String branchAddress;
-@override@JsonKey(name: 'branch_phone') final  String branchPhone;
+@override@JsonKey(name: 'address') final  String branchAddress;
+@override@JsonKey(name: 'phone') final  String branchPhone;
 @override@JsonKey(name: 'thank_you_note') final  String thankYouNote;
 
 /// Create a copy of StoreSettings
@@ -255,7 +255,7 @@ abstract mixin class _$StoreSettingsCopyWith<$Res> implements $StoreSettingsCopy
   factory _$StoreSettingsCopyWith(_StoreSettings value, $Res Function(_StoreSettings) _then) = __$StoreSettingsCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'brand_name') String brandName,@JsonKey(name: 'branch_name') String branchName,@JsonKey(name: 'branch_address') String branchAddress,@JsonKey(name: 'branch_phone') String branchPhone,@JsonKey(name: 'thank_you_note') String thankYouNote
+@JsonKey(name: 'brand_name') String brandName,@JsonKey(name: 'branch_name') String branchName,@JsonKey(name: 'address') String branchAddress,@JsonKey(name: 'phone') String branchPhone,@JsonKey(name: 'thank_you_note') String thankYouNote
 });
 
 

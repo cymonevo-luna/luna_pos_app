@@ -52,10 +52,13 @@ VERSION="$(read_pubspec version)"
 [ -n "$APP_NAME" ] || { echo "ERROR: could not resolve APP_NAME from pubspec.yaml" >&2; exit 1; }
 [ -n "$VERSION" ] || VERSION="0.0.0"
 
-SHORT_SHA="$(git -C "$REPO_DIR" rev-parse --short HEAD 2>/dev/null || echo nogit)"
 STAMP="$(date -u +%Y%m%d-%H%M%S)"
-# e.g. my_app-v1.0.0+1-debug-1a2b3c4-20260621-120000.apk
-FILENAME="${APP_NAME}-v${VERSION}-${BUILD_TYPE}-${SHORT_SHA}-${STAMP}.apk"
+# e.g. my_app-v1.0.0+1-debug-20260621-120000.apk
+# Name-sortable by design: the constant prefix is followed by a trailing UTC
+# timestamp, so lexical order matches build order and the newest build sorts
+# last by name. Mobile/web Nextcloud clients only sort by name, so no git sha is
+# embedded — it would break that ordering (and the commit is already in the log).
+FILENAME="${APP_NAME}-v${VERSION}-${BUILD_TYPE}-${STAMP}.apk"
 
 # Destination path under the remote, trimming any stray slash on the base dir.
 REMOTE_PATH="${APP_NAME}/${BUILD_TYPE}/${FILENAME}"

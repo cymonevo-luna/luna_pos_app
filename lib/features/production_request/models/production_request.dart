@@ -23,6 +23,7 @@ abstract class ProductionRequestSummary with _$ProductionRequestSummary {
     required String id,
     required String status,
     @JsonKey(name: 'item_count') required int itemCount,
+    @Default([]) List<ProductionRequestItem> items,
     @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)
     DateTime? createdAt,
     @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)
@@ -40,6 +41,7 @@ abstract class ProductionRequestItem with _$ProductionRequestItem {
     @JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson)
     required num quantity,
     @JsonKey(name: 'is_finished') @Default(false) bool isFinished,
+    String? note,
   }) = _ProductionRequestItem;
 
   factory ProductionRequestItem.fromJson(Map<String, dynamic> json) =>
@@ -52,6 +54,7 @@ abstract class ProductionRequestDetail with _$ProductionRequestDetail {
     required String id,
     required String status,
     required List<ProductionRequestItem> items,
+    String? notes,
     @JsonKey(name: 'item_count') int? itemCount,
     @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)
     DateTime? createdAt,

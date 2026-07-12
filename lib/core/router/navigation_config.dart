@@ -34,7 +34,11 @@ bool isCashierRoute(String location) {
       location == AppRoute.messages.path ||
       location == AppRoute.cart.path ||
       location == AppRoute.checkout.path ||
-      _matchesPrefix(location, AppRoute.transactionDetail.path.split(':').first);
+      _matchesPrefix(location, AppRoute.transactionDetail.path.split(':').first) ||
+      _matchesPrefix(
+        location,
+        AppRoute.productionRequestDetail.path.split(':').first,
+      );
 }
 
 bool isOperationalRoute(String location) {

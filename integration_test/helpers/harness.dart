@@ -249,8 +249,8 @@ class IntegrationTestHarness {
         'data': {
           'brand_name': 'Luna Coffee',
           'branch_name': 'Test Branch',
-          'branch_address': 'Jl. Test 1',
-          'branch_phone': '021-0000000',
+          'address': 'Jl. Test 1',
+          'phone': '021-0000000',
           'thank_you_note': 'Terima kasih!',
         },
       }),

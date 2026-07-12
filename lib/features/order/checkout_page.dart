@@ -24,6 +24,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   final _discountController = TextEditingController(text: '0');
   final _cashController = TextEditingController();
   PaymentMethod _paymentMethod = PaymentMethod.cash;
+  bool _printReceiptChecked = false;
 
   @override
   void dispose() {
@@ -43,11 +44,12 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     };
   }
 
-  Future<void> _confirmAndPrint(AppLocalizations l10n) async {
-    final result = await ref.read(checkoutProvider.notifier).confirmAndPrint(
+  Future<void> _proceed(AppLocalizations l10n) async {
+    final result = await ref.read(checkoutProvider.notifier).proceed(
           discountAmount: _discountAmount,
           paymentMethod: _paymentMethod,
           cashTendered: _isCashPayment ? _cashTendered : null,
+          printReceipt: _printReceiptChecked,
         );
 
     if (!mounted || result == null) return;
@@ -72,17 +74,17 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                       )
                     : dialogL10n.saleCompleteQrisMessage,
               ),
-              if (!result.printSucceeded) ...[
+              if (result.printError != null) ...[
                 const VGap(AppSpacing.sm),
                 Text(
-                  result.printError ?? dialogL10n.printFailedWarning,
+                  result.printError!,
                   style: TextStyle(color: Theme.of(dialogContext).colorScheme.error),
                 ),
               ],
             ],
           ),
           actions: [
-            if (!result.printSucceeded)
+            if (result.printError != null)
               TextButton(
                 onPressed: () async {
                   final printed =
@@ -221,7 +223,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                   else if (_cashTendered >= totalAmount)
                     _SummaryRow(
                       label: l10n.change,
-                      value: formatRupiah(changeAmount),
+                      value: '-${formatRupiah(changeAmount)}',
+                      color: context.colors.error,
                       emphasized: true,
                     ),
                 ],
@@ -237,7 +240,19 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                 padding: AppSpacing.screenPadding,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
+                    CheckboxListTile(
+                      value: _printReceiptChecked,
+                      onChanged: checkout.submitting
+                          ? null
+                          : (checked) => setState(
+                                () => _printReceiptChecked = checked ?? false,
+                              ),
+                      title: Text(l10n.printReceipt),
+                      contentPadding: EdgeInsets.zero,
+                      controlAffinity: ListTileControlAffinity.leading,
+                    ),
                     InputDecorator(
                       decoration: InputDecoration(
                         labelText: l10n.paymentMethod,
@@ -265,9 +280,9 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                     ),
                     const VGap(AppSpacing.md),
                     AppButton(
-                      l10n.confirmAndPrint,
+                      l10n.proceed,
                       loading: checkout.submitting,
-                      onPressed: canConfirm ? () => _confirmAndPrint(l10n) : null,
+                      onPressed: canConfirm ? () => _proceed(l10n) : null,
                     ),
                   ],
                 ),
@@ -352,25 +367,30 @@ class _SummaryRow extends StatelessWidget {
     required this.label,
     required this.value,
     this.emphasized = false,
+    this.color,
   });
 
   final String label;
   final String value;
   final bool emphasized;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
+    final valueColor = color ?? (emphasized ? context.colors.primary : null);
+
     return Row(
       children: [
         Expanded(
           child: AppText.title(
             label,
+            color: color,
             weight: emphasized ? FontWeight.w700 : null,
           ),
         ),
         AppText.title(
           value,
-          color: emphasized ? context.colors.primary : null,
+          color: valueColor,
           weight: emphasized ? FontWeight.w700 : null,
         ),
       ],

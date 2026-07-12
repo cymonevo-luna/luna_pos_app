@@ -13,6 +13,8 @@ import 'package:luna_pos/core/printer/bluetooth_printer_service.dart';
 import 'package:luna_pos/core/router/app_router.dart';
 import 'package:luna_pos/core/storage/preferences_service.dart';
 import 'package:luna_pos/core/storage/secure_storage_service.dart';
+import 'package:luna_pos/core/theme/app_palette.dart';
+import 'package:luna_pos/core/theme/app_theme.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
 import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
@@ -24,6 +26,7 @@ import 'package:luna_pos/features/transaction/data/transaction_repository.dart';
 import 'package:luna_pos/features/user/models/user.dart';
 import 'package:luna_pos/l10n/app_localizations.dart';
 import 'package:luna_pos/shared/widgets/app_button.dart';
+import 'package:luna_pos/shared/widgets/app_text.dart';
 
 import 'helpers/auth_harness.dart';
 import 'helpers/mock_bluetooth_printer_service.dart';
@@ -83,6 +86,7 @@ void main() {
     return UncontrolledProviderScope(
       container: container,
       child: MaterialApp(
+        theme: AppTheme.light(AppAccent.blue),
         locale: const Locale('en'),
         supportedLocales: kSupportedLocales,
         localizationsDelegates: const [
@@ -141,10 +145,12 @@ void main() {
     expect(find.text('—'), findsOneWidget);
     expect(find.text('Rp 8.000'), findsOneWidget);
     expect(find.text('Rp 70.000'), findsOneWidget);
-    expect(find.text('Rp 78.000'), findsOneWidget);
+
+    await scrollToCashFields(tester);
+    expect(find.text('Rp 78.000'), findsWidgets);
   });
 
-  testWidgets('payment method dropdown appears above confirm button',
+  testWidgets('payment method dropdown appears above proceed button',
       (WidgetTester tester) async {
     seedTwoLineCart();
 
@@ -153,7 +159,15 @@ void main() {
 
     expect(find.byKey(const Key('payment_method_dropdown')), findsOneWidget);
     expect(find.text('Cash'), findsWidgets);
-    expect(find.widgetWithText(AppButton, 'Confirm & Print'), findsOneWidget);
+    expect(find.widgetWithText(AppButton, 'Proceed'), findsOneWidget);
+    expect(find.text('Print receipt'), findsOneWidget);
+    expect(find.byType(CheckboxListTile), findsOneWidget);
+
+    final dropdownFinder = find.byKey(const Key('payment_method_dropdown'));
+    final proceedFinder = find.widgetWithText(AppButton, 'Proceed');
+    final dropdownY = tester.getTopLeft(dropdownFinder).dy;
+    final proceedY = tester.getTopLeft(proceedFinder).dy;
+    expect(dropdownY, lessThan(proceedY));
 
     await tester.tap(find.byKey(const Key('payment_method_dropdown')));
     await tester.pumpAndSettle();
@@ -175,7 +189,7 @@ void main() {
     await tester.pumpAndSettle();
     await scrollToCashFields(tester);
 
-    expect(find.text('Rp 22.000'), findsOneWidget);
+    expect(find.text('-Rp 22.000'), findsOneWidget);
   });
 
   testWidgets('qris hides customer pay and change fields',
@@ -231,7 +245,7 @@ void main() {
     expect(find.text('Cash received'), findsOneWidget);
   });
 
-  testWidgets('qris enables confirm without cash input', (WidgetTester tester) async {
+  testWidgets('qris enables proceed without cash input', (WidgetTester tester) async {
     seedTwoLineCart();
 
     await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
@@ -244,13 +258,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      tester.widget<AppButton>(find.widgetWithText(AppButton, 'Confirm & Print'))
+      tester.widget<AppButton>(find.widgetWithText(AppButton, 'Proceed'))
           .onPressed,
       isNotNull,
     );
   });
 
-  testWidgets('confirm button disabled when cash tendered is insufficient',
+  testWidgets('proceed button disabled when cash tendered is insufficient',
       (WidgetTester tester) async {
     seedTwoLineCart();
 
@@ -264,9 +278,38 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      tester.widget<AppButton>(find.widgetWithText(AppButton, 'Confirm & Print'))
-          .onPressed,
+      tester.widget<AppButton>(find.widgetWithText(AppButton, 'Proceed')).onPressed,
       isNull,
+    );
+  });
+
+  testWidgets('change row displays red minus amount', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(800, 2000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    seedTwoLineCart();
+
+    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
+    await tester.pumpAndSettle();
+
+    await tester.drag(find.byType(ListView), const Offset(0, -400));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const Key('cash_tendered_field')), '100000');
+    await tester.pumpAndSettle();
+
+    final changeLabel = find.widgetWithText(AppText, 'Change');
+    expect(changeLabel, findsOneWidget);
+    expect(find.widgetWithText(AppText, '-Rp 22.000'), findsOneWidget);
+
+    final context = tester.element(changeLabel);
+    final errorColor = Theme.of(context).colorScheme.error;
+
+    expect(tester.widget<AppText>(changeLabel).color, errorColor);
+    expect(
+      tester.widget<AppText>(find.widgetWithText(AppText, '-Rp 22.000')).color,
+      errorColor,
     );
   });
 

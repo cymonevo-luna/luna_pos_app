@@ -332,7 +332,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get total => 'Total';
 
   @override
-  String get confirmAndPrint => 'Confirm & Print';
+  String get proceed => 'Proceed';
+
+  @override
+  String get printReceipt => 'Print receipt';
 
   @override
   String get printAgain => 'Print again';

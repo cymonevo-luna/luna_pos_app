@@ -134,13 +134,14 @@ void main() {
     );
   }
 
-  test('confirmAndPrint submits correct cash transaction payload', () async {
+  test('proceed submits correct cash transaction payload', () async {
     seedTwoLineCart();
 
-    final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
+    final result = await container.read(checkoutProvider.notifier).proceed(
           discountAmount: 5000,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 100000,
+          printReceipt: true,
         );
 
     expect(result, isNotNull);
@@ -157,12 +158,13 @@ void main() {
     expect(request.items[1].lineTotal, 70000);
   });
 
-  test('confirmAndPrint submits correct qris transaction payload', () async {
+  test('proceed submits correct qris transaction payload', () async {
     seedTwoLineCart();
 
-    final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
+    final result = await container.read(checkoutProvider.notifier).proceed(
           discountAmount: 0,
           paymentMethod: PaymentMethod.qris,
+          printReceipt: false,
         );
 
     expect(result, isNotNull);
@@ -172,28 +174,79 @@ void main() {
     expect(request.changeAmount, isNull);
   });
 
-  test('confirmAndPrint calls printBytes and clears cart on success', () async {
+  test('proceed without print completes sale and clears cart', () async {
     seedTwoLineCart();
-    await printer.connect('00:11:22:33:44:55');
 
-    await container.read(checkoutProvider.notifier).confirmAndPrint(
+    final result = await container.read(checkoutProvider.notifier).proceed(
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
+          printReceipt: false,
         );
 
+    expect(result, isNotNull);
+    expect(result!.transactionId, 'tx-1');
+    expect(result.printSucceeded, isFalse);
+    expect(result.printError, isNull);
+    expect(transactionRepository.lastRequest, isNotNull);
+    expect(printer.lastPrintedBytes, isNull);
+    expect(container.read(orderProvider).lines, isEmpty);
+    expect(container.read(checkoutProvider).error, isNull);
+    expect(container.read(checkoutProvider).lastReceiptBytes, isNull);
+  });
+
+  test('proceed without print when store-settings would fail', () async {
+    seedTwoLineCart();
+    adapter.reset();
+    adapter.onGet(
+      '/api/v1/pos/store-settings',
+      (server) => server.reply(500, {
+        'success': false,
+        'error': {'message': 'settings unavailable'},
+      }),
+    );
+
+    final result = await container.read(checkoutProvider.notifier).proceed(
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.cash,
+          cashTendered: 80000,
+          printReceipt: false,
+        );
+
+    expect(result, isNotNull);
+    expect(result!.transactionId, 'tx-1');
+    expect(transactionRepository.lastRequest, isNotNull);
+    expect(container.read(orderProvider).lines, isEmpty);
+    expect(container.read(checkoutProvider).error, isNull);
+    expect(printer.lastPrintedBytes, isNull);
+  });
+
+  test('proceed with print calls printBytes and clears cart on success', () async {
+    seedTwoLineCart();
+    await printer.connect('00:11:22:33:44:55');
+
+    final result = await container.read(checkoutProvider.notifier).proceed(
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.cash,
+          cashTendered: 80000,
+          printReceipt: true,
+        );
+
+    expect(result, isNotNull);
+    expect(result!.printSucceeded, isTrue);
     expect(printer.lastPrintedBytes, isNotNull);
     expect(printer.lastPrintedBytes, isNotEmpty);
     expect(container.read(orderProvider).lines, isEmpty);
   });
 
-  test('confirmAndPrint completes sale when printer unavailable', () async {
+  test('proceed with print completes sale when printer unavailable', () async {
     seedTwoLineCart();
 
-    final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
+    final result = await container.read(checkoutProvider.notifier).proceed(
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
+          printReceipt: true,
         );
 
     expect(result, isNotNull);
@@ -207,7 +260,8 @@ void main() {
     );
   });
 
-  test('confirmAndPrint does not POST when store settings fail', () async {
+  test('proceed with print completes sale when store settings fail after POST',
+      () async {
     seedTwoLineCart();
     adapter.reset();
     adapter.onGet(
@@ -218,15 +272,19 @@ void main() {
       }),
     );
 
-    final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
+    final result = await container.read(checkoutProvider.notifier).proceed(
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
+          printReceipt: true,
         );
 
-    expect(result, isNull);
-    expect(transactionRepository.lastRequest, isNull);
-    expect(container.read(orderProvider).lines, isNotEmpty);
-    expect(container.read(checkoutProvider).error, 'Server error.');
+    expect(result, isNotNull);
+    expect(result!.transactionId, 'tx-1');
+    expect(result.printSucceeded, isFalse);
+    expect(result.printError, isNotNull);
+    expect(transactionRepository.lastRequest, isNotNull);
+    expect(container.read(orderProvider).lines, isEmpty);
+    expect(container.read(checkoutProvider).error, isNull);
   });
 }

@@ -366,6 +366,43 @@
   "@procurementAccessDenied": {
     "description": "Shown when an authenticated user without operational role opens stock or purchases"
   },
+  "noPurchaseRequests": "No purchase requests yet",
+  "@noPurchaseRequests": {
+    "description": "Empty state when there are no purchase requests"
+  },
+  "purchaseFilterAll": "All",
+  "@purchaseFilterAll": {
+    "description": "Purchase list filter showing all statuses"
+  },
+  "purchaseStatusPending": "Pending",
+  "@purchaseStatusPending": {
+    "description": "Purchase request status: pending"
+  },
+  "purchaseStatusRequested": "Requested",
+  "@purchaseStatusRequested": {
+    "description": "Purchase request status: requested"
+  },
+  "purchaseStatusPaid": "Paid",
+  "@purchaseStatusPaid": {
+    "description": "Purchase request status: paid"
+  },
+  "purchaseStatusDelivered": "Delivered",
+  "@purchaseStatusDelivered": {
+    "description": "Purchase request status: delivered"
+  },
+  "purchaseCreatedBy": "Created by",
+  "@purchaseCreatedBy": {
+    "description": "Label for purchase request creator username"
+  },
+  "purchaseItemCount": "{count, plural, =1{1 item} other{{count} items}}",
+  "@purchaseItemCount": {
+    "description": "Number of items in a purchase request",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "searchStock": "Search supplies",
   "@searchStock": {
     "description": "Search field hint on stock list"

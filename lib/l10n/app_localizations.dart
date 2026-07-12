@@ -872,6 +872,54 @@ abstract class AppLocalizations {
   /// **'You do not have permission to access procurement features.'**
   String get procurementAccessDenied;
 
+  /// Empty state when there are no purchase requests
+  ///
+  /// In en, this message translates to:
+  /// **'No purchase requests yet'**
+  String get noPurchaseRequests;
+
+  /// Purchase list filter showing all statuses
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get purchaseFilterAll;
+
+  /// Purchase request status: pending
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get purchaseStatusPending;
+
+  /// Purchase request status: requested
+  ///
+  /// In en, this message translates to:
+  /// **'Requested'**
+  String get purchaseStatusRequested;
+
+  /// Purchase request status: paid
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get purchaseStatusPaid;
+
+  /// Purchase request status: delivered
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get purchaseStatusDelivered;
+
+  /// Label for purchase request creator username
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get purchaseCreatedBy;
+
+  /// Number of items in a purchase request
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 item} other{{count} items}}'**
+  String purchaseItemCount(int count);
+
   /// Search field hint on stock list
   ///
   /// In en, this message translates to:

@@ -36,48 +36,63 @@ class MenuItemCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(AppRadius.lg),
+              Flexible(
+                flex: 3,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    ClipRRect(
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(AppRadius.lg),
+                      ),
+                      child: SizedBox.expand(
+                        child: MenuPhoto(photoUrl: item.photoUrl),
+                      ),
                     ),
-                    child: AspectRatio(
-                      aspectRatio: 4 / 3,
-                      child: MenuPhoto(photoUrl: item.photoUrl),
+                    if (!inStock)
+                      const Positioned(
+                        top: AppSpacing.sm,
+                        right: AppSpacing.sm,
+                        child: _OutOfStockBadge(),
+                      ),
+                  ],
+                ),
+              ),
+              Flexible(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.xs),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.topLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AppText.title(
+                          item.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const VGap(AppSpacing.xxs),
+                        AppText.label(
+                          formatRupiah(item.sellPrice),
+                          color: colors.primary,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const VGap(AppSpacing.xxs),
+                        AppText.body(
+                          inStock
+                              ? 'Stock: ${item.availableStock}'
+                              : 'Out of stock',
+                          muted: true,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
                   ),
-                  if (!inStock)
-                    const Positioned(
-                      top: AppSpacing.sm,
-                      right: AppSpacing.sm,
-                      child: _OutOfStockBadge(),
-                    ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(AppSpacing.sm),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AppText.title(
-                      item.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const VGap(AppSpacing.xs),
-                    AppText.label(
-                      formatRupiah(item.sellPrice),
-                      color: colors.primary,
-                    ),
-                    const VGap(AppSpacing.xs),
-                    AppText.body(
-                      inStock
-                          ? 'Stock: ${item.availableStock}'
-                          : 'Out of stock',
-                      muted: true,
-                    ),
-                  ],
                 ),
               ),
             ],

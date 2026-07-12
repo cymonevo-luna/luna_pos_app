@@ -276,6 +276,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get addToCart => 'Tambah ke keranjang';
 
   @override
+  String get add => 'Tambah';
+
+  @override
+  String get orderTotal => 'Total pesanan';
+
+  @override
   String get emptyCart => 'Keranjangmu kosong';
 
   @override

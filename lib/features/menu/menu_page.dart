@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/formatting/currency_formatter.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_tokens.dart';
@@ -40,11 +41,9 @@ class _MenuPageState extends ConsumerState<MenuPage> {
       context: context,
       item: item,
       onAdd: (quantity, note) {
-        ref.read(orderProvider.notifier).addLine(
-              item,
-              quantity: quantity,
-              note: note,
-            );
+        ref
+            .read(orderProvider.notifier)
+            .addLine(item, quantity: quantity, note: note);
       },
     );
   }
@@ -55,20 +54,20 @@ class _MenuPageState extends ConsumerState<MenuPage> {
       if (!next && mounted) context.goNamed(AppRoute.login.name);
     });
 
-    ref.listen<String?>(
-      orderProvider.select((state) => state.errorMessage),
-      (previous, next) {
-        if (next != null && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(next)),
-          );
-        }
-      },
-    );
+    ref.listen<String?>(orderProvider.select((state) => state.errorMessage), (
+      previous,
+      next,
+    ) {
+      if (next != null && mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(next)));
+      }
+    });
 
     final l10n = AppLocalizations.of(context);
     final menu = ref.watch(menuProvider);
-    final itemCount = ref.watch(orderProvider.select((state) => state.itemCount));
+    final order = ref.watch(orderProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -78,8 +77,8 @@ class _MenuPageState extends ConsumerState<MenuPage> {
             tooltip: l10n.cart,
             onPressed: () => context.pushNamed(AppRoute.cart.name),
             icon: Badge(
-              isLabelVisible: itemCount > 0,
-              label: Text('$itemCount'),
+              isLabelVisible: order.itemCount > 0,
+              label: Text('${order.itemCount}'),
               child: const Icon(Icons.shopping_cart_outlined),
             ),
           ),
@@ -98,13 +97,28 @@ class _MenuPageState extends ConsumerState<MenuPage> {
           ),
         ],
       ),
-      body: _MenuBody(
-        state: menu,
-        onRetry: () => ref.read(menuProvider.notifier).retry(),
-        onRefresh: () => ref.read(menuProvider.notifier).refresh(),
-        onAdd: _addToCart,
-        emptyLabel: l10n.noMenuItemsAvailable,
-        retryLabel: l10n.retry,
+      body: Column(
+        children: [
+          Expanded(
+            child: _MenuBody(
+              state: menu,
+              onRetry: () => ref.read(menuProvider.notifier).retry(),
+              onRefresh: () => ref.read(menuProvider.notifier).refresh(),
+              onAdd: _addToCart,
+              emptyLabel: l10n.noMenuItemsAvailable,
+              retryLabel: l10n.retry,
+            ),
+          ),
+          _MenuOrderBar(
+            itemCountLabel: l10n.itemCount(order.itemCount),
+            orderTotalLabel: l10n.orderTotal,
+            grandTotal: order.grandTotal,
+            checkoutLabel: l10n.checkout,
+            onCheckout: order.lines.isEmpty
+                ? null
+                : () => context.pushNamed(AppRoute.checkout.name),
+          ),
+        ],
       ),
     );
   }
@@ -142,10 +156,7 @@ class _MenuBody extends StatelessWidget {
     }
 
     if (state.isEmpty) {
-      return _MenuEmptyView(
-        message: emptyLabel,
-        onRefresh: onRefresh,
-      );
+      return _MenuEmptyView(message: emptyLabel, onRefresh: onRefresh);
     }
 
     final data = state.data!;
@@ -157,8 +168,8 @@ class _MenuBody extends StatelessWidget {
           final crossAxisCount = width >= 900
               ? 4
               : width >= 600
-                  ? 3
-                  : 2;
+              ? 3
+              : 2;
 
           return ListView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -180,10 +191,7 @@ class _MenuBody extends StatelessWidget {
                     ),
                     itemBuilder: (context, index) {
                       final item = category.menus[index];
-                      return MenuItemCard(
-                        item: item,
-                        onAdd: () => onAdd(item),
-                      );
+                      return MenuItemCard(item: item, onAdd: () => onAdd(item));
                     },
                   ),
                   const VGap(AppSpacing.lg),
@@ -229,10 +237,7 @@ class _MenuErrorView extends StatelessWidget {
 }
 
 class _MenuEmptyView extends StatelessWidget {
-  const _MenuEmptyView({
-    required this.message,
-    required this.onRefresh,
-  });
+  const _MenuEmptyView({required this.message, required this.onRefresh});
 
   final String message;
   final Future<void> Function() onRefresh;
@@ -249,11 +254,65 @@ class _MenuEmptyView extends StatelessWidget {
             child: Center(
               child: Padding(
                 padding: const EdgeInsets.all(AppSpacing.lg),
-                child: AppText.body(message, align: TextAlign.center, muted: true),
+                child: AppText.body(
+                  message,
+                  align: TextAlign.center,
+                  muted: true,
+                ),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _MenuOrderBar extends StatelessWidget {
+  const _MenuOrderBar({
+    required this.itemCountLabel,
+    required this.orderTotalLabel,
+    required this.grandTotal,
+    required this.checkoutLabel,
+    required this.onCheckout,
+  });
+
+  final String itemCountLabel;
+  final String orderTotalLabel;
+  final int grandTotal;
+  final String checkoutLabel;
+  final VoidCallback? onCheckout;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      elevation: 8,
+      color: context.colors.surface,
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: AppSpacing.screenPadding,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              AppText.body(itemCountLabel, muted: true),
+              const VGap(AppSpacing.sm),
+              Row(
+                children: [
+                  Expanded(child: AppText.title(orderTotalLabel)),
+                  AppText.title(
+                    formatRupiah(grandTotal),
+                    color: context.colors.primary,
+                    weight: FontWeight.w700,
+                  ),
+                ],
+              ),
+              const VGap(AppSpacing.md),
+              AppButton(checkoutLabel, onPressed: onCheckout),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -28,10 +28,7 @@ Future<void> showAddToCartSheet({
 }
 
 class _AddToCartSheet extends StatefulWidget {
-  const _AddToCartSheet({
-    required this.item,
-    required this.onAdd,
-  });
+  const _AddToCartSheet({required this.item, required this.onAdd});
 
   final POSMenuItem item;
   final void Function(int quantity, String note) onAdd;
@@ -107,7 +104,7 @@ class _AddToCartSheetState extends State<_AddToCartSheet> {
           ),
           const VGap(AppSpacing.lg),
           AppButton(
-            l10n.addToCart,
+            l10n.add,
             onPressed: () => widget.onAdd(_quantity, _noteController.text),
           ),
         ],

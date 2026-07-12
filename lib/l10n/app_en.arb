@@ -184,6 +184,14 @@
   "@addToCart": {
     "description": "Add menu item to cart button label"
   },
+  "add": "Add",
+  "@add": {
+    "description": "Confirm adding an item from the menu bottom sheet"
+  },
+  "orderTotal": "Order total",
+  "@orderTotal": {
+    "description": "Running order total on the menu page bottom bar"
+  },
   "emptyCart": "Your cart is empty",
   "@emptyCart": {
     "description": "Message shown when the cart has no items"

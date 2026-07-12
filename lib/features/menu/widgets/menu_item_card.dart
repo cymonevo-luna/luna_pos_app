@@ -4,17 +4,12 @@ import '../../../core/formatting/currency_formatter.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_tokens.dart';
-import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/widgets.dart';
 import '../models/pos_menu.dart';
 import 'menu_photo.dart';
 
 class MenuItemCard extends StatelessWidget {
-  const MenuItemCard({
-    super.key,
-    required this.item,
-    required this.onAdd,
-  });
+  const MenuItemCard({super.key, required this.item, required this.onAdd});
 
   final POSMenuItem item;
   final VoidCallback onAdd;
@@ -23,7 +18,6 @@ class MenuItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final tokens = context.tokens;
-    final l10n = AppLocalizations.of(context);
     final inStock = item.isInStock;
     final borderColor = inStock ? Colors.transparent : tokens.border;
 
@@ -33,6 +27,7 @@ class MenuItemCard extends StatelessWidget {
         elevated: true,
         padding: EdgeInsets.zero,
         borderRadius: AppRadius.brLg,
+        onTap: inStock ? onAdd : null,
         child: DecoratedBox(
           decoration: BoxDecoration(
             borderRadius: AppRadius.brLg,
@@ -82,12 +77,6 @@ class MenuItemCard extends StatelessWidget {
                           : 'Out of stock',
                       muted: true,
                     ),
-                    const VGap(AppSpacing.sm),
-                    AppButton(
-                      l10n.addToCart,
-                      size: AppButtonSize.small,
-                      onPressed: inStock ? onAdd : null,
-                    ),
                   ],
                 ),
               ),
@@ -115,10 +104,7 @@ class _OutOfStockBadge extends StatelessWidget {
           horizontal: AppSpacing.sm,
           vertical: AppSpacing.xs,
         ),
-        child: AppText.label(
-          'Out of stock',
-          color: colors.onErrorContainer,
-        ),
+        child: AppText.label('Out of stock', color: colors.onErrorContainer),
       ),
     );
   }

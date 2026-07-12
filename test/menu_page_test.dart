@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Size;
+import 'package:flutter/material.dart' show Icons, Size;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
@@ -15,6 +15,7 @@ import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/features/menu/widgets/menu_item_card.dart';
 import 'package:luna_pos/features/order/order_controller.dart';
+import 'package:luna_pos/shared/widgets/app_button.dart';
 import 'package:luna_pos/shared/widgets/app_section_header.dart';
 
 import 'helpers/auth_harness.dart';
@@ -40,84 +41,84 @@ void main() {
   });
 
   Map<String, dynamic> orderedCategoriesResponse() => {
-        'success': true,
-        'data': {
-          'categories': [
+    'success': true,
+    'data': {
+      'categories': [
+        {
+          'id': 'c2',
+          'name': 'Desserts',
+          'menus': [
             {
-              'id': 'c2',
-              'name': 'Desserts',
-              'menus': [
-                {
-                  'id': 'm-dessert',
-                  'title': 'Pudding',
-                  'description': '',
-                  'photo_url': '/static/default-food.png',
-                  'available_stock': 5,
-                  'sell_price': 15000,
-                },
-              ],
-            },
-            {
-              'id': 'c3',
-              'name': 'Appetizers',
-              'menus': [
-                {
-                  'id': 'm-appetizer',
-                  'title': 'Spring Rolls',
-                  'description': '',
-                  'photo_url': '/static/default-food.png',
-                  'available_stock': 10,
-                  'sell_price': 20000,
-                },
-              ],
-            },
-            {
-              'id': 'c1',
-              'name': 'Mains',
-              'menus': [
-                {
-                  'id': 'm-main',
-                  'title': 'Nasi Goreng',
-                  'description': '',
-                  'photo_url': '/static/default-food.png',
-                  'available_stock': 3,
-                  'sell_price': 35000,
-                },
-              ],
+              'id': 'm-dessert',
+              'title': 'Pudding',
+              'description': '',
+              'photo_url': '/static/default-food.png',
+              'available_stock': 5,
+              'sell_price': 15000,
             },
           ],
         },
-      };
+        {
+          'id': 'c3',
+          'name': 'Appetizers',
+          'menus': [
+            {
+              'id': 'm-appetizer',
+              'title': 'Spring Rolls',
+              'description': '',
+              'photo_url': '/static/default-food.png',
+              'available_stock': 10,
+              'sell_price': 20000,
+            },
+          ],
+        },
+        {
+          'id': 'c1',
+          'name': 'Mains',
+          'menus': [
+            {
+              'id': 'm-main',
+              'title': 'Nasi Goreng',
+              'description': '',
+              'photo_url': '/static/default-food.png',
+              'available_stock': 3,
+              'sell_price': 35000,
+            },
+          ],
+        },
+      ],
+    },
+  };
 
   Map<String, dynamic> sampleMenusResponse() => {
-        'success': true,
-        'data': {
-          'categories': [
+    'success': true,
+    'data': {
+      'categories': [
+        {
+          'id': 'c1',
+          'name': 'Mains',
+          'menus': [
             {
-              'id': 'c1',
-              'name': 'Mains',
-              'menus': [
-                {
-                  'id': 'm1',
-                  'title': 'Nasi Goreng',
-                  'description': '',
-                  'photo_url': '/static/default-food.png',
-                  'available_stock': 3,
-                  'sell_price': 35000,
-                },
-                {
-                  'id': 'm2',
-                  'title': 'Empty Stock',
-                  'description': '',
-                  'photo_url': '',
-                  'available_stock': 0,
-                  'sell_price': 20000,
-                },
-              ],
+              'id': 'm1',
+              'title': 'Nasi Goreng',
+              'description': '',
+              'photo_url': '/static/default-food.png',
+              'available_stock': 3,
+              'sell_price': 35000,
+            },
+            {
+              'id': 'm2',
+              'title': 'Empty Stock',
+              'description': '',
+              'photo_url': '',
+              'available_stock': 0,
+              'sell_price': 20000,
             },
           ],
         },
-      };
+      ],
+    },
+  };
 
   Future<void> pumpApp(WidgetTester tester) async {
     await tester.pumpWidget(const ProviderScope(child: App()));
@@ -125,8 +126,9 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('authenticated user sees menus grouped by category',
-      (WidgetTester tester) async {
+  testWidgets('authenticated user sees menus grouped by category', (
+    WidgetTester tester,
+  ) async {
     secure.store[SecureKeys.authToken] = 'acc';
     secure.store[SecureKeys.userId] = 'u1';
 
@@ -157,8 +159,9 @@ void main() {
     expect(find.text('Out of stock'), findsWidgets);
   });
 
-  testWidgets('add item from menu updates cart count',
-      (WidgetTester tester) async {
+  testWidgets('menu page renders cart bottom bar with total', (
+    WidgetTester tester,
+  ) async {
     secure.store[SecureKeys.authToken] = 'acc';
     secure.store[SecureKeys.userId] = 'u1';
 
@@ -182,10 +185,85 @@ void main() {
 
     await pumpApp(tester);
 
-    await tester.tap(find.text('Add to cart').first);
+    expect(find.text('Order total'), findsOneWidget);
+    expect(find.text('Rp 0'), findsOneWidget);
+
+    await tester.tap(find.text('Nasi Goreng'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Add to cart').last);
+    await tester.tap(find.byIcon(Icons.add_circle_outline));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Add'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('2 items'), findsOneWidget);
+    expect(find.text('Rp 70.000'), findsOneWidget);
+  });
+
+  testWidgets('checkout button disabled on empty cart', (
+    WidgetTester tester,
+  ) async {
+    secure.store[SecureKeys.authToken] = 'acc';
+    secure.store[SecureKeys.userId] = 'u1';
+
+    adapter
+      ..onGet(
+        '/api/v1/users/u1',
+        (server) => server.reply(200, {
+          'success': true,
+          'data': {
+            'id': 'u1',
+            'email': 'a@b.com',
+            'name': 'Alex',
+            'role': 'user',
+          },
+        }),
+      )
+      ..onGet(
+        '/api/v1/pos/menus',
+        (server) => server.reply(200, sampleMenusResponse()),
+      );
+
+    await pumpApp(tester);
+
+    final checkoutButtons = tester.widgetList<AppButton>(
+      find.widgetWithText(AppButton, 'Checkout'),
+    );
+    expect(checkoutButtons, hasLength(1));
+    expect(checkoutButtons.first.onPressed, isNull);
+  });
+
+  testWidgets('add item from menu updates cart count', (
+    WidgetTester tester,
+  ) async {
+    secure.store[SecureKeys.authToken] = 'acc';
+    secure.store[SecureKeys.userId] = 'u1';
+
+    adapter
+      ..onGet(
+        '/api/v1/users/u1',
+        (server) => server.reply(200, {
+          'success': true,
+          'data': {
+            'id': 'u1',
+            'email': 'a@b.com',
+            'name': 'Alex',
+            'role': 'user',
+          },
+        }),
+      )
+      ..onGet(
+        '/api/v1/pos/menus',
+        (server) => server.reply(200, sampleMenusResponse()),
+      );
+
+    await pumpApp(tester);
+
+    await tester.tap(find.text('Nasi Goreng'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Add'));
     await tester.pumpAndSettle();
 
     final menuPage = tester.element(find.byType(MenuPage));
@@ -194,8 +272,9 @@ void main() {
     expect(find.text('1'), findsOneWidget);
   });
 
-  testWidgets('out-of-stock item cannot be added to cart',
-      (WidgetTester tester) async {
+  testWidgets('out-of-stock item cannot open add sheet', (
+    WidgetTester tester,
+  ) async {
     secure.store[SecureKeys.authToken] = 'acc';
     secure.store[SecureKeys.userId] = 'u1';
 
@@ -227,13 +306,15 @@ void main() {
     );
     expect(outOfStockCard.item.isInStock, isFalse);
 
-    await tester.tap(find.text('Add to cart').last);
+    await tester.tap(find.text('Empty Stock'));
     await tester.pumpAndSettle();
 
     expect(find.text('Qty'), findsNothing);
   });
 
-  testWidgets('menu fetch error shows retry control', (WidgetTester tester) async {
+  testWidgets('menu fetch error shows retry control', (
+    WidgetTester tester,
+  ) async {
     secure.store[SecureKeys.authToken] = 'acc';
     secure.store[SecureKeys.userId] = 'u1';
 
@@ -273,16 +354,18 @@ void main() {
     expect(find.text('Nasi Goreng'), findsOneWidget);
   });
 
-  testWidgets('unauthenticated access to menu redirects to login',
-      (WidgetTester tester) async {
+  testWidgets('unauthenticated access to menu redirects to login', (
+    WidgetTester tester,
+  ) async {
     await pumpApp(tester);
 
     expect(find.byType(LoginPage), findsOneWidget);
     expect(find.byType(MenuPage), findsNothing);
   });
 
-  testWidgets('menu page renders categories in API order',
-      (WidgetTester tester) async {
+  testWidgets('menu page renders categories in API order', (
+    WidgetTester tester,
+  ) async {
     secure.store[SecureKeys.authToken] = 'acc';
     secure.store[SecureKeys.userId] = 'u1';
 

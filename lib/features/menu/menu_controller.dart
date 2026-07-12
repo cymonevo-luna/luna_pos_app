@@ -11,14 +11,12 @@ class MenuState {
     this.refreshing = false,
     this.error,
     this.data,
-    this.selectedItemId,
   });
 
   final bool loading;
   final bool refreshing;
   final String? error;
   final POSMenusResponse? data;
-  final String? selectedItemId;
 
   bool get isEmpty =>
       data != null &&
@@ -30,17 +28,13 @@ class MenuState {
     bool? refreshing,
     String? error,
     POSMenusResponse? data,
-    String? selectedItemId,
     bool clearError = false,
-    bool clearSelection = false,
   }) {
     return MenuState(
       loading: loading ?? this.loading,
       refreshing: refreshing ?? this.refreshing,
       error: clearError ? null : (error ?? this.error),
       data: data ?? this.data,
-      selectedItemId:
-          clearSelection ? null : (selectedItemId ?? this.selectedItemId),
     );
   }
 }
@@ -72,19 +66,8 @@ class MenuController extends Notifier<MenuState> {
 
     try {
       final data = await _repository.fetchPOSMenus();
-      final selectedId = state.selectedItemId;
-      final stillSelected = selectedId != null &&
-          data.categories.any(
-            (category) =>
-                category.menus.any((menu) => menu.id == selectedId),
-          );
 
-      state = state.copyWith(
-        loading: false,
-        refreshing: false,
-        data: data,
-        clearSelection: !stillSelected,
-      );
+      state = state.copyWith(loading: false, refreshing: false, data: data);
     } on ApiException catch (e) {
       state = state.copyWith(
         loading: false,
@@ -97,16 +80,6 @@ class MenuController extends Notifier<MenuState> {
         refreshing: false,
         error: 'Failed to load menu items',
       );
-    }
-  }
-
-  void toggleSelection(POSMenuItem item) {
-    if (!item.isInStock) return;
-
-    if (state.selectedItemId == item.id) {
-      state = state.copyWith(clearSelection: true);
-    } else {
-      state = state.copyWith(selectedItemId: item.id);
     }
   }
 }

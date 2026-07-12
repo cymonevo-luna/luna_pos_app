@@ -739,6 +739,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Transaction ID: {id}'**
   String transactionIdLabel(String id);
+
+  /// Transaction history bottom navigation label and screen title
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get transactionHistory;
+
+  /// Transaction detail screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction details'**
+  String get transactionDetails;
+
+  /// Empty state when the cashier has no transaction history
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions yet'**
+  String get noTransactions;
+
+  /// Payment method label on transaction rows
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get paymentMethod;
+
+  /// Display label for OFFLINE payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get paymentMethodOffline;
+
+  /// Cashier name label on transaction rows and detail
+  ///
+  /// In en, this message translates to:
+  /// **'Cashier'**
+  String get cashier;
+
+  /// Opens the date range filter picker
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by date'**
+  String get filterByDate;
+
+  /// Clears the active transaction date range filter
+  ///
+  /// In en, this message translates to:
+  /// **'Clear date filter'**
+  String get clearDateFilter;
+
+  /// Title when transaction history returns HTTP 403
+  ///
+  /// In en, this message translates to:
+  /// **'Not authorized'**
+  String get notAuthorized;
+
+  /// Message when transaction history returns HTTP 403
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to view transactions. Please sign out and use a cashier account.'**
+  String get notAuthorizedMessage;
 }
 
 class _AppLocalizationsDelegate

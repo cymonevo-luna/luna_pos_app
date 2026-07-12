@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:luna_pos/app.dart';
 import 'package:luna_pos/core/auth/session_guard.dart';
 import 'package:luna_pos/core/config/app_config.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
+import 'package:luna_pos/core/router/app_router.dart';
 import 'package:luna_pos/core/storage/preferences_service.dart';
 import 'package:luna_pos/core/storage/secure_storage_service.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
 import 'package:luna_pos/features/auth/login_page.dart';
 import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
+import 'package:luna_pos/features/stock/stock_list_page.dart';
 import 'package:luna_pos/l10n/app_localizations_en.dart';
+import 'package:luna_pos/shared/widgets/main_scaffold.dart';
 import 'package:luna_pos/testing/test_accounts.dart';
 import 'package:luna_pos/testing/test_auth.dart' as test_auth;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -118,6 +122,7 @@ Future<IntegrationTestHarness> setUpIntegrationHarness() async {
   return IntegrationTestHarness(
     secure: secure,
     adapter: mocked.adapter,
+    container: ProviderContainer(),
   );
 }
 
@@ -126,10 +131,14 @@ class IntegrationTestHarness {
   IntegrationTestHarness({
     required this.secure,
     required this.adapter,
+    required this.container,
   });
 
   final FakeSecureStorage secure;
   final DioAdapter adapter;
+  final ProviderContainer container;
+
+  GoRouter readRouter() => container.read(routerProvider);
 
   /// Rejects any accidental registration attempt during automation.
   void forbidRegistration() {
@@ -258,7 +267,12 @@ class IntegrationTestHarness {
   }
 
   Future<void> pumpApp(WidgetTester tester) async {
-    await tester.pumpWidget(const ProviderScope(child: App()));
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const App(),
+      ),
+    );
     await tester.pump(const Duration(seconds: 2));
     await tester.pumpAndSettle(
       const Duration(milliseconds: 100),
@@ -295,10 +309,26 @@ class IntegrationTestHarness {
     expect(find.text(l10n.menu), findsWidgets);
   }
 
+  Future<void> expectAuthenticatedProcurement(WidgetTester tester) async {
+    expect(find.byType(StockListPage), findsOneWidget);
+    final l10n = AppLocalizationsEn();
+    expect(find.text(l10n.stock), findsWidgets);
+    expect(find.byType(MenuPage), findsNothing);
+  }
+
+  Future<void> expectProcurementTabsVisible(WidgetTester tester) async {
+    expect(find.byType(MainScaffold), findsOneWidget);
+    final l10n = AppLocalizationsEn();
+    expect(find.text(l10n.stock), findsWidgets);
+    expect(find.text(l10n.purchases), findsWidgets);
+    expect(find.text(l10n.menu), findsWidgets);
+  }
+
   Future<void> expectLoginRejected(WidgetTester tester) async {
     expect(find.byType(LoginPage), findsOneWidget);
     expect(find.byType(MenuPage), findsNothing);
-    expect(find.text(kCashierAccessDeniedMessage), findsOneWidget);
+    expect(find.byType(StockListPage), findsNothing);
+    expect(find.text(kPosAccessDeniedMessage), findsOneWidget);
   }
 }
 

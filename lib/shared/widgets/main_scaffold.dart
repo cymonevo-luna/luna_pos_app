@@ -1,62 +1,101 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/router/navigation_config.dart';
+import '../../features/auth/auth_controller.dart';
 import '../../l10n/app_localizations.dart';
 
 /// Shell scaffold for the bottom-navigation tabs. Backed by
 /// [StatefulShellRoute.indexedStack], so each tab is built exactly once and
 /// kept alive — switching tabs swaps the active branch instead of pushing a new
 /// page, which avoids growing the navigation stack.
-class MainScaffold extends StatelessWidget {
+class MainScaffold extends ConsumerWidget {
   const MainScaffold({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
-  void _onSelected(int index) {
-    // Re-tapping the active tab pops it back to its initial location.
+  void _onSelected(List<int> visibleBranches, int visibleIndex) {
+    final branchIndex = visibleBranches[visibleIndex];
     navigationShell.goBranch(
-      index,
-      initialLocation: index == navigationShell.currentIndex,
+      branchIndex,
+      initialLocation: branchIndex == navigationShell.currentIndex,
     );
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final user = ref.watch(authProvider.select((s) => s.user));
+    final visibleBranches = visibleShellBranches(user);
+    final wideLayout = MediaQuery.sizeOf(context).width >= 600;
+
+    final destinations = <NavigationDestination>[];
+    for (final branch in visibleBranches) {
+      destinations.add(_destinationForBranch(branch, l10n));
+    }
+
+    var selectedIndex = visibleBranches.indexOf(navigationShell.currentIndex);
+    if (selectedIndex < 0) selectedIndex = 0;
+
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: _onSelected,
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.restaurant_menu_outlined),
-            selectedIcon: const Icon(Icons.restaurant_menu),
-            label: l10n.menu,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.receipt_long_outlined),
-            selectedIcon: const Icon(Icons.receipt_long),
-            label: l10n.transactionHistory,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.calendar_today_outlined),
-            selectedIcon: const Icon(Icons.calendar_today),
-            label: l10n.calendar,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.chat_bubble_outline),
-            selectedIcon: const Icon(Icons.chat_bubble),
-            label: l10n.messages,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.person_outline),
-            selectedIcon: const Icon(Icons.person),
-            label: l10n.profile,
-          ),
-        ],
+        selectedIndex: selectedIndex,
+        onDestinationSelected: (index) => _onSelected(visibleBranches, index),
+        labelBehavior: wideLayout
+            ? NavigationDestinationLabelBehavior.alwaysShow
+            : NavigationDestinationLabelBehavior.onlyShowSelected,
+        destinations: destinations,
       ),
     );
+  }
+
+  NavigationDestination _destinationForBranch(
+    int branch,
+    AppLocalizations l10n,
+  ) {
+    return switch (branch) {
+      0 => NavigationDestination(
+          icon: const Icon(Icons.restaurant_menu_outlined),
+          selectedIcon: const Icon(Icons.restaurant_menu),
+          label: l10n.menu,
+        ),
+      1 => NavigationDestination(
+          icon: const Icon(Icons.receipt_long_outlined),
+          selectedIcon: const Icon(Icons.receipt_long),
+          label: l10n.transactionHistory,
+        ),
+      2 => NavigationDestination(
+          icon: const Icon(Icons.calendar_today_outlined),
+          selectedIcon: const Icon(Icons.calendar_today),
+          label: l10n.calendar,
+        ),
+      3 => NavigationDestination(
+          icon: const Icon(Icons.chat_bubble_outline),
+          selectedIcon: const Icon(Icons.chat_bubble),
+          label: l10n.messages,
+        ),
+      4 => NavigationDestination(
+          icon: const Icon(Icons.inventory_2_outlined),
+          selectedIcon: const Icon(Icons.inventory_2),
+          label: l10n.stock,
+        ),
+      5 => NavigationDestination(
+          icon: const Icon(Icons.shopping_cart_outlined),
+          selectedIcon: const Icon(Icons.shopping_cart),
+          label: l10n.purchases,
+        ),
+      6 => NavigationDestination(
+          icon: const Icon(Icons.person_outline),
+          selectedIcon: const Icon(Icons.person),
+          label: l10n.profile,
+        ),
+      _ => NavigationDestination(
+          icon: const Icon(Icons.help_outline),
+          label: l10n.profile,
+        ),
+    };
   }
 }
 

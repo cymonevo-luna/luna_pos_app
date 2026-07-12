@@ -317,5 +317,37 @@
   "notAuthorizedMessage": "You do not have permission to view transactions. Please sign out and use a cashier account.",
   "@notAuthorizedMessage": {
     "description": "Message when transaction history returns HTTP 403"
+  },
+  "stock": "Stock",
+  "@stock": {
+    "description": "Stock management tab and screen title"
+  },
+  "purchases": "Purchases",
+  "@purchases": {
+    "description": "Purchase orders tab and screen title"
+  },
+  "stockNew": "New stock item",
+  "@stockNew": {
+    "description": "Create stock item screen title"
+  },
+  "stockEdit": "Edit stock item",
+  "@stockEdit": {
+    "description": "Edit stock item screen title"
+  },
+  "purchasesNew": "New purchase",
+  "@purchasesNew": {
+    "description": "Create purchase order screen title"
+  },
+  "purchaseDetail": "Purchase details",
+  "@purchaseDetail": {
+    "description": "Purchase order detail screen title"
+  },
+  "posAccessDenied": "This account does not have POS or operational access",
+  "@posAccessDenied": {
+    "description": "Shown when login succeeds but the user lacks cashier and operational roles"
+  },
+  "procurementAccessDenied": "You do not have permission to access procurement features.",
+  "@procurementAccessDenied": {
+    "description": "Shown when an authenticated user without operational role opens stock or purchases"
   }
 }

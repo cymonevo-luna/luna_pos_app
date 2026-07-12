@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/router/app_router.dart';
+import '../../core/router/navigation_config.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_tokens.dart';
 import '../../l10n/app_localizations.dart';
@@ -36,7 +37,12 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     if (!mounted) return;
 
     final authed = ref.read(authProvider).isAuthenticated;
-    context.goNamed(authed ? AppRoute.home.name : AppRoute.login.name);
+    if (authed) {
+      final user = ref.read(authProvider).user;
+      context.go(defaultAuthenticatedRoute(user));
+    } else {
+      context.goNamed(AppRoute.login.name);
+    }
   }
 
   @override

@@ -376,4 +376,30 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notAuthorizedMessage =>
       'You do not have permission to view transactions. Please sign out and use a cashier account.';
+
+  @override
+  String get stock => 'Stock';
+
+  @override
+  String get purchases => 'Purchases';
+
+  @override
+  String get stockNew => 'New stock item';
+
+  @override
+  String get stockEdit => 'Edit stock item';
+
+  @override
+  String get purchasesNew => 'New purchase';
+
+  @override
+  String get purchaseDetail => 'Purchase details';
+
+  @override
+  String get posAccessDenied =>
+      'This account does not have POS or operational access';
+
+  @override
+  String get procurementAccessDenied =>
+      'You do not have permission to access procurement features.';
 }

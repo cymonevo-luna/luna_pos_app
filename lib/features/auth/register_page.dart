@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/router/app_router.dart';
+import '../../core/router/navigation_config.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_tokens.dart';
 import '../../l10n/app_localizations.dart';
@@ -42,7 +42,10 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           email: _email.text.trim(),
           password: _password.text,
         );
-    if (ok && mounted) context.goNamed(AppRoute.home.name);
+    if (ok && mounted) {
+      final user = ref.read(authProvider).user;
+      context.go(defaultAuthenticatedRoute(user));
+    }
   }
 
   @override

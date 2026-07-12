@@ -11,6 +11,8 @@ import '../../features/order/cart_page.dart';
 import '../../features/order/checkout_page.dart';
 import '../../features/order/order_controller.dart';
 import '../../features/placeholder/coming_soon_page.dart';
+import '../../features/production_request/production_request_detail_page.dart';
+import '../../features/production_request/production_request_list_page.dart';
 import '../../features/purchase/purchase_create_page.dart';
 import '../../features/purchase/purchase_list_page.dart';
 import '../../features/stock/stock_form_sheet.dart';
@@ -45,7 +47,8 @@ enum AppRoute {
   details('/details'),
   cart('/cart'),
   checkout('/checkout'),
-  transactionDetail('/transactions/:id');
+  transactionDetail('/transactions/:id'),
+  productionRequestDetail('/production-requests/:id');
 
   const AppRoute(this.path);
   final String path;
@@ -188,10 +191,8 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoute.calendar.path,
                 name: AppRoute.calendar.name,
-                builder: (context, state) => ComingSoonPage(
-                  title: AppLocalizations.of(context).calendar,
-                  icon: Icons.calendar_today_outlined,
-                ),
+                builder: (context, state) =>
+                    const ProductionRequestListPage(),
               ),
             ],
           ),
@@ -299,6 +300,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => TransactionDetailPage(
           transactionId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: AppRoute.productionRequestDetail.path,
+        name: AppRoute.productionRequestDetail.name,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => ProductionRequestDetailPage(
+          requestId: state.pathParameters['id']!,
         ),
       ),
     ],

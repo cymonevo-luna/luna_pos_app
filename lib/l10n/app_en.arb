@@ -502,5 +502,43 @@
   "stockQuantityInvalid": "Enter a quantity of 0 or more",
   "@stockQuantityInvalid": {
     "description": "Validation when food supply quantity is invalid"
+  },
+  "deliveries": "Deliveries",
+  "@deliveries": {
+    "description": "Production deliveries bottom navigation label"
+  },
+  "productionDeliveries": "Production deliveries",
+  "@productionDeliveries": {
+    "description": "Production delivery inbox screen title"
+  },
+  "productionDeliveryDetail": "Delivery details",
+  "@productionDeliveryDetail": {
+    "description": "Production delivery detail screen title"
+  },
+  "noDeliveriesPending": "No deliveries pending",
+  "@noDeliveriesPending": {
+    "description": "Empty state when there are no READY_TO_PICK production requests"
+  },
+  "confirmDelivery": "Confirm delivery",
+  "@confirmDelivery": {
+    "description": "Button to mark a production request as delivered"
+  },
+  "deliveryConfirmed": "Delivery confirmed",
+  "@deliveryConfirmed": {
+    "description": "SnackBar shown after cashier confirms production delivery"
+  },
+  "productionDeliveryItems": "Items",
+  "@productionDeliveryItems": {
+    "description": "Section header for production request line items"
+  },
+  "productionItemCount": "{count, plural, =1{1 item} other{{count} items}}",
+  "@productionItemCount": {
+    "description": "Fallback summary when list rows have no embedded items",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
   }
 }

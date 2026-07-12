@@ -39,5 +39,16 @@ void main() {
         'operational',
       );
     });
+
+    test('userIdFor maps to seeded stable UUIDs', () {
+      expect(
+        TestAccounts.userIdFor(TestAccountRole.cashier),
+        '11111111-1111-4111-8111-111111111103',
+      );
+      expect(
+        TestAccounts.userIdFor(TestAccountRole.admin),
+        TestAccounts.adminUserId,
+      );
+    });
   });
 }

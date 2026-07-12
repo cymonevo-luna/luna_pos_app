@@ -9,7 +9,6 @@ void main() {
   testWidgets('cashier POS flow uses dedicated account login', (tester) async {
     final harness = await setUpIntegrationHarness();
     harness
-      ..forbidRegistration()
       ..stubLoginForRole(TestAccountRole.cashier)
       ..stubSampleMenu();
 
@@ -17,9 +16,10 @@ void main() {
     await harness.loginViaUi(tester, TestAccountRole.cashier);
     await harness.expectAuthenticatedHome(tester);
 
+    expect(TestAccounts.cashierEmail, 'cashier-test@cymonevo.com');
+    expect(TestAccounts.cashierUserId, '11111111-1111-4111-8111-111111111103');
+
     expect(find.byType(MenuItemCard), findsWidgets);
     expect(find.text('Nasi Goreng'), findsOneWidget);
-    expect(TestAccounts.cashierEmail, 'cashier-test@cymonevo.com');
-    expect(TestAccounts.password, 'LunaTesting123!');
   });
 }

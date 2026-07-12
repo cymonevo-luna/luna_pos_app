@@ -16,18 +16,20 @@ import 'package:luna_pos/features/order/order_controller.dart';
 import 'package:luna_pos/features/store_settings/data/store_settings_repository.dart';
 import 'package:luna_pos/features/transaction/data/transaction_repository.dart';
 import 'package:luna_pos/features/user/models/user.dart';
+import 'package:luna_pos/testing/test_accounts.dart';
 
 import 'helpers/auth_harness.dart';
 import 'helpers/mock_bluetooth_printer_service.dart';
 
 class _FakeAuthController extends AuthController {
   @override
-  AuthState build() => const AuthState(
+  AuthState build() => AuthState(
         status: AuthStatus.authenticated,
         user: User(
-          id: 'u1',
-          name: 'Alex',
-          email: 'a@b.com',
+          id: TestAccounts.cashierUserId,
+          name: 'Cashier Test',
+          email: TestAccounts.cashierEmail,
+          role: 'cashier',
         ),
       );
 }

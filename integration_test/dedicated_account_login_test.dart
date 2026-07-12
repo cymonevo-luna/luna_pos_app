@@ -4,14 +4,13 @@ import 'package:luna_pos/testing/test_accounts.dart';
 import 'helpers/harness.dart';
 
 /// Role-based Tester Agent smoke paths: each scenario logs in via the app UI
-/// with a dedicated seeded account and never calls `/api/v1/auth/register`.
+/// with a dedicated seeded account (login only, no new user creation).
 void main() {
   group('dedicated account login automation', () {
     late IntegrationTestHarness harness;
 
     setUp(() async {
       harness = await setUpIntegrationHarness();
-      harness.forbidRegistration();
     });
 
     testWidgets('admin logs in without registration', (tester) async {

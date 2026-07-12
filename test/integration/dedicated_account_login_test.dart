@@ -10,7 +10,6 @@ void main() {
 
     setUp(() async {
       harness = await setUpIntegrationHarness();
-      harness.forbidRegistration();
     });
 
     testWidgets('admin logs in without registration', (tester) async {

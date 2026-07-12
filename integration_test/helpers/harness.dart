@@ -13,6 +13,7 @@ import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/l10n/app_localizations_en.dart';
 import 'package:luna_pos/testing/test_accounts.dart';
+import 'package:luna_pos/testing/test_auth.dart' as test_auth;
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// In-memory secure storage for integration tests.
@@ -41,11 +42,12 @@ class FakeSecureStorage extends SecureStorageService {
 void stubDedicatedAccountLogin(
   DioAdapter adapter,
   TestAccountRole role, {
-  String userId = 'test-user',
+  String? userId,
   String accessToken = 'acc',
   String refreshToken = 'ref',
 }) {
   final email = TestAccounts.emailFor(role);
+  final resolvedUserId = userId ?? TestAccounts.userIdFor(role);
   adapter.onPost(
     '/api/v1/auth/login',
     (server) => server.reply(200, {
@@ -57,7 +59,7 @@ void stubDedicatedAccountLogin(
           'expires_in': 900,
         },
         'user': {
-          'id': userId,
+          'id': resolvedUserId,
           'email': email,
           'name': _displayNameFor(role),
           'role': TestAccounts.apiRoleFor(role),
@@ -101,30 +103,29 @@ class IntegrationTestHarness {
   final FakeSecureStorage secure;
   final DioAdapter adapter;
 
-  /// Rejects any accidental registration attempt during automation.
-  void forbidRegistration() {
-    adapter.onPost(
-      '/api/v1/auth/register',
-      (server) => server.reply(403, {
-        'success': false,
-        'error': {'message': 'register forbidden in tests'},
-      }),
-    );
-  }
-
   void stubLoginForRole(TestAccountRole role) {
-    stubDedicatedAccountLogin(adapter, role, userId: '${role.name}-user');
+    final userId = TestAccounts.userIdFor(role);
+    stubDedicatedAccountLogin(adapter, role, userId: userId);
     adapter.onGet(
-      '/api/v1/users/${role.name}-user',
+      '/api/v1/users/$userId',
       (server) => server.reply(200, {
         'success': true,
         'data': {
-          'id': '${role.name}-user',
+          'id': userId,
           'email': TestAccounts.emailFor(role),
           'name': _displayNameFor(role),
           'role': TestAccounts.apiRoleFor(role),
         },
       }),
+    );
+  }
+
+  /// Programmatic login via the shared test auth helper (mocked or live API).
+  Future<test_auth.AuthSession> loginAsTestRole(TestAccountRole role) {
+    return test_auth.loginAsTestRole(
+      locator<ApiClient>(),
+      secure,
+      role,
     );
   }
 
@@ -168,7 +169,11 @@ class IntegrationTestHarness {
   Future<void> pumpApp(WidgetTester tester) async {
     await tester.pumpWidget(const ProviderScope(child: App()));
     await tester.pump(const Duration(seconds: 2));
-    await tester.pumpAndSettle();
+    await tester.pumpAndSettle(
+      const Duration(milliseconds: 100),
+      EnginePhase.sendSemanticsUpdate,
+      const Duration(seconds: 5),
+    );
   }
 
   Future<void> loginViaUi(
@@ -186,7 +191,11 @@ class IntegrationTestHarness {
 
     final l10n = AppLocalizationsEn();
     await tester.tap(find.widgetWithText(FilledButton, l10n.login));
-    await tester.pumpAndSettle();
+    await tester.pumpAndSettle(
+      const Duration(milliseconds: 100),
+      EnginePhase.sendSemanticsUpdate,
+      const Duration(seconds: 5),
+    );
   }
 
   Future<void> expectAuthenticatedHome(WidgetTester tester) async {

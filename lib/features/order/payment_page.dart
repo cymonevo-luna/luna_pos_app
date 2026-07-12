@@ -8,6 +8,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_tokens.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/widgets.dart';
+import '../transaction/payment_controller.dart';
 import 'order_controller.dart';
 
 class PaymentPage extends ConsumerStatefulWidget {
@@ -26,17 +27,37 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
     super.dispose();
   }
 
-  void _completePayment(AppLocalizations l10n) {
-    final messenger = ScaffoldMessenger.of(context);
-    ref.read(orderProvider.notifier).clear();
+  Future<void> _completePayment(AppLocalizations l10n) async {
+    final cashReceived = parseIdrAmount(_cashController.text);
+    final changeAmount = await ref
+        .read(paymentProvider.notifier)
+        .completeOfflineSale(cashReceived: cashReceived);
+
+    if (!mounted || changeAmount == null) return;
+
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.saleComplete),
+        content: Text(l10n.saleCompleteMessage(formatRupiah(changeAmount))),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n.ok),
+          ),
+        ],
+      ),
+    );
+
+    if (!mounted) return;
     context.goNamed(AppRoute.home.name);
-    messenger.showSnackBar(SnackBar(content: Text(l10n.paymentSuccess)));
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final grandTotal = ref.watch(orderProvider.select((order) => order.grandTotal));
+    final payment = ref.watch(paymentProvider);
     final cashReceived = parseIdrAmount(_cashController.text);
     final sufficient = isPaymentSufficient(
       cashReceived: cashReceived,
@@ -46,6 +67,14 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
       cashReceived: cashReceived,
       grandTotal: grandTotal,
     );
+
+    ref.listen(paymentProvider, (previous, next) {
+      if (next.error != null && next.error != previous?.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(next.error!)),
+        );
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -74,6 +103,7 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
             ),
             const VGap(AppSpacing.lg),
             AppTextField(
+              key: const Key('cash_tendered_field'),
               label: l10n.cashReceived,
               hint: '0',
               controller: _cashController,
@@ -104,7 +134,10 @@ class _PaymentPageState extends ConsumerState<PaymentPage> {
             const Spacer(),
             AppButton(
               l10n.complete,
-              onPressed: sufficient ? () => _completePayment(l10n) : null,
+              loading: payment.submitting,
+              onPressed: sufficient && !payment.submitting
+                  ? () => _completePayment(l10n)
+                  : null,
             ),
             const VGap(AppSpacing.md),
           ],

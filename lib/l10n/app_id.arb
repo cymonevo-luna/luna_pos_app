@@ -93,5 +93,8 @@
   "remove": "Hapus",
   "itemCount": "{count, plural, =0{Tidak ada item} =1{1 item} other{{count} item}}",
   "editNote": "Ubah catatan",
-  "noteHint": "Catatan opsional (mis. es sedikit)"
+  "noteHint": "Catatan opsional (mis. es sedikit)",
+  "saleComplete": "Penjualan selesai",
+  "saleCompleteMessage": "Kembalian: {amount}",
+  "ok": "OK"
 }

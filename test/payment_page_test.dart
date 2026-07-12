@@ -19,7 +19,9 @@ import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/features/menu/models/pos_menu.dart';
 import 'package:luna_pos/features/order/order_controller.dart';
 import 'package:luna_pos/features/order/payment_page.dart';
+import 'package:luna_pos/features/transaction/data/transaction_repository.dart';
 import 'package:luna_pos/l10n/app_localizations.dart';
+import 'package:luna_pos/shared/widgets/app_button.dart';
 
 import 'helpers/auth_harness.dart';
 
@@ -41,6 +43,9 @@ void main() {
       ..registerSingleton<ApiClient>(mocked.client)
       ..registerLazySingleton<MenuRepository>(
         () => MenuRepository(locator<ApiClient>()),
+      )
+      ..registerLazySingleton<TransactionRepository>(
+        () => TransactionRepository(locator<ApiClient>()),
       );
     container = ProviderContainer();
   });
@@ -122,21 +127,31 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  void seedCart({required int sellPrice, required int quantity}) {
-    container.read(orderProvider.notifier).addLine(
-          POSMenuItem(
-            id: 'm1',
-            title: 'Test Item',
-            sellPrice: sellPrice,
-            availableStock: 10,
-          ),
-          quantity: quantity,
-        );
+  void seedCart({
+    required List<({String id, String title, int sellPrice, int quantity})>
+        items,
+  }) {
+    final notifier = container.read(orderProvider.notifier);
+    for (final item in items) {
+      notifier.addLine(
+        POSMenuItem(
+          id: item.id,
+          title: item.title,
+          sellPrice: item.sellPrice,
+          availableStock: 10,
+        ),
+        quantity: item.quantity,
+      );
+    }
   }
 
   testWidgets('payment calculates change when overpaid',
       (WidgetTester tester) async {
-    seedCart(sellPrice: 45000, quantity: 1);
+    seedCart(
+      items: [
+        (id: 'm1', title: 'Test Item', sellPrice: 45000, quantity: 1),
+      ],
+    );
 
     await pumpPaymentApp(tester);
 
@@ -145,15 +160,40 @@ void main() {
 
     expect(find.text('Rp 5.000'), findsOneWidget);
     expect(
-      tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Complete'))
+      tester.widget<AppButton>(find.widgetWithText(AppButton, 'Complete'))
           .onPressed,
       isNotNull,
     );
   });
 
+  testWidgets('complete sale button disabled when underpaid',
+      (WidgetTester tester) async {
+    seedCart(
+      items: [
+        (id: 'm1', title: 'Es Teh', sellPrice: 8000, quantity: 2),
+        (id: 'm2', title: 'Nasi Goreng', sellPrice: 35000, quantity: 1),
+      ],
+    );
+
+    await pumpPaymentApp(tester);
+
+    await tester.enterText(find.byKey(const Key('cash_tendered_field')), '50000');
+    await tester.pump();
+
+    expect(
+      tester.widget<AppButton>(find.widgetWithText(AppButton, 'Complete'))
+          .onPressed,
+      isNull,
+    );
+  });
+
   testWidgets('payment blocks complete when underpaid',
       (WidgetTester tester) async {
-    seedCart(sellPrice: 45000, quantity: 1);
+    seedCart(
+      items: [
+        (id: 'm1', title: 'Test Item', sellPrice: 45000, quantity: 1),
+      ],
+    );
 
     await pumpPaymentApp(tester);
 
@@ -162,7 +202,7 @@ void main() {
 
     expect(find.text('Insufficient payment'), findsOneWidget);
     expect(
-      tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Complete'))
+      tester.widget<AppButton>(find.widgetWithText(AppButton, 'Complete'))
           .onPressed,
       isNull,
     );
@@ -170,7 +210,42 @@ void main() {
 
   testWidgets('complete clears cart and returns to menu',
       (WidgetTester tester) async {
-    seedCart(sellPrice: 45000, quantity: 1);
+    seedCart(
+      items: [
+        (id: 'm1', title: 'Test Item', sellPrice: 45000, quantity: 1),
+      ],
+    );
+
+    adapter.onPost(
+      '/api/v1/pos/transactions',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'id': 'tx-1',
+          'method': 'OFFLINE',
+          'amount': 45000,
+          'cash_tendered': 50000,
+          'change_amount': 5000,
+        },
+      }),
+      data: {
+        'method': 'OFFLINE',
+        'items': [
+          {
+            'menu_id': 'm1',
+            'title': 'Test Item',
+            'quantity': 1,
+            'unit_price': 45000,
+            'line_total': 45000,
+          },
+        ],
+        'subtotal_amount': 45000,
+        'discount_amount': 0,
+        'amount': 45000,
+        'cash_tendered': 50000,
+        'change_amount': 5000,
+      },
+    );
 
     secure.store[SecureKeys.authToken] = 'acc';
     secure.store[SecureKeys.userId] = 'u1';
@@ -227,8 +302,13 @@ void main() {
     await tester.pump();
     await tester.pumpAndSettle();
 
+    expect(find.text('Sale complete'), findsOneWidget);
+    expect(find.text('Change due: Rp 5.000'), findsOneWidget);
+
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+
     expect(find.byType(MenuPage), findsOneWidget);
     expect(container.read(orderProvider).lines, isEmpty);
-    expect(find.text('Payment completed successfully'), findsOneWidget);
   });
 }

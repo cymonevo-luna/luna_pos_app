@@ -301,4 +301,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noteHint => 'Optional note (e.g. less ice)';
+
+  @override
+  String get saleComplete => 'Sale complete';
+
+  @override
+  String saleCompleteMessage(String amount) {
+    return 'Change due: $amount';
+  }
+
+  @override
+  String get ok => 'OK';
 }

@@ -661,6 +661,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Optional note (e.g. less ice)'**
   String get noteHint;
+
+  /// Title shown after a successful offline sale
+  ///
+  /// In en, this message translates to:
+  /// **'Sale complete'**
+  String get saleComplete;
+
+  /// Success message after completing an offline sale
+  ///
+  /// In en, this message translates to:
+  /// **'Change due: {amount}'**
+  String saleCompleteMessage(String amount);
+
+  /// Dismiss confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
 }
 
 class _AppLocalizationsDelegate

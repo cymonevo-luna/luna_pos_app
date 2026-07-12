@@ -301,4 +301,15 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get noteHint => 'Catatan opsional (mis. es sedikit)';
+
+  @override
+  String get saleComplete => 'Penjualan selesai';
+
+  @override
+  String saleCompleteMessage(String amount) {
+    return 'Kembalian: $amount';
+  }
+
+  @override
+  String get ok => 'OK';
 }

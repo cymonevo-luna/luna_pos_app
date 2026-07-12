@@ -213,5 +213,23 @@
   "noteHint": "Optional note (e.g. less ice)",
   "@noteHint": {
     "description": "Hint for optional cart line note input"
+  },
+  "saleComplete": "Sale complete",
+  "@saleComplete": {
+    "description": "Title shown after a successful offline sale"
+  },
+  "saleCompleteMessage": "Change due: {amount}",
+  "@saleCompleteMessage": {
+    "description": "Success message after completing an offline sale",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "Rp 9.000"
+      }
+    }
+  },
+  "ok": "OK",
+  "@ok": {
+    "description": "Dismiss confirmation dialog"
   }
 }

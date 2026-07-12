@@ -147,6 +147,9 @@ class IntegrationTestHarness {
   final DioAdapter adapter;
   final ProviderContainer container;
   bool _productionDeliveryMarkedDone = false;
+  String _productionRequestMenuTitle = 'Nasi Goreng';
+  int _productionRequestQuantity = 2;
+  String? _productionRequestNotes;
 
   GoRouter readRouter() => container.read(routerProvider);
 
@@ -288,16 +291,18 @@ class IntegrationTestHarness {
     );
   }
 
-  /// Stubs production delivery list/detail/mark-done for cashier E2E flows.
+  /// Stubs `GET /api/v1/pos/production-requests` for READY_TO_PICK inbox.
   ///
-  /// After [markDone] is called, subsequent list fetches return an empty page.
-  void stubProductionDeliveryFlow({
-    String requestId = 'pr-1',
+  /// Summaries match the live API: `item_count` only (no embedded line items).
+  /// After mark-done, subsequent list fetches return an empty page.
+  void stubProductionRequestInbox({
+    required String requestId,
     String menuTitle = 'Nasi Goreng',
-    num quantity = 2,
-    String? notes,
+    int quantity = 2,
   }) {
     _productionDeliveryMarkedDone = false;
+    _productionRequestMenuTitle = menuTitle;
+    _productionRequestQuantity = quantity;
 
     adapter.onGet(
       ProductionRequestRepository.listPath,
@@ -310,14 +315,9 @@ class IntegrationTestHarness {
                       'id': requestId,
                       'status': 'READY_TO_PICK',
                       'item_count': 1,
-                      'items': [
-                        {
-                          'menu_title': menuTitle,
-                          'quantity': quantity,
-                          'is_finished': false,
-                        },
-                      ],
+                      'items': <Map<String, dynamic>>[],
                       'created_at': '2026-07-12T10:00:00Z',
+                      'updated_at': '2026-07-12T10:00:00Z',
                     },
                   ],
             'meta': {
@@ -332,49 +332,80 @@ class IntegrationTestHarness {
         'per_page': '20',
       },
     );
+  }
+
+  /// Stubs `GET /api/v1/pos/production-requests/{id}` detail with line items.
+  void stubProductionRequestDetail({
+    required String requestId,
+    String menuTitle = 'Nasi Goreng',
+    int quantity = 2,
+    String? notes,
+  }) {
+    _productionRequestMenuTitle = menuTitle;
+    _productionRequestQuantity = quantity;
+    _productionRequestNotes = notes;
 
     adapter.onGet(
       '${ProductionRequestRepository.listPath}/$requestId',
-      (server) => server.replyCallback(200, (_) => {
-            'success': true,
-            'data': {
+      (server) => server.replyCallback(200, (_) {
+            final data = <String, dynamic>{
               'id': requestId,
               'status':
                   _productionDeliveryMarkedDone ? 'DONE' : 'READY_TO_PICK',
               'item_count': 1,
-              'notes?': notes,
               'items': [
                 {
-                  'menu_title': menuTitle,
-                  'quantity': quantity,
+                  'id': 'pri-1',
+                  'menu_id': 'm1',
+                  'menu_title': _productionRequestMenuTitle,
+                  'quantity': _productionRequestQuantity,
                   'is_finished': _productionDeliveryMarkedDone,
                 },
               ],
               'created_at': '2026-07-12T10:00:00Z',
-            },
+              'updated_at': '2026-07-12T10:00:00Z',
+            };
+            if (_productionRequestNotes != null) {
+              data['notes'] = _productionRequestNotes;
+            }
+            return {
+              'success': true,
+              'data': data,
+            };
           }),
     );
+  }
 
+  /// Stubs `PATCH /api/v1/pos/production-requests/{id}/status` with DONE body.
+  ///
+  /// Flips list stub state so the next inbox fetch returns empty data.
+  void stubMarkProductionRequestDone({required String requestId}) {
     adapter.onPatch(
       '${ProductionRequestRepository.listPath}/$requestId/status',
       (server) => server.replyCallback(200, (_) {
             _productionDeliveryMarkedDone = true;
+            final data = <String, dynamic>{
+              'id': requestId,
+              'status': 'DONE',
+              'item_count': 1,
+              'items': [
+                {
+                  'id': 'pri-1',
+                  'menu_id': 'm1',
+                  'menu_title': _productionRequestMenuTitle,
+                  'quantity': _productionRequestQuantity,
+                  'is_finished': true,
+                },
+              ],
+              'created_at': '2026-07-12T10:00:00Z',
+              'updated_at': '2026-07-12T10:05:00Z',
+            };
+            if (_productionRequestNotes != null) {
+              data['notes'] = _productionRequestNotes;
+            }
             return {
               'success': true,
-              'data': {
-                'id': requestId,
-                'status': 'DONE',
-                'item_count': 1,
-                'notes?': notes,
-                'items': [
-                  {
-                    'menu_title': menuTitle,
-                    'quantity': quantity,
-                    'is_finished': true,
-                  },
-                ],
-                'created_at': '2026-07-12T10:00:00Z',
-              },
+              'data': data,
             };
           }),
       data: {'status': 'DONE'},
@@ -424,7 +455,7 @@ class IntegrationTestHarness {
     expect(find.text(l10n.menu), findsWidgets);
   }
 
-  Future<void> openDeliveriesTab(WidgetTester tester) async {
+  Future<void> tapDeliveriesTab(WidgetTester tester) async {
     final l10n = AppLocalizationsEn();
     await tester.tap(find.text(l10n.deliveries));
     await tester.pumpAndSettle(

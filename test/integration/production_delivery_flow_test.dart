@@ -5,31 +5,34 @@ import 'package:luna_pos/features/production_request/production_request_list_pag
 import 'package:luna_pos/l10n/app_localizations_en.dart';
 import 'package:luna_pos/testing/test_accounts.dart';
 
-import 'helpers/harness.dart';
+import '../../integration_test/helpers/harness.dart';
 
-/// Cashier production delivery E2E: login, open Deliveries tab, confirm delivery.
+/// Cashier production delivery integration test runnable via `flutter test`.
 void main() {
   testWidgets('cashier marks production delivery done from Deliveries tab',
       (tester) async {
+    const requestId = 'pr-e2e-1';
+
     final harness = await setUpIntegrationHarness();
     harness
       ..stubLoginForRole(TestAccountRole.cashier)
       ..stubSampleMenu()
       ..stubStoreSettings()
-      ..stubProductionDeliveryFlow(menuTitle: 'Nasi Goreng', quantity: 2);
+      ..stubProductionRequestInbox(requestId: requestId)
+      ..stubProductionRequestDetail(requestId: requestId)
+      ..stubMarkProductionRequestDone(requestId: requestId);
 
     await harness.pumpApp(tester);
     await harness.loginViaUi(tester, TestAccountRole.cashier);
     await harness.expectAuthenticatedHome(tester);
 
-    await harness.openDeliveriesTab(tester);
+    await harness.tapDeliveriesTab(tester);
 
     final l10n = AppLocalizationsEn();
     expect(find.text(l10n.productionDeliveries), findsOneWidget);
-    expect(find.text('Nasi Goreng'), findsOneWidget);
-    expect(find.textContaining('Qty: 2'), findsOneWidget);
+    expect(find.text(l10n.productionItemCount(1)), findsOneWidget);
 
-    await tester.tap(find.text('Nasi Goreng'));
+    await tester.tap(find.text(l10n.productionItemCount(1)));
     await tester.pumpAndSettle(
       const Duration(milliseconds: 100),
       EnginePhase.sendSemanticsUpdate,
@@ -37,7 +40,8 @@ void main() {
     );
 
     expect(find.byType(ProductionRequestDetailPage), findsOneWidget);
-    expect(find.byKey(const Key('confirm_delivery_button')), findsOneWidget);
+    expect(find.text(l10n.productionDeliveryDetail), findsOneWidget);
+    expect(find.text('Nasi Goreng'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('confirm_delivery_button')));
     await tester.pump();
@@ -49,7 +53,7 @@ void main() {
 
     expect(find.text(l10n.deliveryConfirmed), findsOneWidget);
     expect(find.byType(ProductionRequestListPage), findsOneWidget);
-    expect(find.text('Nasi Goreng'), findsNothing);
+    expect(find.text(l10n.productionItemCount(1)), findsNothing);
     expect(find.text(l10n.noDeliveriesPending), findsOneWidget);
   });
 }

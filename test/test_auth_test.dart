@@ -26,7 +26,7 @@ void main() {
 
       expect(session.accessToken, 'acc');
       expect(session.refreshToken, 'ref');
-      expect(session.user.role, 'cashier');
+      expect(session.user.roles, contains('cashier'));
       expect(session.user.id, TestAccounts.cashierUserId);
       expect(session.user.email, TestAccounts.cashierEmail);
       expect(secure.store[SecureKeys.authToken], 'acc');
@@ -45,7 +45,7 @@ void main() {
       );
 
       expect(session.accessToken, isNotEmpty);
-      expect(session.user.role, 'admin');
+      expect(session.user.roles, contains('admin'));
       expect(session.user.email, TestAccounts.adminEmail);
       expect(session.user.id, TestAccounts.adminUserId);
     });

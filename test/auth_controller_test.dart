@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 
+import 'package:luna_pos/core/auth/session_guard.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
 import 'package:luna_pos/core/storage/secure_storage_service.dart';
@@ -21,6 +22,7 @@ void main() {
     final mocked = buildMockedApiClient();
     adapter = mocked.adapter;
     locator
+      ..registerSingleton<SessionGuard>(SessionGuard())
       ..registerSingleton<SecureStorageService>(secure)
       ..registerSingleton<ApiClient>(mocked.client);
     container = ProviderContainer();
@@ -36,30 +38,11 @@ void main() {
     }
   }
 
-  test('login persists the session and authenticates', () async {
+  test('login persists the session and authenticates cashier', () async {
     const email = TestAccounts.cashierEmail;
     const password = TestAccounts.password;
 
-    adapter.onPost(
-      '/api/v1/auth/login',
-      (server) => server.reply(200, {
-        'success': true,
-        'data': {
-          'tokens': {
-            'access_token': 'acc',
-            'refresh_token': 'ref',
-            'expires_in': 900,
-          },
-          'user': {
-            'id': 'u1',
-            'email': email,
-            'name': 'Cashier Test',
-            'role': 'cashier',
-          },
-        },
-      }),
-      data: {'email': email, 'password': password},
-    );
+    stubDedicatedAccountLogin(adapter, TestAccountRole.cashier, userId: 'u1');
 
     final ok = await container
         .read(authProvider.notifier)
@@ -69,10 +52,48 @@ void main() {
     final state = container.read(authProvider);
     expect(state.status, AuthStatus.authenticated);
     expect(state.user?.email, email);
-    expect(state.user?.role, 'cashier');
+    expect(state.user?.roles, contains('cashier'));
+    expect(state.merchant?.id, TestAccounts.testMerchantId);
     expect(secure.store[SecureKeys.authToken], 'acc');
     expect(secure.store[SecureKeys.refreshToken], 'ref');
     expect(secure.store[SecureKeys.userId], 'u1');
+    expect(secure.store[SecureKeys.userJson], isNotNull);
+    expect(secure.store[SecureKeys.merchantJson], isNotNull);
+  });
+
+  test('manager-only login is rejected without storing tokens', () async {
+    stubDedicatedAccountLogin(adapter, TestAccountRole.manager, userId: 'mgr');
+
+    final ok = await container.read(authProvider.notifier).login(
+          email: TestAccounts.managerEmail,
+          password: TestAccounts.password,
+        );
+
+    expect(ok, isFalse);
+    final state = container.read(authProvider);
+    expect(state.status, isNot(AuthStatus.authenticated));
+    expect(state.error, kCashierAccessDeniedMessage);
+    expect(secure.store[SecureKeys.authToken], isNull);
+    expect(secure.store[SecureKeys.userJson], isNull);
+  });
+
+  test('multi-role cashier login succeeds', () async {
+    stubDedicatedAccountLogin(
+      adapter,
+      TestAccountRole.cashier,
+      userId: 'co-user',
+      additionalRoles: const ['operational'],
+    );
+
+    final ok = await container.read(authProvider.notifier).login(
+          email: TestAccounts.cashierEmail,
+          password: TestAccounts.password,
+        );
+
+    expect(ok, isTrue);
+    final state = container.read(authProvider);
+    expect(state.status, AuthStatus.authenticated);
+    expect(state.user?.roles, containsAll(['cashier', 'operational']));
   });
 
   test('login failure surfaces the server message and stays signed out',
@@ -99,41 +120,47 @@ void main() {
     expect(secure.store[SecureKeys.authToken], isNull);
   });
 
-  test('register creates the account then logs in', () async {
-    adapter
-      ..onPost(
-        '/api/v1/auth/register',
-        (server) => server.reply(201, {
-          'success': true,
-          'data': {
+  test('register creates the account then logs in as cashier', () async {
+    adapter.onPost(
+      '/api/v1/auth/register',
+      (server) => server.reply(201, {
+        'success': true,
+        'data': {
+          'id': 'u2',
+          'email': 'n@b.com',
+          'name': 'New',
+          'merchant_id': TestAccounts.testMerchantId,
+          'roles': ['cashier'],
+        },
+      }),
+      data: {'name': 'New', 'email': 'n@b.com', 'password': 'secret123'},
+    );
+
+    adapter.onPost(
+      '/api/v1/auth/login',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'tokens': {
+            'access_token': 'acc2',
+            'refresh_token': 'ref2',
+            'expires_in': 900,
+          },
+          'user': {
             'id': 'u2',
             'email': 'n@b.com',
             'name': 'New',
-            'role': 'user',
+            'merchant_id': TestAccounts.testMerchantId,
+            'roles': ['cashier'],
           },
-        }),
-        data: {'name': 'New', 'email': 'n@b.com', 'password': 'secret123'},
-      )
-      ..onPost(
-        '/api/v1/auth/login',
-        (server) => server.reply(200, {
-          'success': true,
-          'data': {
-            'tokens': {
-              'access_token': 'acc2',
-              'refresh_token': 'ref2',
-              'expires_in': 900,
-            },
-            'user': {
-              'id': 'u2',
-              'email': 'n@b.com',
-              'name': 'New',
-              'role': 'user',
-            },
+          'merchant': {
+            'id': TestAccounts.testMerchantId,
+            'name': TestAccounts.testMerchantName,
           },
-        }),
-        data: {'email': 'n@b.com', 'password': 'secret123'},
-      );
+        },
+      }),
+      data: {'email': 'n@b.com', 'password': 'secret123'},
+    );
 
     final ok = await container.read(authProvider.notifier).register(
           name: 'New',
@@ -147,27 +174,44 @@ void main() {
   });
 
   test('restore re-fetches the profile from a saved session', () async {
-    secure.store[SecureKeys.authToken] = 'acc';
-    secure.store[SecureKeys.userId] = 'u1';
-    adapter.onGet(
-      '/api/v1/users/u1',
-      (server) => server.reply(200, {
-        'success': true,
-        'data': {
-          'id': 'u1',
-          'email': TestAccounts.cashierEmail,
-          'name': 'Cashier Test',
-          'role': 'cashier',
-        },
-      }),
+    seedAuthenticatedTestAccount(
+      secure,
+      adapter,
+      TestAccountRole.cashier,
+      userId: 'u1',
     );
+    secure.store[SecureKeys.refreshToken] = 'ref';
+    secure.store[SecureKeys.merchantJson] =
+        '{"id":"${TestAccounts.testMerchantId}","name":"${TestAccounts.testMerchantName}"}';
 
-    // First read constructs the controller, whose build() triggers _restore().
     container.read(authProvider.notifier);
     await waitForResolution();
 
     final state = container.read(authProvider);
     expect(state.status, AuthStatus.authenticated);
     expect(state.user?.name, 'Cashier Test');
+    expect(state.user?.roles, contains('cashier'));
+    expect(state.merchant?.id, TestAccounts.testMerchantId);
+  });
+
+  test('session expired callback clears auth state', () async {
+    seedAuthenticatedTestAccount(
+      secure,
+      adapter,
+      TestAccountRole.cashier,
+      userId: 'u1',
+    );
+
+    container.read(authProvider.notifier);
+    await waitForResolution();
+    expect(container.read(authProvider).status, AuthStatus.authenticated);
+
+    await locator<SessionGuard>().notifyExpired();
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+
+    final state = container.read(authProvider);
+    expect(state.status, AuthStatus.unauthenticated);
+    expect(state.error, kSessionExpiredMessage);
+    expect(secure.store[SecureKeys.authToken], isNull);
   });
 }

@@ -30,6 +30,9 @@ abstract final class TestAccounts {
     defaultValue: 'LunaTesting123!',
   );
 
+  static const testMerchantId = 'test-merchant-id';
+  static const testMerchantName = 'Luna Test Merchant';
+
   /// Returns the email for [role].
   static String emailFor(TestAccountRole role) => switch (role) {
         TestAccountRole.admin => adminEmail,
@@ -45,6 +48,15 @@ abstract final class TestAccounts {
         TestAccountRole.cashier => 'cashier',
         TestAccountRole.operational => 'operational',
       };
+
+  /// Role list for API stubs. Pass [additionalRoles] for multi-role accounts.
+  static List<String> apiRolesFor(
+    TestAccountRole role, {
+    List<String> additionalRoles = const [],
+  }) {
+    final roles = <String>{apiRoleFor(role), ...additionalRoles};
+    return roles.toList();
+  }
 
   /// Stable seeded user id from `luna_pos_service` dedicated-accounts migration.
   static String userIdFor(TestAccountRole role) => switch (role) {

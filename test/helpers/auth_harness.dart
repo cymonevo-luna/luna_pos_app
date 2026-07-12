@@ -30,6 +30,28 @@ class FakeSecureStorage extends SecureStorageService {
   return (client: client, adapter: adapter);
 }
 
+Map<String, dynamic> _loginUserPayload(
+  TestAccountRole role, {
+  required String userId,
+  required String email,
+  List<String> additionalRoles = const [],
+}) =>
+    {
+      'id': userId,
+      'email': email,
+      'name': _displayNameFor(role),
+      'merchant_id': TestAccounts.testMerchantId,
+      'roles': TestAccounts.apiRolesFor(
+        role,
+        additionalRoles: additionalRoles,
+      ),
+    };
+
+Map<String, dynamic> _merchantPayload() => {
+      'id': TestAccounts.testMerchantId,
+      'name': TestAccounts.testMerchantName,
+    };
+
 /// Stubs `POST /api/v1/auth/login` for a dedicated [role] test account.
 void stubDedicatedAccountLogin(
   DioAdapter adapter,
@@ -37,6 +59,7 @@ void stubDedicatedAccountLogin(
   String? userId,
   String accessToken = 'acc',
   String refreshToken = 'ref',
+  List<String> additionalRoles = const [],
 }) {
   final email = TestAccounts.emailFor(role);
   final resolvedUserId = userId ?? TestAccounts.userIdFor(role);
@@ -50,12 +73,13 @@ void stubDedicatedAccountLogin(
           'refresh_token': refreshToken,
           'expires_in': 900,
         },
-        'user': {
-          'id': resolvedUserId,
-          'email': email,
-          'name': _displayNameFor(role),
-          'role': TestAccounts.apiRoleFor(role),
-        },
+        'user': _loginUserPayload(
+          role,
+          userId: resolvedUserId,
+          email: email,
+          additionalRoles: additionalRoles,
+        ),
+        'merchant': _merchantPayload(),
       },
     }),
     data: {'email': email, 'password': TestAccounts.password},
@@ -69,6 +93,7 @@ void seedAuthenticatedTestAccount(
   TestAccountRole role, {
   String? userId,
   String accessToken = 'acc',
+  List<String> additionalRoles = const [],
 }) {
   final resolvedUserId = userId ?? TestAccounts.userIdFor(role);
   secure.store[SecureKeys.authToken] = accessToken;
@@ -78,12 +103,12 @@ void seedAuthenticatedTestAccount(
     '/api/v1/users/$resolvedUserId',
     (server) => server.reply(200, {
       'success': true,
-      'data': {
-        'id': resolvedUserId,
-        'email': TestAccounts.emailFor(role),
-        'name': _displayNameFor(role),
-        'role': TestAccounts.apiRoleFor(role),
-      },
+      'data': _loginUserPayload(
+        role,
+        userId: resolvedUserId,
+        email: TestAccounts.emailFor(role),
+        additionalRoles: additionalRoles,
+      ),
     }),
   );
 }

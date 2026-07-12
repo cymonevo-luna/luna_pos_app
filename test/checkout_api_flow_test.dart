@@ -29,7 +29,8 @@ class _FakeAuthController extends AuthController {
           id: TestAccounts.cashierUserId,
           name: 'Cashier Test',
           email: TestAccounts.cashierEmail,
-          role: 'cashier',
+          merchantId: TestAccounts.testMerchantId,
+          roles: ['cashier'],
         ),
       );
 }

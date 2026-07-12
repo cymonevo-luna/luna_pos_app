@@ -42,6 +42,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(authProvider.select((s) => s.error), (previous, next) {
+      if (next == null) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(next)),
+      );
+    });
+
     final l10n = AppLocalizations.of(context);
     final colors = context.colors;
     final validators = AuthValidators(l10n);

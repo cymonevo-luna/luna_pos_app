@@ -40,6 +40,20 @@ void main() {
       );
     });
 
+    test('apiRolesFor supports multi-role accounts', () {
+      expect(
+        TestAccounts.apiRolesFor(TestAccountRole.cashier),
+        ['cashier'],
+      );
+      expect(
+        TestAccounts.apiRolesFor(
+          TestAccountRole.cashier,
+          additionalRoles: const ['operational'],
+        ),
+        containsAll(['cashier', 'operational']),
+      );
+    });
+
     test('userIdFor maps to seeded stable UUIDs', () {
       expect(
         TestAccounts.userIdFor(TestAccountRole.cashier),

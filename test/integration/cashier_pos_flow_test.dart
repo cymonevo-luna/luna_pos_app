@@ -6,11 +6,13 @@ import '../../integration_test/helpers/harness.dart';
 
 /// Cashier/POS automation runnable via `flutter test test/integration/`.
 void main() {
-  testWidgets('cashier POS flow uses dedicated account login', (tester) async {
+  testWidgets('POS sale flow regression after cashier login', (tester) async {
     final harness = await setUpIntegrationHarness();
     harness
       ..stubLoginForRole(TestAccountRole.cashier)
-      ..stubSampleMenu();
+      ..stubSampleMenu()
+      ..stubStoreSettings()
+      ..stubCreateTransaction();
 
     await harness.pumpApp(tester);
     await harness.loginViaUi(tester, TestAccountRole.cashier);

@@ -10,6 +10,7 @@ import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/widgets.dart';
 import 'checkout_controller.dart';
 import 'models/order_line_item.dart';
+import 'models/payment_method.dart';
 import 'order_controller.dart';
 
 class CheckoutPage extends ConsumerStatefulWidget {
@@ -22,6 +23,7 @@ class CheckoutPage extends ConsumerStatefulWidget {
 class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   final _discountController = TextEditingController(text: '0');
   final _cashController = TextEditingController();
+  PaymentMethod _paymentMethod = PaymentMethod.cash;
 
   @override
   void dispose() {
@@ -32,11 +34,20 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
 
   int get _discountAmount => parseIdrAmount(_discountController.text);
   int get _cashTendered => parseIdrAmount(_cashController.text);
+  bool get _isCashPayment => _paymentMethod == PaymentMethod.cash;
+
+  String _paymentMethodLabel(AppLocalizations l10n, PaymentMethod method) {
+    return switch (method) {
+      PaymentMethod.cash => l10n.paymentMethodCash,
+      PaymentMethod.qris => l10n.paymentMethodQris,
+    };
+  }
 
   Future<void> _confirmAndPrint(AppLocalizations l10n) async {
     final result = await ref.read(checkoutProvider.notifier).confirmAndPrint(
           discountAmount: _discountAmount,
-          cashTendered: _cashTendered,
+          paymentMethod: _paymentMethod,
+          cashTendered: _isCashPayment ? _cashTendered : null,
         );
 
     if (!mounted || result == null) return;
@@ -55,9 +66,11 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
               Text(dialogL10n.transactionIdLabel(result.transactionId)),
               const VGap(AppSpacing.sm),
               Text(
-                dialogL10n.saleCompleteMessage(
-                  formatRupiah(result.changeAmount),
-                ),
+                result.paymentMethod == PaymentMethod.cash
+                    ? dialogL10n.saleCompleteMessage(
+                        formatRupiah(result.changeAmount),
+                      )
+                    : dialogL10n.saleCompleteQrisMessage,
               ),
               if (!result.printSucceeded) ...[
                 const VGap(AppSpacing.sm),
@@ -112,10 +125,11 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
       subtotalAmount: subtotalAmount,
       discountAmount: _discountAmount,
     );
-    final sufficient = isPaymentSufficient(
-      cashReceived: _cashTendered,
-      grandTotal: totalAmount,
-    );
+    final sufficient = !_isCashPayment ||
+        isPaymentSufficient(
+          cashReceived: _cashTendered,
+          grandTotal: totalAmount,
+        );
     final changeAmount = calculatePaymentChange(
       cashReceived: _cashTendered,
       grandTotal: totalAmount,
@@ -178,37 +192,39 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                   value: formatRupiah(totalAmount),
                   emphasized: true,
                 ),
-                const VGap(AppSpacing.lg),
-                AppTextField(
-                  fieldKey: const Key('cash_tendered_field'),
-                  label: l10n.cashReceived,
-                  hint: '0',
-                  controller: _cashController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [IdrWholeNumberInputFormatter()],
-                  onChanged: (_) => setState(() {}),
-                ),
-                if (_cashTendered > 0) ...[
-                  const VGap(AppSpacing.sm),
-                  AppText.body(
-                    formatRupiah(_cashTendered),
-                    muted: true,
-                    align: TextAlign.end,
+                if (_isCashPayment) ...[
+                  const VGap(AppSpacing.lg),
+                  AppTextField(
+                    fieldKey: const Key('cash_tendered_field'),
+                    label: l10n.cashReceived,
+                    hint: '0',
+                    controller: _cashController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [IdrWholeNumberInputFormatter()],
+                    onChanged: (_) => setState(() {}),
                   ),
+                  if (_cashTendered > 0) ...[
+                    const VGap(AppSpacing.sm),
+                    AppText.body(
+                      formatRupiah(_cashTendered),
+                      muted: true,
+                      align: TextAlign.end,
+                    ),
+                  ],
+                  const VGap(AppSpacing.md),
+                  if (_cashTendered > 0 && !sufficient)
+                    AppText.body(
+                      l10n.insufficientPayment,
+                      color: context.colors.error,
+                      align: TextAlign.center,
+                    )
+                  else if (_cashTendered >= totalAmount)
+                    _SummaryRow(
+                      label: l10n.change,
+                      value: formatRupiah(changeAmount),
+                      emphasized: true,
+                    ),
                 ],
-                const VGap(AppSpacing.md),
-                if (_cashTendered > 0 && !sufficient)
-                  AppText.body(
-                    l10n.insufficientPayment,
-                    color: context.colors.error,
-                    align: TextAlign.center,
-                  )
-                else if (_cashTendered >= totalAmount)
-                  _SummaryRow(
-                    label: l10n.change,
-                    value: formatRupiah(changeAmount),
-                    emphasized: true,
-                  ),
               ],
             ),
           ),
@@ -219,10 +235,41 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
               top: false,
               child: Padding(
                 padding: AppSpacing.screenPadding,
-                child: AppButton(
-                  l10n.confirmAndPrint,
-                  loading: checkout.submitting,
-                  onPressed: canConfirm ? () => _confirmAndPrint(l10n) : null,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: l10n.paymentMethod,
+                        border: const OutlineInputBorder(),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<PaymentMethod>(
+                          key: const Key('payment_method_dropdown'),
+                          isExpanded: true,
+                          value: _paymentMethod,
+                          items: PaymentMethod.values
+                              .map(
+                                (method) => DropdownMenuItem(
+                                  value: method,
+                                  child: Text(_paymentMethodLabel(l10n, method)),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (method) {
+                            if (method == null) return;
+                            setState(() => _paymentMethod = method);
+                          },
+                        ),
+                      ),
+                    ),
+                    const VGap(AppSpacing.md),
+                    AppButton(
+                      l10n.confirmAndPrint,
+                      loading: checkout.submitting,
+                      onPressed: canConfirm ? () => _confirmAndPrint(l10n) : null,
+                    ),
+                  ],
                 ),
               ),
             ),

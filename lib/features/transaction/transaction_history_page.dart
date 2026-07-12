@@ -11,6 +11,7 @@ import '../../features/auth/auth_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/widgets.dart';
 import 'models/transaction.dart';
+import 'payment_method_label.dart';
 import 'transaction_history_controller.dart';
 
 class TransactionHistoryPage extends ConsumerStatefulWidget {
@@ -76,10 +77,7 @@ class _TransactionHistoryPageState
   }
 
   String _paymentMethodLabel(AppLocalizations l10n, String method) {
-    return switch (method.toUpperCase()) {
-      'OFFLINE' => l10n.paymentMethodOffline,
-      _ => method,
-    };
+    return paymentMethodLabel(l10n, method);
   }
 
   @override

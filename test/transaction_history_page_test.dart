@@ -83,7 +83,7 @@ void main() {
           items: [
             {
               'id': 'tx-1',
-              'method': 'OFFLINE',
+              'method': 'CASH',
               'amount': 25000,
               'cashier_username': 'Cashier Test',
               'transaction_date': '2026-07-12T10:00:00Z',

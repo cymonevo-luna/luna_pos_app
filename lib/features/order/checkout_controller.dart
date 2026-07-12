@@ -15,6 +15,7 @@ import '../transaction/data/transaction_repository.dart';
 import '../transaction/models/transaction.dart';
 import '../transaction/transaction_mapper.dart';
 import 'models/order_line_item.dart';
+import 'models/payment_method.dart';
 import 'order_controller.dart';
 
 class CheckoutState {
@@ -48,12 +49,14 @@ class CheckoutState {
 class CheckoutResult {
   const CheckoutResult({
     required this.transactionId,
+    required this.paymentMethod,
     required this.changeAmount,
     required this.printSucceeded,
     this.printError,
   });
 
   final String transactionId;
+  final PaymentMethod paymentMethod;
   final int changeAmount;
   final bool printSucceeded;
   final String? printError;
@@ -82,7 +85,8 @@ class CheckoutController extends Notifier<CheckoutState> {
 
   Future<CheckoutResult?> confirmAndPrint({
     required int discountAmount,
-    required int cashTendered,
+    required PaymentMethod paymentMethod,
+    int? cashTendered,
   }) async {
     final order = ref.read(orderProvider);
     if (order.lines.isEmpty) return null;
@@ -100,17 +104,20 @@ class CheckoutController extends Notifier<CheckoutState> {
       discountAmount: discountAmount,
     );
 
-    if (!isPaymentSufficient(
-      cashReceived: cashTendered,
-      grandTotal: totalAmount,
-    )) {
-      return null;
+    int? changeAmount;
+    if (paymentMethod == PaymentMethod.cash) {
+      final tendered = cashTendered ?? 0;
+      if (!isPaymentSufficient(
+        cashReceived: tendered,
+        grandTotal: totalAmount,
+      )) {
+        return null;
+      }
+      changeAmount = calculatePaymentChange(
+        cashReceived: tendered,
+        grandTotal: totalAmount,
+      );
     }
-
-    final changeAmount = calculatePaymentChange(
-      cashReceived: cashTendered,
-      grandTotal: totalAmount,
-    );
 
     state = state.copyWith(submitting: true, clearError: true);
 
@@ -123,17 +130,17 @@ class CheckoutController extends Notifier<CheckoutState> {
       }
 
       final request = CreateTransactionRequest(
-        method: 'OFFLINE',
+        method: paymentMethod.apiValue,
         items: buildTransactionItems(order.lines),
         subtotalAmount: subtotalAmount,
         discountAmount: discountAmount,
         amount: totalAmount,
-        cashTendered: cashTendered,
-        changeAmount: changeAmount,
+        cashTendered: paymentMethod == PaymentMethod.cash ? cashTendered : null,
+        changeAmount: paymentMethod == PaymentMethod.cash ? changeAmount : null,
       );
 
       final response =
-          await _transactionRepository.createOfflineTransaction(request);
+          await _transactionRepository.createTransaction(request);
 
       final receiptTxn = _buildReceiptTransaction(
         response: response,
@@ -141,6 +148,7 @@ class CheckoutController extends Notifier<CheckoutState> {
         subtotalAmount: subtotalAmount,
         discountAmount: discountAmount,
         totalAmount: totalAmount,
+        paymentMethod: paymentMethod,
         cashTendered: cashTendered,
         changeAmount: changeAmount,
       );
@@ -165,7 +173,8 @@ class CheckoutController extends Notifier<CheckoutState> {
 
       return CheckoutResult(
         transactionId: response.id,
-        changeAmount: changeAmount,
+        paymentMethod: paymentMethod,
+        changeAmount: changeAmount ?? 0,
         printSucceeded: printResult.succeeded,
         printError: printResult.error,
       );
@@ -199,11 +208,13 @@ class CheckoutController extends Notifier<CheckoutState> {
     required int subtotalAmount,
     required int discountAmount,
     required int totalAmount,
-    required int cashTendered,
-    required int changeAmount,
+    required PaymentMethod paymentMethod,
+    int? cashTendered,
+    int? changeAmount,
   }) {
     return receipt.TransactionResponse(
       id: response.id,
+      method: response.method,
       createdAt: DateTime.now(),
       items: lines
           .map(
@@ -218,8 +229,9 @@ class CheckoutController extends Notifier<CheckoutState> {
       subtotalAmount: subtotalAmount,
       discountAmount: discountAmount,
       totalAmount: totalAmount,
-      cashTendered: cashTendered,
-      changeAmount: changeAmount,
+      cashTendered:
+          paymentMethod == PaymentMethod.cash ? cashTendered : null,
+      changeAmount: paymentMethod == PaymentMethod.cash ? (changeAmount ?? 0) : 0,
     );
   }
 

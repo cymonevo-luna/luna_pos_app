@@ -119,6 +119,16 @@ void main() {
     );
   }
 
+  Future<void> scrollToFooter(WidgetTester tester) async {
+    await tester.drag(find.byType(ListView), const Offset(0, -600));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> scrollToCashFields(WidgetTester tester) async {
+    await tester.drag(find.byType(ListView), const Offset(0, -500));
+    await tester.pumpAndSettle();
+  }
+
   testWidgets('checkout page lists lines and subtotal', (WidgetTester tester) async {
     seedTwoLineCart();
 
@@ -134,6 +144,112 @@ void main() {
     expect(find.text('Rp 78.000'), findsOneWidget);
   });
 
+  testWidgets('payment method dropdown appears above confirm button',
+      (WidgetTester tester) async {
+    seedTwoLineCart();
+
+    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('payment_method_dropdown')), findsOneWidget);
+    expect(find.text('Cash'), findsWidgets);
+    expect(find.widgetWithText(AppButton, 'Confirm & Print'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('payment_method_dropdown')));
+    await tester.pumpAndSettle();
+    expect(find.text('QRIS'), findsOneWidget);
+  });
+
+  testWidgets('cash shows customer pay and change fields',
+      (WidgetTester tester) async {
+    seedTwoLineCart();
+
+    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
+    await tester.pumpAndSettle();
+    await scrollToCashFields(tester);
+
+    expect(find.byKey(const Key('cash_tendered_field')), findsOneWidget);
+    expect(find.text('Cash received'), findsOneWidget);
+
+    await tester.enterText(find.byKey(const Key('cash_tendered_field')), '100000');
+    await tester.pumpAndSettle();
+    await scrollToCashFields(tester);
+
+    expect(find.text('Rp 22.000'), findsOneWidget);
+  });
+
+  testWidgets('qris hides customer pay and change fields',
+      (WidgetTester tester) async {
+    seedTwoLineCart();
+
+    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
+    await tester.pumpAndSettle();
+    await scrollToCashFields(tester);
+
+    await tester.tap(find.byKey(const Key('payment_method_dropdown')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('QRIS').last);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('cash_tendered_field')), findsNothing);
+    expect(find.text('Change'), findsNothing);
+  });
+
+  testWidgets('switching payment methods toggles cash field visibility',
+      (WidgetTester tester) async {
+    seedTwoLineCart();
+
+    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
+    await tester.pumpAndSettle();
+    await scrollToCashFields(tester);
+
+    expect(find.byKey(const Key('cash_tendered_field')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('payment_method_dropdown')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('QRIS').last);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('cash_tendered_field')), findsNothing);
+
+    await tester.tap(find.byKey(const Key('payment_method_dropdown')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cash').last);
+    await tester.pumpAndSettle();
+    await scrollToCashFields(tester);
+    expect(find.byKey(const Key('cash_tendered_field')), findsOneWidget);
+  });
+
+  testWidgets('default payment method is cash with cash fields visible',
+      (WidgetTester tester) async {
+    seedTwoLineCart();
+
+    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
+    await tester.pumpAndSettle();
+    await scrollToCashFields(tester);
+
+    expect(find.byKey(const Key('cash_tendered_field')), findsOneWidget);
+    expect(find.text('Cash received'), findsOneWidget);
+  });
+
+  testWidgets('qris enables confirm without cash input', (WidgetTester tester) async {
+    seedTwoLineCart();
+
+    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
+    await tester.pumpAndSettle();
+    await scrollToCashFields(tester);
+
+    await tester.tap(find.byKey(const Key('payment_method_dropdown')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('QRIS').last);
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<AppButton>(find.widgetWithText(AppButton, 'Confirm & Print'))
+          .onPressed,
+      isNotNull,
+    );
+  });
+
   testWidgets('confirm button disabled when cash tendered is insufficient',
       (WidgetTester tester) async {
     seedTwoLineCart();
@@ -141,8 +257,8 @@ void main() {
     await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
     await tester.pumpAndSettle();
 
-    await tester.drag(find.byType(ListView), const Offset(0, -400));
-    await tester.pumpAndSettle();
+    await scrollToFooter(tester);
+    await scrollToCashFields(tester);
 
     await tester.enterText(find.byKey(const Key('cash_tendered_field')), '50000');
     await tester.pumpAndSettle();

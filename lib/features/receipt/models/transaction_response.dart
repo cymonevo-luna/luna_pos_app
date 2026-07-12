@@ -8,12 +8,13 @@ part 'transaction_response.freezed.dart';
 abstract class TransactionResponse with _$TransactionResponse {
   const factory TransactionResponse({
     required String id,
+    required String method,
     required DateTime createdAt,
     required List<ReceiptLineItem> items,
     required int subtotalAmount,
     @Default(0) int discountAmount,
     required int totalAmount,
-    required int cashTendered,
+    int? cashTendered,
     @Default(0) int changeAmount,
   }) = _TransactionResponse;
 }

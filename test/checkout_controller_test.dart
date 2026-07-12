@@ -12,6 +12,7 @@ import 'package:luna_pos/core/storage/secure_storage_service.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
 import 'package:luna_pos/features/menu/models/pos_menu.dart';
 import 'package:luna_pos/features/order/checkout_controller.dart';
+import 'package:luna_pos/features/order/models/payment_method.dart';
 import 'package:luna_pos/features/order/order_controller.dart';
 import 'package:luna_pos/features/store_settings/data/store_settings_repository.dart';
 import 'package:luna_pos/features/transaction/data/transaction_repository.dart';
@@ -41,13 +42,13 @@ class _RecordingTransactionRepository extends TransactionRepository {
   CreateTransactionRequest? lastRequest;
 
   @override
-  Future<TransactionResponse> createOfflineTransaction(
+  Future<TransactionResponse> createTransaction(
     CreateTransactionRequest request,
   ) async {
     lastRequest = request;
     return TransactionResponse(
       id: 'tx-1',
-      method: 'OFFLINE',
+      method: request.method,
       amount: request.amount,
       subtotalAmount: request.subtotalAmount,
       discountAmount: request.discountAmount,
@@ -133,16 +134,18 @@ void main() {
     );
   }
 
-  test('confirmAndPrint submits correct transaction payload', () async {
+  test('confirmAndPrint submits correct cash transaction payload', () async {
     seedTwoLineCart();
 
     final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
           discountAmount: 5000,
+          paymentMethod: PaymentMethod.cash,
           cashTendered: 100000,
         );
 
     expect(result, isNotNull);
     final request = transactionRepository.lastRequest!;
+    expect(request.method, 'CASH');
     expect(request.subtotalAmount, 78000);
     expect(request.discountAmount, 5000);
     expect(request.amount, 73000);
@@ -154,12 +157,28 @@ void main() {
     expect(request.items[1].lineTotal, 70000);
   });
 
+  test('confirmAndPrint submits correct qris transaction payload', () async {
+    seedTwoLineCart();
+
+    final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.qris,
+        );
+
+    expect(result, isNotNull);
+    final request = transactionRepository.lastRequest!;
+    expect(request.method, 'QRIS');
+    expect(request.cashTendered, isNull);
+    expect(request.changeAmount, isNull);
+  });
+
   test('confirmAndPrint calls printBytes and clears cart on success', () async {
     seedTwoLineCart();
     await printer.connect('00:11:22:33:44:55');
 
     await container.read(checkoutProvider.notifier).confirmAndPrint(
           discountAmount: 0,
+          paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
         );
 
@@ -173,6 +192,7 @@ void main() {
 
     final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
           discountAmount: 0,
+          paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
         );
 
@@ -200,6 +220,7 @@ void main() {
 
     final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
           discountAmount: 0,
+          paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
         );
 

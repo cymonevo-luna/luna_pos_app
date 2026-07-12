@@ -16,8 +16,8 @@ _CreateTransactionRequest _$CreateTransactionRequestFromJson(
   subtotalAmount: (json['subtotal_amount'] as num).toInt(),
   discountAmount: (json['discount_amount'] as num?)?.toInt() ?? 0,
   amount: (json['amount'] as num).toInt(),
-  cashTendered: (json['cash_tendered'] as num).toInt(),
-  changeAmount: (json['change_amount'] as num).toInt(),
+  cashTendered: (json['cash_tendered'] as num?)?.toInt(),
+  changeAmount: (json['change_amount'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$CreateTransactionRequestToJson(

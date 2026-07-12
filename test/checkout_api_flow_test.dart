@@ -12,6 +12,7 @@ import 'package:luna_pos/core/storage/secure_storage_service.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
 import 'package:luna_pos/features/menu/models/pos_menu.dart';
 import 'package:luna_pos/features/order/checkout_controller.dart';
+import 'package:luna_pos/features/order/models/payment_method.dart';
 import 'package:luna_pos/features/order/order_controller.dart';
 import 'package:luna_pos/features/store_settings/data/store_settings_repository.dart';
 import 'package:luna_pos/features/transaction/data/transaction_repository.dart';
@@ -121,7 +122,7 @@ void main() {
           'success': true,
           'data': {
             'id': 'tx-e2e-1',
-            'method': 'OFFLINE',
+            'method': 'CASH',
             'subtotal_amount': 78000,
             'discount_amount': 5000,
             'amount': 73000,
@@ -130,7 +131,7 @@ void main() {
           },
         }),
         data: {
-          'method': 'OFFLINE',
+          'method': 'CASH',
           'items': [
             {
               'menu_id': 'm1',
@@ -168,6 +169,7 @@ void main() {
 
       final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
             discountAmount: 5000,
+            paymentMethod: PaymentMethod.cash,
             cashTendered: 100000,
           );
 
@@ -177,6 +179,70 @@ void main() {
       expect(result.printSucceeded, isTrue);
       expect(container.read(orderProvider).lines, isEmpty);
       expect(printer.lastPrintedBytes, isNotEmpty);
+    });
+  });
+
+  group('successful qris checkout API flow', () {
+    setUp(() async {
+      await setUpHarness();
+      registerStoreSettingsMock();
+      adapter.onPost(
+        '/api/v1/pos/transactions',
+        (server) => server.reply(201, {
+          'success': true,
+          'data': {
+            'id': 'tx-qris-1',
+            'method': 'QRIS',
+            'subtotal_amount': 78000,
+            'discount_amount': 0,
+            'amount': 78000,
+          },
+        }),
+        data: {
+          'method': 'QRIS',
+          'items': [
+            {
+              'menu_id': 'm1',
+              'title': 'Es Teh',
+              'quantity': 1,
+              'unit_price': 8000,
+              'line_total': 8000,
+              'note': 'less ice',
+            },
+            {
+              'menu_id': 'm2',
+              'title': 'Nasi Goreng',
+              'quantity': 2,
+              'unit_price': 35000,
+              'line_total': 70000,
+            },
+          ],
+          'subtotal_amount': 78000,
+          'discount_amount': 0,
+          'amount': 78000,
+        },
+      );
+    });
+
+    tearDown(() {
+      container.dispose();
+      printer.dispose();
+    });
+
+    test('qris checkout persists transaction without cash fields', () async {
+      seedTwoLineCart();
+      await printer.connect('00:11:22:33:44:55');
+
+      final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
+            discountAmount: 0,
+            paymentMethod: PaymentMethod.qris,
+          );
+
+      expect(result, isNotNull);
+      expect(result!.transactionId, 'tx-qris-1');
+      expect(result.paymentMethod, PaymentMethod.qris);
+      expect(result.changeAmount, 0);
+      expect(container.read(orderProvider).lines, isEmpty);
     });
   });
 
@@ -191,7 +257,7 @@ void main() {
           'error': {'message': 'server error'},
         }),
         data: {
-          'method': 'OFFLINE',
+          'method': 'CASH',
           'items': [
             {
               'menu_id': 'm1',
@@ -229,6 +295,7 @@ void main() {
 
       final result = await container.read(checkoutProvider.notifier).confirmAndPrint(
             discountAmount: 0,
+            paymentMethod: PaymentMethod.cash,
             cashTendered: 80000,
           );
 

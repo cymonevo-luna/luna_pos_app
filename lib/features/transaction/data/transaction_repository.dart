@@ -10,27 +10,33 @@ class TransactionRepository {
 
   static const defaultPerPage = 20;
 
-  Future<TransactionResponse> createOfflineTransaction(
+  Future<TransactionResponse> createTransaction(
     CreateTransactionRequest request,
   ) {
+    final body = <String, dynamic>{
+      'method': request.method,
+      'items': request.items.map((item) {
+        final json = item.toJson();
+        final note = item.note?.trim();
+        if (note == null || note.isEmpty) {
+          json.remove('note');
+        }
+        return json;
+      }).toList(),
+      'subtotal_amount': request.subtotalAmount,
+      'discount_amount': request.discountAmount,
+      'amount': request.amount,
+    };
+    if (request.cashTendered != null) {
+      body['cash_tendered'] = request.cashTendered;
+    }
+    if (request.changeAmount != null) {
+      body['change_amount'] = request.changeAmount;
+    }
+
     return _api.post<TransactionResponse>(
       '/api/v1/pos/transactions',
-      body: {
-        'method': request.method,
-        'items': request.items.map((item) {
-          final json = item.toJson();
-          final note = item.note?.trim();
-          if (note == null || note.isEmpty) {
-            json.remove('note');
-          }
-          return json;
-        }).toList(),
-        'subtotal_amount': request.subtotalAmount,
-        'discount_amount': request.discountAmount,
-        'amount': request.amount,
-        'cash_tendered': request.cashTendered,
-        'change_amount': request.changeAmount,
-      },
+      body: body,
       decoder: (raw) =>
           TransactionResponse.fromJson(unwrapApiEnvelope(raw)),
     );

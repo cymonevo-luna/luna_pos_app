@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TransactionResponse {
 
- String get id; DateTime get createdAt; List<ReceiptLineItem> get items; int get subtotalAmount; int get discountAmount; int get totalAmount; int get cashTendered; int get changeAmount;
+ String get id; String get method; DateTime get createdAt; List<ReceiptLineItem> get items; int get subtotalAmount; int get discountAmount; int get totalAmount; int? get cashTendered; int get changeAmount;
 /// Create a copy of TransactionResponse
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $TransactionResponseCopyWith<TransactionResponse> get copyWith => _$TransactionR
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TransactionResponse&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.subtotalAmount, subtotalAmount) || other.subtotalAmount == subtotalAmount)&&(identical(other.discountAmount, discountAmount) || other.discountAmount == discountAmount)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.cashTendered, cashTendered) || other.cashTendered == cashTendered)&&(identical(other.changeAmount, changeAmount) || other.changeAmount == changeAmount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TransactionResponse&&(identical(other.id, id) || other.id == id)&&(identical(other.method, method) || other.method == method)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.subtotalAmount, subtotalAmount) || other.subtotalAmount == subtotalAmount)&&(identical(other.discountAmount, discountAmount) || other.discountAmount == discountAmount)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.cashTendered, cashTendered) || other.cashTendered == cashTendered)&&(identical(other.changeAmount, changeAmount) || other.changeAmount == changeAmount));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,createdAt,const DeepCollectionEquality().hash(items),subtotalAmount,discountAmount,totalAmount,cashTendered,changeAmount);
+int get hashCode => Object.hash(runtimeType,id,method,createdAt,const DeepCollectionEquality().hash(items),subtotalAmount,discountAmount,totalAmount,cashTendered,changeAmount);
 
 @override
 String toString() {
-  return 'TransactionResponse(id: $id, createdAt: $createdAt, items: $items, subtotalAmount: $subtotalAmount, discountAmount: $discountAmount, totalAmount: $totalAmount, cashTendered: $cashTendered, changeAmount: $changeAmount)';
+  return 'TransactionResponse(id: $id, method: $method, createdAt: $createdAt, items: $items, subtotalAmount: $subtotalAmount, discountAmount: $discountAmount, totalAmount: $totalAmount, cashTendered: $cashTendered, changeAmount: $changeAmount)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $TransactionResponseCopyWith<$Res>  {
   factory $TransactionResponseCopyWith(TransactionResponse value, $Res Function(TransactionResponse) _then) = _$TransactionResponseCopyWithImpl;
 @useResult
 $Res call({
- String id, DateTime createdAt, List<ReceiptLineItem> items, int subtotalAmount, int discountAmount, int totalAmount, int cashTendered, int changeAmount
+ String id, String method, DateTime createdAt, List<ReceiptLineItem> items, int subtotalAmount, int discountAmount, int totalAmount, int? cashTendered, int changeAmount
 });
 
 
@@ -62,16 +62,17 @@ class _$TransactionResponseCopyWithImpl<$Res>
 
 /// Create a copy of TransactionResponse
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? createdAt = null,Object? items = null,Object? subtotalAmount = null,Object? discountAmount = null,Object? totalAmount = null,Object? cashTendered = null,Object? changeAmount = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? method = null,Object? createdAt = null,Object? items = null,Object? subtotalAmount = null,Object? discountAmount = null,Object? totalAmount = null,Object? cashTendered = freezed,Object? changeAmount = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,method: null == method ? _self.method : method // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
 as List<ReceiptLineItem>,subtotalAmount: null == subtotalAmount ? _self.subtotalAmount : subtotalAmount // ignore: cast_nullable_to_non_nullable
 as int,discountAmount: null == discountAmount ? _self.discountAmount : discountAmount // ignore: cast_nullable_to_non_nullable
 as int,totalAmount: null == totalAmount ? _self.totalAmount : totalAmount // ignore: cast_nullable_to_non_nullable
-as int,cashTendered: null == cashTendered ? _self.cashTendered : cashTendered // ignore: cast_nullable_to_non_nullable
-as int,changeAmount: null == changeAmount ? _self.changeAmount : changeAmount // ignore: cast_nullable_to_non_nullable
+as int,cashTendered: freezed == cashTendered ? _self.cashTendered : cashTendered // ignore: cast_nullable_to_non_nullable
+as int?,changeAmount: null == changeAmount ? _self.changeAmount : changeAmount // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }
@@ -157,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime createdAt,  List<ReceiptLineItem> items,  int subtotalAmount,  int discountAmount,  int totalAmount,  int cashTendered,  int changeAmount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String method,  DateTime createdAt,  List<ReceiptLineItem> items,  int subtotalAmount,  int discountAmount,  int totalAmount,  int? cashTendered,  int changeAmount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TransactionResponse() when $default != null:
-return $default(_that.id,_that.createdAt,_that.items,_that.subtotalAmount,_that.discountAmount,_that.totalAmount,_that.cashTendered,_that.changeAmount);case _:
+return $default(_that.id,_that.method,_that.createdAt,_that.items,_that.subtotalAmount,_that.discountAmount,_that.totalAmount,_that.cashTendered,_that.changeAmount);case _:
   return orElse();
 
 }
@@ -178,10 +179,10 @@ return $default(_that.id,_that.createdAt,_that.items,_that.subtotalAmount,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime createdAt,  List<ReceiptLineItem> items,  int subtotalAmount,  int discountAmount,  int totalAmount,  int cashTendered,  int changeAmount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String method,  DateTime createdAt,  List<ReceiptLineItem> items,  int subtotalAmount,  int discountAmount,  int totalAmount,  int? cashTendered,  int changeAmount)  $default,) {final _that = this;
 switch (_that) {
 case _TransactionResponse():
-return $default(_that.id,_that.createdAt,_that.items,_that.subtotalAmount,_that.discountAmount,_that.totalAmount,_that.cashTendered,_that.changeAmount);case _:
+return $default(_that.id,_that.method,_that.createdAt,_that.items,_that.subtotalAmount,_that.discountAmount,_that.totalAmount,_that.cashTendered,_that.changeAmount);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +199,10 @@ return $default(_that.id,_that.createdAt,_that.items,_that.subtotalAmount,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime createdAt,  List<ReceiptLineItem> items,  int subtotalAmount,  int discountAmount,  int totalAmount,  int cashTendered,  int changeAmount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String method,  DateTime createdAt,  List<ReceiptLineItem> items,  int subtotalAmount,  int discountAmount,  int totalAmount,  int? cashTendered,  int changeAmount)?  $default,) {final _that = this;
 switch (_that) {
 case _TransactionResponse() when $default != null:
-return $default(_that.id,_that.createdAt,_that.items,_that.subtotalAmount,_that.discountAmount,_that.totalAmount,_that.cashTendered,_that.changeAmount);case _:
+return $default(_that.id,_that.method,_that.createdAt,_that.items,_that.subtotalAmount,_that.discountAmount,_that.totalAmount,_that.cashTendered,_that.changeAmount);case _:
   return null;
 
 }
@@ -213,10 +214,11 @@ return $default(_that.id,_that.createdAt,_that.items,_that.subtotalAmount,_that.
 
 
 class _TransactionResponse implements TransactionResponse {
-  const _TransactionResponse({required this.id, required this.createdAt, required final  List<ReceiptLineItem> items, required this.subtotalAmount, this.discountAmount = 0, required this.totalAmount, required this.cashTendered, this.changeAmount = 0}): _items = items;
+  const _TransactionResponse({required this.id, required this.method, required this.createdAt, required final  List<ReceiptLineItem> items, required this.subtotalAmount, this.discountAmount = 0, required this.totalAmount, this.cashTendered, this.changeAmount = 0}): _items = items;
   
 
 @override final  String id;
+@override final  String method;
 @override final  DateTime createdAt;
  final  List<ReceiptLineItem> _items;
 @override List<ReceiptLineItem> get items {
@@ -228,7 +230,7 @@ class _TransactionResponse implements TransactionResponse {
 @override final  int subtotalAmount;
 @override@JsonKey() final  int discountAmount;
 @override final  int totalAmount;
-@override final  int cashTendered;
+@override final  int? cashTendered;
 @override@JsonKey() final  int changeAmount;
 
 /// Create a copy of TransactionResponse
@@ -241,16 +243,16 @@ _$TransactionResponseCopyWith<_TransactionResponse> get copyWith => __$Transacti
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TransactionResponse&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.subtotalAmount, subtotalAmount) || other.subtotalAmount == subtotalAmount)&&(identical(other.discountAmount, discountAmount) || other.discountAmount == discountAmount)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.cashTendered, cashTendered) || other.cashTendered == cashTendered)&&(identical(other.changeAmount, changeAmount) || other.changeAmount == changeAmount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TransactionResponse&&(identical(other.id, id) || other.id == id)&&(identical(other.method, method) || other.method == method)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.subtotalAmount, subtotalAmount) || other.subtotalAmount == subtotalAmount)&&(identical(other.discountAmount, discountAmount) || other.discountAmount == discountAmount)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.cashTendered, cashTendered) || other.cashTendered == cashTendered)&&(identical(other.changeAmount, changeAmount) || other.changeAmount == changeAmount));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,createdAt,const DeepCollectionEquality().hash(_items),subtotalAmount,discountAmount,totalAmount,cashTendered,changeAmount);
+int get hashCode => Object.hash(runtimeType,id,method,createdAt,const DeepCollectionEquality().hash(_items),subtotalAmount,discountAmount,totalAmount,cashTendered,changeAmount);
 
 @override
 String toString() {
-  return 'TransactionResponse(id: $id, createdAt: $createdAt, items: $items, subtotalAmount: $subtotalAmount, discountAmount: $discountAmount, totalAmount: $totalAmount, cashTendered: $cashTendered, changeAmount: $changeAmount)';
+  return 'TransactionResponse(id: $id, method: $method, createdAt: $createdAt, items: $items, subtotalAmount: $subtotalAmount, discountAmount: $discountAmount, totalAmount: $totalAmount, cashTendered: $cashTendered, changeAmount: $changeAmount)';
 }
 
 
@@ -261,7 +263,7 @@ abstract mixin class _$TransactionResponseCopyWith<$Res> implements $Transaction
   factory _$TransactionResponseCopyWith(_TransactionResponse value, $Res Function(_TransactionResponse) _then) = __$TransactionResponseCopyWithImpl;
 @override @useResult
 $Res call({
- String id, DateTime createdAt, List<ReceiptLineItem> items, int subtotalAmount, int discountAmount, int totalAmount, int cashTendered, int changeAmount
+ String id, String method, DateTime createdAt, List<ReceiptLineItem> items, int subtotalAmount, int discountAmount, int totalAmount, int? cashTendered, int changeAmount
 });
 
 
@@ -278,16 +280,17 @@ class __$TransactionResponseCopyWithImpl<$Res>
 
 /// Create a copy of TransactionResponse
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? createdAt = null,Object? items = null,Object? subtotalAmount = null,Object? discountAmount = null,Object? totalAmount = null,Object? cashTendered = null,Object? changeAmount = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? method = null,Object? createdAt = null,Object? items = null,Object? subtotalAmount = null,Object? discountAmount = null,Object? totalAmount = null,Object? cashTendered = freezed,Object? changeAmount = null,}) {
   return _then(_TransactionResponse(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,method: null == method ? _self.method : method // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
 as List<ReceiptLineItem>,subtotalAmount: null == subtotalAmount ? _self.subtotalAmount : subtotalAmount // ignore: cast_nullable_to_non_nullable
 as int,discountAmount: null == discountAmount ? _self.discountAmount : discountAmount // ignore: cast_nullable_to_non_nullable
 as int,totalAmount: null == totalAmount ? _self.totalAmount : totalAmount // ignore: cast_nullable_to_non_nullable
-as int,cashTendered: null == cashTendered ? _self.cashTendered : cashTendered // ignore: cast_nullable_to_non_nullable
-as int,changeAmount: null == changeAmount ? _self.changeAmount : changeAmount // ignore: cast_nullable_to_non_nullable
+as int,cashTendered: freezed == cashTendered ? _self.cashTendered : cashTendered // ignore: cast_nullable_to_non_nullable
+as int?,changeAmount: null == changeAmount ? _self.changeAmount : changeAmount // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }

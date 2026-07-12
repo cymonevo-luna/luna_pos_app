@@ -28,6 +28,7 @@ void main() {
       cashierName: 'Budi Santoso',
       transactionId: 'TXN-001',
       transactionDate: DateTime(2026, 7, 11, 14, 30),
+      paymentMethod: 'CASH',
       items: const [
         ReceiptLineItem(
           title: 'Es Teh Manis',
@@ -109,6 +110,7 @@ void main() {
     final data = ReceiptData.fromCheckout(
       txn: TransactionResponse(
         id: 'TXN-99',
+        method: 'CASH',
         createdAt: DateTime(2026, 7, 11, 9, 15),
         items: const [
           ReceiptLineItem(
@@ -168,6 +170,23 @@ void main() {
     final text = decodeReceiptText(bytes);
     expect(text, contains('Menu Spesial'));
     expect(text, contains('Note:'));
+  });
+
+  test('receipt omits cash lines for qris payment', () {
+    final text = decodeReceiptText(
+      builder.build(
+        sampleReceiptData().copyWith(
+          paymentMethod: 'QRIS',
+          cashTendered: null,
+          changeAmount: 0,
+        ),
+      ),
+    );
+
+    expect(text, contains('Metode'));
+    expect(text, contains('QRIS'));
+    expect(text, isNot(contains('Bayar')));
+    expect(text, isNot(contains('Kembalian')));
   });
 
   test('builder output is deterministic for the same input', () {

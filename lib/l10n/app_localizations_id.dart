@@ -317,6 +317,9 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String get saleCompleteQrisMessage => 'Pembayaran QRIS diterima.';
+
+  @override
   String get ok => 'OK';
 
   @override
@@ -360,6 +363,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get paymentMethodOffline => 'Tunai';
+
+  @override
+  String get paymentMethodCash => 'Tunai';
+
+  @override
+  String get paymentMethodQris => 'QRIS';
 
   @override
   String get cashier => 'Kasir';

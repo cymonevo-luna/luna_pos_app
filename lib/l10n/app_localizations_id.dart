@@ -495,6 +495,30 @@ class AppLocalizationsId extends AppLocalizations {
   String get purchaseSelectCatalogItem => 'Pilih item katalog';
 
   @override
+  String get purchaseUpdateStatus => 'Perbarui status';
+
+  @override
+  String get purchaseTakePhoto => 'Ambil foto';
+
+  @override
+  String get purchaseChooseGallery => 'Pilih dari galeri';
+
+  @override
+  String get purchaseProofPhotos => 'Foto bukti';
+
+  @override
+  String get purchaseProofPaid => 'Bukti pembayaran';
+
+  @override
+  String get purchaseProofDelivered => 'Bukti pengiriman';
+
+  @override
+  String get purchaseContactSupplier => 'Hubungi pemasok';
+
+  @override
+  String get purchaseCreatedAt => 'Dibuat pada';
+
+  @override
   String get searchStock => 'Cari persediaan';
 
   @override

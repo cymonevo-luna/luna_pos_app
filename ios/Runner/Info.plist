@@ -70,5 +70,9 @@
 	<string>Bluetooth access to connect 58mm or 80mm thermal printers</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Bluetooth access to interact with thermal printers</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera access to capture purchase proof photos</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo library access to attach purchase proof photos</string>
 </dict>
 </plist>

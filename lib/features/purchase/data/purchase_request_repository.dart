@@ -34,6 +34,29 @@ class PurchaseRequestRepository {
     );
   }
 
+  Future<PurchaseRequestDetail> get(String id) => _api.get<PurchaseRequestDetail>(
+        '$listPath/$id',
+        decoder: (raw) =>
+            PurchaseRequestDetail.fromJson(unwrapApiEnvelope(raw)),
+      );
+
+  Future<PurchaseRequestDetail> updateStatus(
+    String id,
+    PurchaseRequestStatus status, {
+    String? proofUrl,
+  }) {
+    final body = <String, dynamic>{
+      'status': _statusQueryValue(status),
+      if (proofUrl != null && proofUrl.isNotEmpty) 'proof_url': proofUrl,
+    };
+    return _api.patch<PurchaseRequestDetail>(
+      '$listPath/$id/status',
+      body: body,
+      decoder: (raw) =>
+          PurchaseRequestDetail.fromJson(unwrapApiEnvelope(raw)),
+    );
+  }
+
   Future<PurchaseRequestDetail> create({
     required String supplierId,
     required List<PurchaseLineCreateInput> items,

@@ -7,6 +7,8 @@ import '../printer/bluetooth_printer_service.dart';
 import '../storage/preferences_service.dart';
 import '../storage/secure_storage_service.dart';
 import '../../features/menu/data/menu_repository.dart';
+import '../../features/purchase/data/purchase_image_picker.dart';
+import '../../features/purchase/data/purchase_proof_upload.dart';
 import '../../features/purchase/data/purchase_request_repository.dart';
 import '../../features/purchase/data/supplier_repository.dart';
 import '../../features/stock/data/food_supply_repository.dart';
@@ -51,6 +53,14 @@ Future<void> setupLocator() async {
 
   locator.registerLazySingleton<PurchaseRequestRepository>(
     () => PurchaseRequestRepository(locator<ApiClient>()),
+  );
+
+  locator.registerLazySingleton<PurchaseProofUpload>(
+    () => PurchaseProofUpload(locator<ApiClient>()),
+  );
+
+  locator.registerLazySingleton<PurchaseImagePicker>(
+    RealPurchaseImagePicker.new,
   );
 
   locator.registerLazySingleton<SupplierRepository>(

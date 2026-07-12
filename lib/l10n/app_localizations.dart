@@ -853,6 +853,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You do not have permission to access procurement features.'**
   String get procurementAccessDenied;
+
+  /// Search field hint on stock list
+  ///
+  /// In en, this message translates to:
+  /// **'Search supplies'**
+  String get searchStock;
+
+  /// FAB label to create a food supply
+  ///
+  /// In en, this message translates to:
+  /// **'Add supply'**
+  String get addSupply;
+
+  /// Empty state on stock list
+  ///
+  /// In en, this message translates to:
+  /// **'No supplies yet'**
+  String get noStockItems;
+
+  /// Food supply title field label
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get stockTitleLabel;
+
+  /// Food supply description field label
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get stockDescriptionLabel;
+
+  /// Food supply quantity field label
+  ///
+  /// In en, this message translates to:
+  /// **'Stock quantity'**
+  String get stockQuantityLabel;
+
+  /// Food supply unit dropdown label
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get stockUnitLabel;
+
+  /// Save form button label
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// Validation when food supply title is too short
+  ///
+  /// In en, this message translates to:
+  /// **'Title must be at least 2 characters'**
+  String get stockTitleTooShort;
+
+  /// Validation when food supply quantity is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a quantity of 0 or more'**
+  String get stockQuantityInvalid;
 }
 
 class _AppLocalizationsDelegate

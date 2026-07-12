@@ -125,5 +125,15 @@
   "purchasesNew": "Pembelian baru",
   "purchaseDetail": "Detail pembelian",
   "posAccessDenied": "Akun ini tidak memiliki akses POS atau operasional",
-  "procurementAccessDenied": "Anda tidak memiliki izin untuk mengakses fitur pengadaan."
+  "procurementAccessDenied": "Anda tidak memiliki izin untuk mengakses fitur pengadaan.",
+  "searchStock": "Cari persediaan",
+  "addSupply": "Tambah persediaan",
+  "noStockItems": "Belum ada persediaan",
+  "stockTitleLabel": "Judul",
+  "stockDescriptionLabel": "Deskripsi",
+  "stockQuantityLabel": "Jumlah stok",
+  "stockUnitLabel": "Satuan",
+  "save": "Simpan",
+  "stockTitleTooShort": "Judul minimal 2 karakter",
+  "stockQuantityInvalid": "Masukkan jumlah 0 atau lebih"
 }

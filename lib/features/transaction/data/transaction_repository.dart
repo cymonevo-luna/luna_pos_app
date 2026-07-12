@@ -14,7 +14,16 @@ class TransactionRepository {
       '/api/v1/pos/transactions',
       body: {
         'method': request.method,
-        'items': request.items.map((item) => item.toJson()).toList(),
+        'items': request.items.map((item) {
+          final json = item.toJson();
+          final note = item.note?.trim();
+          if (note == null || note.isEmpty) {
+            json.remove('note');
+          }
+          return json;
+        }).toList(),
+        'subtotal_amount': request.subtotalAmount,
+        'discount_amount': request.discountAmount,
         'amount': request.amount,
         'cash_tendered': request.cashTendered,
         'change_amount': request.changeAmount,

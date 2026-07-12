@@ -34,6 +34,7 @@ class ApiException implements Exception {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
+      case DioExceptionType.transformTimeout:
         return const ApiException(
           type: ApiErrorType.timeout,
           message: 'The connection timed out. Please try again.',

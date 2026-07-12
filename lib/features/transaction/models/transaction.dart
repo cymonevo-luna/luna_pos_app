@@ -8,6 +8,8 @@ abstract class CreateTransactionRequest with _$CreateTransactionRequest {
   const factory CreateTransactionRequest({
     required String method,
     required List<TransactionItemRequest> items,
+    @JsonKey(name: 'subtotal_amount') required int subtotalAmount,
+    @JsonKey(name: 'discount_amount') @Default(0) int discountAmount,
     required int amount,
     @JsonKey(name: 'cash_tendered') required int cashTendered,
     @JsonKey(name: 'change_amount') required int changeAmount,
@@ -21,7 +23,11 @@ abstract class CreateTransactionRequest with _$CreateTransactionRequest {
 abstract class TransactionItemRequest with _$TransactionItemRequest {
   const factory TransactionItemRequest({
     @JsonKey(name: 'menu_id') required String menuId,
+    required String title,
     required int quantity,
+    @JsonKey(name: 'unit_price') required int unitPrice,
+    @JsonKey(name: 'line_total') required int lineTotal,
+    String? note,
   }) = _TransactionItemRequest;
 
   factory TransactionItemRequest.fromJson(Map<String, dynamic> json) =>
@@ -34,6 +40,8 @@ abstract class TransactionResponse with _$TransactionResponse {
     required String id,
     required String method,
     required int amount,
+    @JsonKey(name: 'subtotal_amount') int? subtotalAmount,
+    @JsonKey(name: 'discount_amount') int? discountAmount,
     @JsonKey(name: 'cash_tendered') int? cashTendered,
     @JsonKey(name: 'change_amount') int? changeAmount,
   }) = _TransactionResponse;

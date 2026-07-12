@@ -231,8 +231,16 @@ void main() {
       data: {
         'method': 'OFFLINE',
         'items': [
-          {'menu_id': 'm1', 'quantity': 1},
+          {
+            'menu_id': 'm1',
+            'title': 'Test Item',
+            'quantity': 1,
+            'unit_price': 45000,
+            'line_total': 45000,
+          },
         ],
+        'subtotal_amount': 45000,
+        'discount_amount': 0,
         'amount': 45000,
         'cash_tendered': 50000,
         'change_amount': 5000,

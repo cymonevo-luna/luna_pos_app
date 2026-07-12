@@ -48,4 +48,6 @@ abstract final class PrefKeys {
   static const String themeMode = 'theme_mode';
   static const String onboardingDone = 'onboarding_done';
   static const String locale = 'locale';
+  static const String printerDeviceId = 'printer_device_id';
+  static const String printerDeviceName = 'printer_device_name';
 }

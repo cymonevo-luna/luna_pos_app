@@ -30,6 +30,7 @@ void main() {
         'data': {
           'id': 'tx-1',
           'method': 'OFFLINE',
+          'subtotal_amount': 51000,
           'amount': 51000,
           'cash_tendered': 60000,
           'change_amount': 9000,
@@ -38,9 +39,23 @@ void main() {
       data: {
         'method': 'OFFLINE',
         'items': [
-          {'menu_id': 'm1', 'quantity': 2},
-          {'menu_id': 'm2', 'quantity': 1},
+          {
+            'menu_id': 'm1',
+            'title': 'Es Teh',
+            'quantity': 2,
+            'unit_price': 8000,
+            'line_total': 16000,
+          },
+          {
+            'menu_id': 'm2',
+            'title': 'Nasi Goreng',
+            'quantity': 1,
+            'unit_price': 35000,
+            'line_total': 35000,
+          },
         ],
+        'subtotal_amount': 51000,
+        'discount_amount': 0,
         'amount': 51000,
         'cash_tendered': 60000,
         'change_amount': 9000,
@@ -50,9 +65,22 @@ void main() {
     final request = CreateTransactionRequest(
       method: 'OFFLINE',
       items: const [
-        TransactionItemRequest(menuId: 'm1', quantity: 2),
-        TransactionItemRequest(menuId: 'm2', quantity: 1),
+        TransactionItemRequest(
+          menuId: 'm1',
+          title: 'Es Teh',
+          quantity: 2,
+          unitPrice: 8000,
+          lineTotal: 16000,
+        ),
+        TransactionItemRequest(
+          menuId: 'm2',
+          title: 'Nasi Goreng',
+          quantity: 1,
+          unitPrice: 35000,
+          lineTotal: 35000,
+        ),
       ],
+      subtotalAmount: 51000,
       amount: 51000,
       cashTendered: 60000,
       changeAmount: 9000,

@@ -30,17 +30,15 @@ class PaymentState {
 }
 
 List<TransactionItemRequest> buildTransactionItems(List<OrderLineItem> lines) {
-  final quantitiesByMenuId = <String, int>{};
-  for (final line in lines) {
-    quantitiesByMenuId[line.menuId] =
-        (quantitiesByMenuId[line.menuId] ?? 0) + line.quantity;
-  }
-
-  return quantitiesByMenuId.entries
+  return lines
       .map(
-        (entry) => TransactionItemRequest(
-          menuId: entry.key,
-          quantity: entry.value,
+        (line) => TransactionItemRequest(
+          menuId: line.menuId,
+          title: line.title,
+          quantity: line.quantity,
+          unitPrice: line.sellPrice,
+          lineTotal: line.lineTotal,
+          note: line.note.trim().isEmpty ? null : line.note.trim(),
         ),
       )
       .toList();
@@ -72,6 +70,7 @@ class PaymentController extends Notifier<PaymentState> {
       final request = CreateTransactionRequest(
         method: 'OFFLINE',
         items: buildTransactionItems(order.lines),
+        subtotalAmount: amount,
         amount: amount,
         cashTendered: cashReceived,
         changeAmount: changeAmount,

@@ -547,4 +547,36 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get stockQuantityInvalid => 'Masukkan jumlah 0 atau lebih';
+
+  @override
+  String get deliveries => 'Pengiriman';
+
+  @override
+  String get productionDeliveries => 'Pengiriman produksi';
+
+  @override
+  String get productionDeliveryDetail => 'Detail pengiriman';
+
+  @override
+  String get noDeliveriesPending => 'Tidak ada pengiriman tertunda';
+
+  @override
+  String get confirmDelivery => 'Konfirmasi pengiriman';
+
+  @override
+  String get deliveryConfirmed => 'Pengiriman dikonfirmasi';
+
+  @override
+  String get productionDeliveryItems => 'Item';
+
+  @override
+  String productionItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count item',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
 }

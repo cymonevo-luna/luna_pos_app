@@ -169,5 +169,13 @@
   "stockUnitLabel": "Satuan",
   "save": "Simpan",
   "stockTitleTooShort": "Judul minimal 2 karakter",
-  "stockQuantityInvalid": "Masukkan jumlah 0 atau lebih"
+  "stockQuantityInvalid": "Masukkan jumlah 0 atau lebih",
+  "deliveries": "Pengiriman",
+  "productionDeliveries": "Pengiriman produksi",
+  "productionDeliveryDetail": "Detail pengiriman",
+  "noDeliveriesPending": "Tidak ada pengiriman tertunda",
+  "confirmDelivery": "Konfirmasi pengiriman",
+  "deliveryConfirmed": "Pengiriman dikonfirmasi",
+  "productionDeliveryItems": "Item",
+  "productionItemCount": "{count, plural, =1{1 item} other{{count} item}}"
 }

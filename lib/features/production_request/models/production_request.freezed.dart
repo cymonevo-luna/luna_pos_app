@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ProductionRequestSummary {
 
- String get id; String get status;@JsonKey(name: 'item_count') int get itemCount;@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? get createdAt;@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? get updatedAt;
+ String get id; String get status;@JsonKey(name: 'item_count') int get itemCount; List<ProductionRequestItem> get items;@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? get createdAt;@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? get updatedAt;
 /// Create a copy of ProductionRequestSummary
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ProductionRequestSummaryCopyWith<ProductionRequestSummary> get copyWith => _$Pr
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProductionRequestSummary&&(identical(other.id, id) || other.id == id)&&(identical(other.status, status) || other.status == status)&&(identical(other.itemCount, itemCount) || other.itemCount == itemCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProductionRequestSummary&&(identical(other.id, id) || other.id == id)&&(identical(other.status, status) || other.status == status)&&(identical(other.itemCount, itemCount) || other.itemCount == itemCount)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,status,itemCount,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,status,itemCount,const DeepCollectionEquality().hash(items),createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'ProductionRequestSummary(id: $id, status: $status, itemCount: $itemCount, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'ProductionRequestSummary(id: $id, status: $status, itemCount: $itemCount, items: $items, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ProductionRequestSummaryCopyWith<$Res>  {
   factory $ProductionRequestSummaryCopyWith(ProductionRequestSummary value, $Res Function(ProductionRequestSummary) _then) = _$ProductionRequestSummaryCopyWithImpl;
 @useResult
 $Res call({
- String id, String status,@JsonKey(name: 'item_count') int itemCount,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt,@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? updatedAt
+ String id, String status,@JsonKey(name: 'item_count') int itemCount, List<ProductionRequestItem> items,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt,@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? updatedAt
 });
 
 
@@ -65,12 +65,13 @@ class _$ProductionRequestSummaryCopyWithImpl<$Res>
 
 /// Create a copy of ProductionRequestSummary
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? status = null,Object? itemCount = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? status = null,Object? itemCount = null,Object? items = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,itemCount: null == itemCount ? _self.itemCount : itemCount // ignore: cast_nullable_to_non_nullable
-as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as int,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
+as List<ProductionRequestItem>,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -157,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String status, @JsonKey(name: 'item_count')  int itemCount, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String status, @JsonKey(name: 'item_count')  int itemCount,  List<ProductionRequestItem> items, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProductionRequestSummary() when $default != null:
-return $default(_that.id,_that.status,_that.itemCount,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.status,_that.itemCount,_that.items,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
@@ -178,10 +179,10 @@ return $default(_that.id,_that.status,_that.itemCount,_that.createdAt,_that.upda
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String status, @JsonKey(name: 'item_count')  int itemCount, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String status, @JsonKey(name: 'item_count')  int itemCount,  List<ProductionRequestItem> items, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _ProductionRequestSummary():
-return $default(_that.id,_that.status,_that.itemCount,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.status,_that.itemCount,_that.items,_that.createdAt,_that.updatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +199,10 @@ return $default(_that.id,_that.status,_that.itemCount,_that.createdAt,_that.upda
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String status, @JsonKey(name: 'item_count')  int itemCount, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String status, @JsonKey(name: 'item_count')  int itemCount,  List<ProductionRequestItem> items, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _ProductionRequestSummary() when $default != null:
-return $default(_that.id,_that.status,_that.itemCount,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.status,_that.itemCount,_that.items,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -213,12 +214,19 @@ return $default(_that.id,_that.status,_that.itemCount,_that.createdAt,_that.upda
 @JsonSerializable()
 
 class _ProductionRequestSummary implements ProductionRequestSummary {
-  const _ProductionRequestSummary({required this.id, required this.status, @JsonKey(name: 'item_count') required this.itemCount, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) this.createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) this.updatedAt});
+  const _ProductionRequestSummary({required this.id, required this.status, @JsonKey(name: 'item_count') required this.itemCount, final  List<ProductionRequestItem> items = const [], @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) this.createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) this.updatedAt}): _items = items;
   factory _ProductionRequestSummary.fromJson(Map<String, dynamic> json) => _$ProductionRequestSummaryFromJson(json);
 
 @override final  String id;
 @override final  String status;
 @override@JsonKey(name: 'item_count') final  int itemCount;
+ final  List<ProductionRequestItem> _items;
+@override@JsonKey() List<ProductionRequestItem> get items {
+  if (_items is EqualUnmodifiableListView) return _items;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_items);
+}
+
 @override@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) final  DateTime? createdAt;
 @override@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) final  DateTime? updatedAt;
 
@@ -235,16 +243,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProductionRequestSummary&&(identical(other.id, id) || other.id == id)&&(identical(other.status, status) || other.status == status)&&(identical(other.itemCount, itemCount) || other.itemCount == itemCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProductionRequestSummary&&(identical(other.id, id) || other.id == id)&&(identical(other.status, status) || other.status == status)&&(identical(other.itemCount, itemCount) || other.itemCount == itemCount)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,status,itemCount,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,status,itemCount,const DeepCollectionEquality().hash(_items),createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'ProductionRequestSummary(id: $id, status: $status, itemCount: $itemCount, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'ProductionRequestSummary(id: $id, status: $status, itemCount: $itemCount, items: $items, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -255,7 +263,7 @@ abstract mixin class _$ProductionRequestSummaryCopyWith<$Res> implements $Produc
   factory _$ProductionRequestSummaryCopyWith(_ProductionRequestSummary value, $Res Function(_ProductionRequestSummary) _then) = __$ProductionRequestSummaryCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String status,@JsonKey(name: 'item_count') int itemCount,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt,@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? updatedAt
+ String id, String status,@JsonKey(name: 'item_count') int itemCount, List<ProductionRequestItem> items,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt,@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? updatedAt
 });
 
 
@@ -272,12 +280,13 @@ class __$ProductionRequestSummaryCopyWithImpl<$Res>
 
 /// Create a copy of ProductionRequestSummary
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? status = null,Object? itemCount = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? status = null,Object? itemCount = null,Object? items = null,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_ProductionRequestSummary(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,itemCount: null == itemCount ? _self.itemCount : itemCount // ignore: cast_nullable_to_non_nullable
-as int,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as int,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
+as List<ProductionRequestItem>,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -290,7 +299,7 @@ as DateTime?,
 /// @nodoc
 mixin _$ProductionRequestItem {
 
-@JsonKey(name: 'menu_title') String get menuTitle;@JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson) num get quantity;@JsonKey(name: 'is_finished') bool get isFinished;
+@JsonKey(name: 'menu_title') String get menuTitle;@JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson) num get quantity;@JsonKey(name: 'is_finished') bool get isFinished; String? get note;
 /// Create a copy of ProductionRequestItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -303,16 +312,16 @@ $ProductionRequestItemCopyWith<ProductionRequestItem> get copyWith => _$Producti
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProductionRequestItem&&(identical(other.menuTitle, menuTitle) || other.menuTitle == menuTitle)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.isFinished, isFinished) || other.isFinished == isFinished));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProductionRequestItem&&(identical(other.menuTitle, menuTitle) || other.menuTitle == menuTitle)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.isFinished, isFinished) || other.isFinished == isFinished)&&(identical(other.note, note) || other.note == note));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,menuTitle,quantity,isFinished);
+int get hashCode => Object.hash(runtimeType,menuTitle,quantity,isFinished,note);
 
 @override
 String toString() {
-  return 'ProductionRequestItem(menuTitle: $menuTitle, quantity: $quantity, isFinished: $isFinished)';
+  return 'ProductionRequestItem(menuTitle: $menuTitle, quantity: $quantity, isFinished: $isFinished, note: $note)';
 }
 
 
@@ -323,7 +332,7 @@ abstract mixin class $ProductionRequestItemCopyWith<$Res>  {
   factory $ProductionRequestItemCopyWith(ProductionRequestItem value, $Res Function(ProductionRequestItem) _then) = _$ProductionRequestItemCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'menu_title') String menuTitle,@JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson) num quantity,@JsonKey(name: 'is_finished') bool isFinished
+@JsonKey(name: 'menu_title') String menuTitle,@JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson) num quantity,@JsonKey(name: 'is_finished') bool isFinished, String? note
 });
 
 
@@ -340,12 +349,13 @@ class _$ProductionRequestItemCopyWithImpl<$Res>
 
 /// Create a copy of ProductionRequestItem
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? menuTitle = null,Object? quantity = null,Object? isFinished = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? menuTitle = null,Object? quantity = null,Object? isFinished = null,Object? note = freezed,}) {
   return _then(_self.copyWith(
 menuTitle: null == menuTitle ? _self.menuTitle : menuTitle // ignore: cast_nullable_to_non_nullable
 as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
 as num,isFinished: null == isFinished ? _self.isFinished : isFinished // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -430,10 +440,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'menu_title')  String menuTitle, @JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson)  num quantity, @JsonKey(name: 'is_finished')  bool isFinished)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'menu_title')  String menuTitle, @JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson)  num quantity, @JsonKey(name: 'is_finished')  bool isFinished,  String? note)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProductionRequestItem() when $default != null:
-return $default(_that.menuTitle,_that.quantity,_that.isFinished);case _:
+return $default(_that.menuTitle,_that.quantity,_that.isFinished,_that.note);case _:
   return orElse();
 
 }
@@ -451,10 +461,10 @@ return $default(_that.menuTitle,_that.quantity,_that.isFinished);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'menu_title')  String menuTitle, @JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson)  num quantity, @JsonKey(name: 'is_finished')  bool isFinished)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'menu_title')  String menuTitle, @JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson)  num quantity, @JsonKey(name: 'is_finished')  bool isFinished,  String? note)  $default,) {final _that = this;
 switch (_that) {
 case _ProductionRequestItem():
-return $default(_that.menuTitle,_that.quantity,_that.isFinished);case _:
+return $default(_that.menuTitle,_that.quantity,_that.isFinished,_that.note);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -471,10 +481,10 @@ return $default(_that.menuTitle,_that.quantity,_that.isFinished);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'menu_title')  String menuTitle, @JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson)  num quantity, @JsonKey(name: 'is_finished')  bool isFinished)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'menu_title')  String menuTitle, @JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson)  num quantity, @JsonKey(name: 'is_finished')  bool isFinished,  String? note)?  $default,) {final _that = this;
 switch (_that) {
 case _ProductionRequestItem() when $default != null:
-return $default(_that.menuTitle,_that.quantity,_that.isFinished);case _:
+return $default(_that.menuTitle,_that.quantity,_that.isFinished,_that.note);case _:
   return null;
 
 }
@@ -486,12 +496,13 @@ return $default(_that.menuTitle,_that.quantity,_that.isFinished);case _:
 @JsonSerializable()
 
 class _ProductionRequestItem implements ProductionRequestItem {
-  const _ProductionRequestItem({@JsonKey(name: 'menu_title') required this.menuTitle, @JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson) required this.quantity, @JsonKey(name: 'is_finished') this.isFinished = false});
+  const _ProductionRequestItem({@JsonKey(name: 'menu_title') required this.menuTitle, @JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson) required this.quantity, @JsonKey(name: 'is_finished') this.isFinished = false, this.note});
   factory _ProductionRequestItem.fromJson(Map<String, dynamic> json) => _$ProductionRequestItemFromJson(json);
 
 @override@JsonKey(name: 'menu_title') final  String menuTitle;
 @override@JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson) final  num quantity;
 @override@JsonKey(name: 'is_finished') final  bool isFinished;
+@override final  String? note;
 
 /// Create a copy of ProductionRequestItem
 /// with the given fields replaced by the non-null parameter values.
@@ -506,16 +517,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProductionRequestItem&&(identical(other.menuTitle, menuTitle) || other.menuTitle == menuTitle)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.isFinished, isFinished) || other.isFinished == isFinished));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProductionRequestItem&&(identical(other.menuTitle, menuTitle) || other.menuTitle == menuTitle)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.isFinished, isFinished) || other.isFinished == isFinished)&&(identical(other.note, note) || other.note == note));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,menuTitle,quantity,isFinished);
+int get hashCode => Object.hash(runtimeType,menuTitle,quantity,isFinished,note);
 
 @override
 String toString() {
-  return 'ProductionRequestItem(menuTitle: $menuTitle, quantity: $quantity, isFinished: $isFinished)';
+  return 'ProductionRequestItem(menuTitle: $menuTitle, quantity: $quantity, isFinished: $isFinished, note: $note)';
 }
 
 
@@ -526,7 +537,7 @@ abstract mixin class _$ProductionRequestItemCopyWith<$Res> implements $Productio
   factory _$ProductionRequestItemCopyWith(_ProductionRequestItem value, $Res Function(_ProductionRequestItem) _then) = __$ProductionRequestItemCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'menu_title') String menuTitle,@JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson) num quantity,@JsonKey(name: 'is_finished') bool isFinished
+@JsonKey(name: 'menu_title') String menuTitle,@JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson) num quantity,@JsonKey(name: 'is_finished') bool isFinished, String? note
 });
 
 
@@ -543,12 +554,13 @@ class __$ProductionRequestItemCopyWithImpl<$Res>
 
 /// Create a copy of ProductionRequestItem
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? menuTitle = null,Object? quantity = null,Object? isFinished = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? menuTitle = null,Object? quantity = null,Object? isFinished = null,Object? note = freezed,}) {
   return _then(_ProductionRequestItem(
 menuTitle: null == menuTitle ? _self.menuTitle : menuTitle // ignore: cast_nullable_to_non_nullable
 as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
 as num,isFinished: null == isFinished ? _self.isFinished : isFinished // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -559,7 +571,7 @@ as bool,
 /// @nodoc
 mixin _$ProductionRequestDetail {
 
- String get id; String get status; List<ProductionRequestItem> get items;@JsonKey(name: 'item_count') int? get itemCount;@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? get createdAt;@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? get updatedAt;
+ String get id; String get status; List<ProductionRequestItem> get items; String? get notes;@JsonKey(name: 'item_count') int? get itemCount;@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? get createdAt;@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? get updatedAt;
 /// Create a copy of ProductionRequestDetail
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -572,16 +584,16 @@ $ProductionRequestDetailCopyWith<ProductionRequestDetail> get copyWith => _$Prod
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProductionRequestDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.itemCount, itemCount) || other.itemCount == itemCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProductionRequestDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.itemCount, itemCount) || other.itemCount == itemCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,status,const DeepCollectionEquality().hash(items),itemCount,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,status,const DeepCollectionEquality().hash(items),notes,itemCount,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'ProductionRequestDetail(id: $id, status: $status, items: $items, itemCount: $itemCount, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'ProductionRequestDetail(id: $id, status: $status, items: $items, notes: $notes, itemCount: $itemCount, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -592,7 +604,7 @@ abstract mixin class $ProductionRequestDetailCopyWith<$Res>  {
   factory $ProductionRequestDetailCopyWith(ProductionRequestDetail value, $Res Function(ProductionRequestDetail) _then) = _$ProductionRequestDetailCopyWithImpl;
 @useResult
 $Res call({
- String id, String status, List<ProductionRequestItem> items,@JsonKey(name: 'item_count') int? itemCount,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt,@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? updatedAt
+ String id, String status, List<ProductionRequestItem> items, String? notes,@JsonKey(name: 'item_count') int? itemCount,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt,@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? updatedAt
 });
 
 
@@ -609,12 +621,13 @@ class _$ProductionRequestDetailCopyWithImpl<$Res>
 
 /// Create a copy of ProductionRequestDetail
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? status = null,Object? items = null,Object? itemCount = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? status = null,Object? items = null,Object? notes = freezed,Object? itemCount = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
-as List<ProductionRequestItem>,itemCount: freezed == itemCount ? _self.itemCount : itemCount // ignore: cast_nullable_to_non_nullable
+as List<ProductionRequestItem>,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
+as String?,itemCount: freezed == itemCount ? _self.itemCount : itemCount // ignore: cast_nullable_to_non_nullable
 as int?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
@@ -702,10 +715,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String status,  List<ProductionRequestItem> items, @JsonKey(name: 'item_count')  int? itemCount, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String status,  List<ProductionRequestItem> items,  String? notes, @JsonKey(name: 'item_count')  int? itemCount, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProductionRequestDetail() when $default != null:
-return $default(_that.id,_that.status,_that.items,_that.itemCount,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.status,_that.items,_that.notes,_that.itemCount,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
@@ -723,10 +736,10 @@ return $default(_that.id,_that.status,_that.items,_that.itemCount,_that.createdA
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String status,  List<ProductionRequestItem> items, @JsonKey(name: 'item_count')  int? itemCount, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String status,  List<ProductionRequestItem> items,  String? notes, @JsonKey(name: 'item_count')  int? itemCount, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _ProductionRequestDetail():
-return $default(_that.id,_that.status,_that.items,_that.itemCount,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.status,_that.items,_that.notes,_that.itemCount,_that.createdAt,_that.updatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -743,10 +756,10 @@ return $default(_that.id,_that.status,_that.items,_that.itemCount,_that.createdA
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String status,  List<ProductionRequestItem> items, @JsonKey(name: 'item_count')  int? itemCount, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String status,  List<ProductionRequestItem> items,  String? notes, @JsonKey(name: 'item_count')  int? itemCount, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _ProductionRequestDetail() when $default != null:
-return $default(_that.id,_that.status,_that.items,_that.itemCount,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.status,_that.items,_that.notes,_that.itemCount,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -758,7 +771,7 @@ return $default(_that.id,_that.status,_that.items,_that.itemCount,_that.createdA
 @JsonSerializable()
 
 class _ProductionRequestDetail implements ProductionRequestDetail {
-  const _ProductionRequestDetail({required this.id, required this.status, required final  List<ProductionRequestItem> items, @JsonKey(name: 'item_count') this.itemCount, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) this.createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) this.updatedAt}): _items = items;
+  const _ProductionRequestDetail({required this.id, required this.status, required final  List<ProductionRequestItem> items, this.notes, @JsonKey(name: 'item_count') this.itemCount, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) this.createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) this.updatedAt}): _items = items;
   factory _ProductionRequestDetail.fromJson(Map<String, dynamic> json) => _$ProductionRequestDetailFromJson(json);
 
 @override final  String id;
@@ -770,6 +783,7 @@ class _ProductionRequestDetail implements ProductionRequestDetail {
   return EqualUnmodifiableListView(_items);
 }
 
+@override final  String? notes;
 @override@JsonKey(name: 'item_count') final  int? itemCount;
 @override@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) final  DateTime? createdAt;
 @override@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) final  DateTime? updatedAt;
@@ -787,16 +801,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProductionRequestDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.itemCount, itemCount) || other.itemCount == itemCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProductionRequestDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.itemCount, itemCount) || other.itemCount == itemCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,status,const DeepCollectionEquality().hash(_items),itemCount,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,status,const DeepCollectionEquality().hash(_items),notes,itemCount,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'ProductionRequestDetail(id: $id, status: $status, items: $items, itemCount: $itemCount, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'ProductionRequestDetail(id: $id, status: $status, items: $items, notes: $notes, itemCount: $itemCount, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -807,7 +821,7 @@ abstract mixin class _$ProductionRequestDetailCopyWith<$Res> implements $Product
   factory _$ProductionRequestDetailCopyWith(_ProductionRequestDetail value, $Res Function(_ProductionRequestDetail) _then) = __$ProductionRequestDetailCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String status, List<ProductionRequestItem> items,@JsonKey(name: 'item_count') int? itemCount,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt,@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? updatedAt
+ String id, String status, List<ProductionRequestItem> items, String? notes,@JsonKey(name: 'item_count') int? itemCount,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt,@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? updatedAt
 });
 
 
@@ -824,12 +838,13 @@ class __$ProductionRequestDetailCopyWithImpl<$Res>
 
 /// Create a copy of ProductionRequestDetail
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? status = null,Object? items = null,Object? itemCount = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? status = null,Object? items = null,Object? notes = freezed,Object? itemCount = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_ProductionRequestDetail(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
-as List<ProductionRequestItem>,itemCount: freezed == itemCount ? _self.itemCount : itemCount // ignore: cast_nullable_to_non_nullable
+as List<ProductionRequestItem>,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
+as String?,itemCount: freezed == itemCount ? _self.itemCount : itemCount // ignore: cast_nullable_to_non_nullable
 as int?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,

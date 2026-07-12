@@ -1117,6 +1117,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter a quantity of 0 or more'**
   String get stockQuantityInvalid;
+
+  /// Production deliveries bottom navigation label
+  ///
+  /// In en, this message translates to:
+  /// **'Deliveries'**
+  String get deliveries;
+
+  /// Production delivery inbox screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Production deliveries'**
+  String get productionDeliveries;
+
+  /// Production delivery detail screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery details'**
+  String get productionDeliveryDetail;
+
+  /// Empty state when there are no READY_TO_PICK production requests
+  ///
+  /// In en, this message translates to:
+  /// **'No deliveries pending'**
+  String get noDeliveriesPending;
+
+  /// Button to mark a production request as delivered
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm delivery'**
+  String get confirmDelivery;
+
+  /// SnackBar shown after cashier confirms production delivery
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery confirmed'**
+  String get deliveryConfirmed;
+
+  /// Section header for production request line items
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get productionDeliveryItems;
+
+  /// Fallback summary when list rows have no embedded items
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 item} other{{count} items}}'**
+  String productionItemCount(int count);
 }
 
 class _AppLocalizationsDelegate

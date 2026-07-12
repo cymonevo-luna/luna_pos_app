@@ -545,4 +545,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stockQuantityInvalid => 'Enter a quantity of 0 or more';
+
+  @override
+  String get deliveries => 'Deliveries';
+
+  @override
+  String get productionDeliveries => 'Production deliveries';
+
+  @override
+  String get productionDeliveryDetail => 'Delivery details';
+
+  @override
+  String get noDeliveriesPending => 'No deliveries pending';
+
+  @override
+  String get confirmDelivery => 'Confirm delivery';
+
+  @override
+  String get deliveryConfirmed => 'Delivery confirmed';
+
+  @override
+  String get productionDeliveryItems => 'Items';
+
+  @override
+  String productionItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
 }

@@ -12,6 +12,13 @@ _ProductionRequestSummary _$ProductionRequestSummaryFromJson(
   id: json['id'] as String,
   status: json['status'] as String,
   itemCount: (json['item_count'] as num).toInt(),
+  items:
+      (json['items'] as List<dynamic>?)
+          ?.map(
+            (e) => ProductionRequestItem.fromJson(e as Map<String, dynamic>),
+          )
+          .toList() ??
+      const [],
   createdAt: _nullableDateTimeFromJson(json['created_at']),
   updatedAt: _nullableDateTimeFromJson(json['updated_at']),
 );
@@ -22,6 +29,7 @@ Map<String, dynamic> _$ProductionRequestSummaryToJson(
   'id': instance.id,
   'status': instance.status,
   'item_count': instance.itemCount,
+  'items': instance.items,
   'created_at': instance.createdAt?.toIso8601String(),
   'updated_at': instance.updatedAt?.toIso8601String(),
 };
@@ -32,6 +40,7 @@ _ProductionRequestItem _$ProductionRequestItemFromJson(
   menuTitle: json['menu_title'] as String,
   quantity: _quantityFromJson(json['quantity']),
   isFinished: json['is_finished'] as bool? ?? false,
+  note: json['note'] as String?,
 );
 
 Map<String, dynamic> _$ProductionRequestItemToJson(
@@ -40,6 +49,7 @@ Map<String, dynamic> _$ProductionRequestItemToJson(
   'menu_title': instance.menuTitle,
   'quantity': _quantityToJson(instance.quantity),
   'is_finished': instance.isFinished,
+  'note': instance.note,
 };
 
 _ProductionRequestDetail _$ProductionRequestDetailFromJson(
@@ -50,6 +60,7 @@ _ProductionRequestDetail _$ProductionRequestDetailFromJson(
   items: (json['items'] as List<dynamic>)
       .map((e) => ProductionRequestItem.fromJson(e as Map<String, dynamic>))
       .toList(),
+  notes: json['notes'] as String?,
   itemCount: (json['item_count'] as num?)?.toInt(),
   createdAt: _nullableDateTimeFromJson(json['created_at']),
   updatedAt: _nullableDateTimeFromJson(json['updated_at']),
@@ -61,6 +72,7 @@ Map<String, dynamic> _$ProductionRequestDetailToJson(
   'id': instance.id,
   'status': instance.status,
   'items': instance.items,
+  'notes': instance.notes,
   'item_count': instance.itemCount,
   'created_at': instance.createdAt?.toIso8601String(),
   'updated_at': instance.updatedAt?.toIso8601String(),

@@ -9,6 +9,7 @@ import '../storage/secure_storage_service.dart';
 import '../../features/menu/data/menu_repository.dart';
 import '../../features/stock/data/food_supply_repository.dart';
 import '../../features/store_settings/data/store_settings_repository.dart';
+import '../../features/production_request/data/production_request_repository.dart';
 import '../../features/transaction/data/transaction_repository.dart';
 
 /// Global service locator. Use `locator<T>()` to resolve singletons anywhere.
@@ -52,6 +53,10 @@ Future<void> setupLocator() async {
 
   locator.registerLazySingleton<FoodSupplyRepository>(
     () => FoodSupplyRepository(locator<ApiClient>()),
+  );
+
+  locator.registerLazySingleton<ProductionRequestRepository>(
+    () => ProductionRequestRepository(locator<ApiClient>()),
   );
 
   locator.registerSingleton<BluetoothPrinterService>(

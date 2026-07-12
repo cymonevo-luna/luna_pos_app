@@ -12,6 +12,7 @@ import '../../features/order/checkout_page.dart';
 import '../../features/order/order_controller.dart';
 import '../../features/placeholder/coming_soon_page.dart';
 import '../../features/purchase/purchase_list_page.dart';
+import '../../features/stock/stock_form_sheet.dart';
 import '../../features/stock/stock_list_page.dart';
 import '../../features/transaction/transaction_detail_page.dart';
 import '../../features/transaction/transaction_history_page.dart';
@@ -216,18 +217,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'new',
                     name: AppRoute.stockNew.name,
                     parentNavigatorKey: _rootNavigatorKey,
-                    builder: (context, state) => ComingSoonPage(
-                      title: AppLocalizations.of(context).stockNew,
-                      icon: Icons.add_box_outlined,
-                    ),
+                    builder: (context, state) => const StockFormPage(),
                   ),
                   GoRoute(
                     path: ':id/edit',
                     name: AppRoute.stockEdit.name,
                     parentNavigatorKey: _rootNavigatorKey,
-                    builder: (context, state) => ComingSoonPage(
-                      title: AppLocalizations.of(context).stockEdit,
-                      icon: Icons.edit_outlined,
+                    builder: (context, state) => StockEditPage(
+                      id: state.pathParameters['id']!,
                     ),
                   ),
                 ],

@@ -133,5 +133,15 @@
   "purchaseStatusPaid": "Dibayar",
   "purchaseStatusDelivered": "Diterima",
   "purchaseCreatedBy": "Dibuat oleh",
-  "purchaseItemCount": "{count, plural, =1{1 item} other{{count} item}}"
+  "purchaseItemCount": "{count, plural, =1{1 item} other{{count} item}}",
+  "searchStock": "Cari persediaan",
+  "addSupply": "Tambah persediaan",
+  "noStockItems": "Belum ada persediaan",
+  "stockTitleLabel": "Judul",
+  "stockDescriptionLabel": "Deskripsi",
+  "stockQuantityLabel": "Jumlah stok",
+  "stockUnitLabel": "Satuan",
+  "save": "Simpan",
+  "stockTitleTooShort": "Judul minimal 2 karakter",
+  "stockQuantityInvalid": "Masukkan jumlah 0 atau lebih"
 }

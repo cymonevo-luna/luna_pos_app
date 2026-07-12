@@ -39,7 +39,9 @@ void main() {
     });
 
     testWidgets('operational-only login succeeds', (tester) async {
-      harness.stubLoginForRole(TestAccountRole.operational);
+      harness
+        ..stubLoginForRole(TestAccountRole.operational)
+        ..stubEmptyFoodSupplies();
 
       await harness.pumpApp(tester);
       await harness.loginViaUi(tester, TestAccountRole.operational);
@@ -61,7 +63,9 @@ void main() {
     });
 
     testWidgets('operational-only lands on procurement', (tester) async {
-      harness.stubLoginForRole(TestAccountRole.operational);
+      harness
+        ..stubLoginForRole(TestAccountRole.operational)
+        ..stubEmptyFoodSupplies();
 
       await harness.pumpApp(tester);
       await harness.loginViaUi(tester, TestAccountRole.operational);
@@ -75,7 +79,9 @@ void main() {
     });
 
     testWidgets('operational-only blocked from checkout', (tester) async {
-      harness.stubLoginForRole(TestAccountRole.operational);
+      harness
+        ..stubLoginForRole(TestAccountRole.operational)
+        ..stubEmptyFoodSupplies();
 
       await harness.pumpApp(tester);
       await harness.loginViaUi(tester, TestAccountRole.operational);

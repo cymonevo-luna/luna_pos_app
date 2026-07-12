@@ -15,6 +15,7 @@ import 'package:luna_pos/features/auth/auth_controller.dart';
 import 'package:luna_pos/features/auth/login_page.dart';
 import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
+import 'package:luna_pos/features/stock/data/food_supply_repository.dart';
 import 'package:luna_pos/features/stock/stock_list_page.dart';
 import 'package:luna_pos/l10n/app_localizations_en.dart';
 import 'package:luna_pos/shared/widgets/main_scaffold.dart';
@@ -117,6 +118,9 @@ Future<IntegrationTestHarness> setUpIntegrationHarness() async {
     ..registerSingleton<ApiClient>(mocked.client)
     ..registerLazySingleton<MenuRepository>(
       () => MenuRepository(locator<ApiClient>()),
+    )
+    ..registerLazySingleton<FoodSupplyRepository>(
+      () => FoodSupplyRepository(locator<ApiClient>()),
     );
 
   return IntegrationTestHarness(
@@ -182,6 +186,18 @@ class IntegrationTestHarness {
       locator<ApiClient>(),
       secure,
       role,
+    );
+  }
+
+  void stubEmptyFoodSupplies() {
+    adapter.onGet(
+      FoodSupplyRepository.listPath,
+      (server) => server.reply(200, {
+        'success': true,
+        'data': [],
+        'meta': {'page': 1, 'per_page': 20, 'total': 0},
+      }),
+      queryParameters: {'page': '1', 'per_page': '20'},
     );
   }
 

@@ -437,4 +437,34 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get searchStock => 'Search supplies';
+
+  @override
+  String get addSupply => 'Add supply';
+
+  @override
+  String get noStockItems => 'No supplies yet';
+
+  @override
+  String get stockTitleLabel => 'Title';
+
+  @override
+  String get stockDescriptionLabel => 'Description';
+
+  @override
+  String get stockQuantityLabel => 'Stock quantity';
+
+  @override
+  String get stockUnitLabel => 'Unit';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get stockTitleTooShort => 'Title must be at least 2 characters';
+
+  @override
+  String get stockQuantityInvalid => 'Enter a quantity of 0 or more';
 }

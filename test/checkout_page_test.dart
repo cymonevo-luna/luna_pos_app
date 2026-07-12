@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,18 +9,36 @@ import 'package:luna_pos/core/config/app_config.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/localization/locale_provider.dart';
 import 'package:luna_pos/core/network/api_client.dart';
+import 'package:luna_pos/core/printer/bluetooth_printer_service.dart';
 import 'package:luna_pos/core/router/app_router.dart';
 import 'package:luna_pos/core/storage/preferences_service.dart';
 import 'package:luna_pos/core/storage/secure_storage_service.dart';
+import 'package:luna_pos/features/auth/auth_controller.dart';
 import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/features/menu/models/pos_menu.dart';
 import 'package:luna_pos/features/order/checkout_page.dart';
 import 'package:luna_pos/features/order/order_controller.dart';
-import 'package:luna_pos/features/order/payment_page.dart';
+import 'package:luna_pos/features/store_settings/data/store_settings_repository.dart';
+import 'package:luna_pos/features/transaction/data/transaction_repository.dart';
+import 'package:luna_pos/features/user/models/user.dart';
 import 'package:luna_pos/l10n/app_localizations.dart';
+import 'package:luna_pos/shared/widgets/app_button.dart';
 
 import 'helpers/auth_harness.dart';
+import 'helpers/mock_bluetooth_printer_service.dart';
+
+class _FakeAuthController extends AuthController {
+  @override
+  AuthState build() => const AuthState(
+        status: AuthStatus.authenticated,
+        user: User(
+          id: 'u1',
+          name: 'Alex',
+          email: 'a@b.com',
+        ),
+      );
+}
 
 void main() {
   late ProviderContainer container;
@@ -41,8 +58,19 @@ void main() {
       ..registerSingleton<ApiClient>(mocked.client)
       ..registerLazySingleton<MenuRepository>(
         () => MenuRepository(locator<ApiClient>()),
-      );
-    container = ProviderContainer();
+      )
+      ..registerLazySingleton<TransactionRepository>(
+        () => TransactionRepository(locator<ApiClient>()),
+      )
+      ..registerLazySingleton<StoreSettingsRepository>(
+        () => StoreSettingsRepository(locator<ApiClient>()),
+      )
+      ..registerSingleton<BluetoothPrinterService>(MockBluetoothPrinterService());
+    container = ProviderContainer(
+      overrides: [
+        authProvider.overrideWith(_FakeAuthController.new),
+      ],
+    );
   });
 
   tearDown(() {
@@ -89,8 +117,7 @@ void main() {
     );
   }
 
-  testWidgets('checkout page lists lines and grand total',
-      (WidgetTester tester) async {
+  testWidgets('checkout page lists lines and subtotal', (WidgetTester tester) async {
     seedTwoLineCart();
 
     await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
@@ -100,52 +127,29 @@ void main() {
     expect(find.text('Nasi Goreng'), findsOneWidget);
     expect(find.text('less ice'), findsOneWidget);
     expect(find.text('—'), findsOneWidget);
-    expect(find.text('Rp 8.000'), findsWidgets);
+    expect(find.text('Rp 8.000'), findsOneWidget);
     expect(find.text('Rp 70.000'), findsOneWidget);
     expect(find.text('Rp 78.000'), findsOneWidget);
   });
 
-  testWidgets('confirm navigates to payment page', (WidgetTester tester) async {
+  testWidgets('confirm button disabled when cash tendered is insufficient',
+      (WidgetTester tester) async {
     seedTwoLineCart();
 
-    final router = GoRouter(
-      initialLocation: AppRoute.checkout.path,
-      routes: [
-        GoRoute(
-          path: AppRoute.checkout.path,
-          name: AppRoute.checkout.name,
-          builder: (context, state) => const CheckoutPage(),
-        ),
-        GoRoute(
-          path: AppRoute.payment.path,
-          name: AppRoute.payment.name,
-          builder: (context, state) => const PaymentPage(),
-        ),
-      ],
-    );
-
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp.router(
-          locale: const Locale('en'),
-          supportedLocales: kSupportedLocales,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          routerConfig: router,
-        ),
-      ),
-    );
+    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Confirm'));
+    await tester.drag(find.byType(ListView), const Offset(0, -400));
     await tester.pumpAndSettle();
 
-    expect(find.byType(PaymentPage), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('cash_tendered_field')), '50000');
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<AppButton>(find.widgetWithText(AppButton, 'Confirm & Print'))
+          .onPressed,
+      isNull,
+    );
   });
 
   testWidgets('empty cart cannot access checkout route',

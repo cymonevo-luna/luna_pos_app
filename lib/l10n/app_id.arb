@@ -98,5 +98,13 @@
   "noteHint": "Catatan opsional (mis. es sedikit)",
   "saleComplete": "Penjualan selesai",
   "saleCompleteMessage": "Kembalian: {amount}",
-  "ok": "OK"
+  "ok": "OK",
+  "subtotal": "Subtotal",
+  "discount": "Diskon",
+  "total": "Total",
+  "confirmAndPrint": "Konfirmasi & Cetak",
+  "printAgain": "Cetak ulang",
+  "printFailedWarning": "Struk tidak dapat dicetak. Anda dapat mencoba lagi atau melanjutkan.",
+  "invalidDiscount": "Diskon tidak boleh melebihi subtotal",
+  "transactionIdLabel": "ID Transaksi: {id}"
 }

@@ -691,6 +691,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'OK'**
   String get ok;
+
+  /// Order subtotal before discount
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal'**
+  String get subtotal;
+
+  /// Discount amount input label
+  ///
+  /// In en, this message translates to:
+  /// **'Discount'**
+  String get discount;
+
+  /// Final total after discount
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// Complete checkout and print receipt
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm & Print'**
+  String get confirmAndPrint;
+
+  /// Retry printing the receipt
+  ///
+  /// In en, this message translates to:
+  /// **'Print again'**
+  String get printAgain;
+
+  /// Warning when sale succeeded but printing failed
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt could not be printed. You can retry or continue.'**
+  String get printFailedWarning;
+
+  /// Validation error for discount input
+  ///
+  /// In en, this message translates to:
+  /// **'Discount cannot exceed subtotal'**
+  String get invalidDiscount;
+
+  /// Shows the created transaction id after checkout
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction ID: {id}'**
+  String transactionIdLabel(String id);
 }
 
 class _AppLocalizationsDelegate

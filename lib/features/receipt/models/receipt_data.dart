@@ -2,7 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../user/models/user.dart';
 import 'receipt_line_item.dart';
-import 'store_settings.dart';
+import '../../store_settings/models/store_settings.dart';
 import 'transaction_response.dart';
 
 part 'receipt_data.freezed.dart';

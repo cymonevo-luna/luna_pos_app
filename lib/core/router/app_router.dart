@@ -10,7 +10,6 @@ import '../../features/menu/menu_page.dart';
 import '../../features/order/cart_page.dart';
 import '../../features/order/checkout_page.dart';
 import '../../features/order/order_controller.dart';
-import '../../features/order/payment_page.dart';
 import '../../features/placeholder/coming_soon_page.dart';
 import '../../features/profile/profile_page.dart';
 import '../../features/settings/settings_page.dart';
@@ -31,8 +30,7 @@ enum AppRoute {
   settings('/settings'),
   details('/details'),
   cart('/cart'),
-  checkout('/checkout'),
-  payment('/payment');
+  checkout('/checkout');
 
   const AppRoute(this.path);
   final String path;
@@ -57,10 +55,9 @@ class _AuthRefreshListenable extends ChangeNotifier {
 
 String? _orderRedirect(Ref ref, GoRouterState state) {
   final location = state.matchedLocation;
-  final isCheckoutOrPayment =
-      location == AppRoute.checkout.path || location == AppRoute.payment.path;
+  final isCheckout = location == AppRoute.checkout.path;
 
-  if (!isCheckoutOrPayment) return null;
+  if (!isCheckout) return null;
 
   final order = ref.read(orderProvider);
   if (order.lines.isEmpty) {
@@ -214,12 +211,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       name: AppRoute.checkout.name,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const CheckoutPage(),
-    ),
-    GoRoute(
-      path: AppRoute.payment.path,
-      name: AppRoute.payment.name,
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) => const PaymentPage(),
     ),
   ],
     errorBuilder: (context, state) => Scaffold(

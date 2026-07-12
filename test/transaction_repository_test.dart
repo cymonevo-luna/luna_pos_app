@@ -25,7 +25,7 @@ void main() {
   test('createOfflineTransaction posts expected payload', () async {
     adapter.onPost(
       '/api/v1/pos/transactions',
-      (server) => server.reply(200, {
+      (server) => server.reply(201, {
         'success': true,
         'data': {
           'id': 'tx-1',

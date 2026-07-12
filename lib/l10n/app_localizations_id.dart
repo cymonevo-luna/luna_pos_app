@@ -416,6 +416,85 @@ class AppLocalizationsId extends AppLocalizations {
       'Anda tidak memiliki izin untuk mengakses fitur pengadaan.';
 
   @override
+  String get noPurchaseRequests => 'Belum ada permintaan pembelian';
+
+  @override
+  String get purchaseFilterAll => 'Semua';
+
+  @override
+  String get purchaseStatusPending => 'Menunggu';
+
+  @override
+  String get purchaseStatusRequested => 'Diminta';
+
+  @override
+  String get purchaseStatusPaid => 'Dibayar';
+
+  @override
+  String get purchaseStatusDelivered => 'Diterima';
+
+  @override
+  String get purchaseCreatedBy => 'Dibuat oleh';
+
+  @override
+  String purchaseItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count item',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get purchaseSupplierLabel => 'Pemasok';
+
+  @override
+  String get purchaseSelectSupplier => 'Pilih pemasok';
+
+  @override
+  String get purchaseSearchSuppliers => 'Cari pemasok';
+
+  @override
+  String get purchaseLineItems => 'Item baris';
+
+  @override
+  String get purchaseAddItem => 'Tambah item';
+
+  @override
+  String get purchaseEmptyCatalog =>
+      'Pemasok ini belum memiliki harga katalog.';
+
+  @override
+  String get purchaseNotesHint => 'Catatan opsional (maks. 2000 karakter)';
+
+  @override
+  String get purchaseEstimatedTotal => 'Estimasi total';
+
+  @override
+  String get purchaseLineTotal => 'Total baris';
+
+  @override
+  String get purchaseSubmit => 'Kirim permintaan';
+
+  @override
+  String get purchaseSupplierRequired => 'Pilih pemasok';
+
+  @override
+  String get purchaseAtLeastOneItem => 'Tambahkan minimal satu item';
+
+  @override
+  String get purchaseDuplicateItemError =>
+      'Setiap persediaan hanya boleh muncul sekali';
+
+  @override
+  String get purchaseQuantityRequired => 'Masukkan jumlah lebih dari 0';
+
+  @override
+  String get purchaseSelectCatalogItem => 'Pilih item katalog';
+
+  @override
   String get searchStock => 'Cari persediaan';
 
   @override

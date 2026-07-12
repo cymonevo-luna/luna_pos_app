@@ -13,7 +13,8 @@ import '../../features/order/order_controller.dart';
 import '../../features/placeholder/coming_soon_page.dart';
 import '../../features/production_request/production_request_detail_page.dart';
 import '../../features/production_request/production_request_list_page.dart';
-import '../../features/purchases/purchases_list_page.dart';
+import '../../features/purchase/purchase_create_page.dart';
+import '../../features/purchase/purchase_list_page.dart';
 import '../../features/stock/stock_form_sheet.dart';
 import '../../features/stock/stock_list_page.dart';
 import '../../features/transaction/transaction_detail_page.dart';
@@ -237,16 +238,13 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoute.purchases.path,
                 name: AppRoute.purchases.name,
-                builder: (context, state) => const PurchasesListPage(),
+                builder: (context, state) => const PurchaseListPage(),
                 routes: [
                   GoRoute(
                     path: 'new',
                     name: AppRoute.purchasesNew.name,
                     parentNavigatorKey: _rootNavigatorKey,
-                    builder: (context, state) => ComingSoonPage(
-                      title: AppLocalizations.of(context).purchasesNew,
-                      icon: Icons.add_shopping_cart_outlined,
-                    ),
+                    builder: (context, state) => const PurchaseCreatePage(),
                   ),
                   GoRoute(
                     path: ':id',

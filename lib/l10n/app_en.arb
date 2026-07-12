@@ -366,6 +366,103 @@
   "@procurementAccessDenied": {
     "description": "Shown when an authenticated user without operational role opens stock or purchases"
   },
+  "noPurchaseRequests": "No purchase requests yet",
+  "@noPurchaseRequests": {
+    "description": "Empty state when there are no purchase requests"
+  },
+  "purchaseFilterAll": "All",
+  "@purchaseFilterAll": {
+    "description": "Purchase list filter showing all statuses"
+  },
+  "purchaseStatusPending": "Pending",
+  "@purchaseStatusPending": {
+    "description": "Purchase request status: pending"
+  },
+  "purchaseStatusRequested": "Requested",
+  "@purchaseStatusRequested": {
+    "description": "Purchase request status: requested"
+  },
+  "purchaseStatusPaid": "Paid",
+  "@purchaseStatusPaid": {
+    "description": "Purchase request status: paid"
+  },
+  "purchaseStatusDelivered": "Delivered",
+  "@purchaseStatusDelivered": {
+    "description": "Purchase request status: delivered"
+  },
+  "purchaseCreatedBy": "Created by",
+  "@purchaseCreatedBy": {
+    "description": "Label for purchase request creator username"
+  },
+  "purchaseItemCount": "{count, plural, =1{1 item} other{{count} items}}",
+  "@purchaseItemCount": {
+    "description": "Number of items in a purchase request",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "purchaseSupplierLabel": "Supplier",
+  "@purchaseSupplierLabel": {
+    "description": "Label for supplier selector on purchase create form"
+  },
+  "purchaseSelectSupplier": "Select supplier",
+  "@purchaseSelectSupplier": {
+    "description": "Placeholder and sheet title for supplier picker"
+  },
+  "purchaseSearchSuppliers": "Search suppliers",
+  "@purchaseSearchSuppliers": {
+    "description": "Search hint in supplier picker"
+  },
+  "purchaseLineItems": "Line items",
+  "@purchaseLineItems": {
+    "description": "Section title for purchase line items"
+  },
+  "purchaseAddItem": "Add item",
+  "@purchaseAddItem": {
+    "description": "Button to add a catalog line item"
+  },
+  "purchaseEmptyCatalog": "This supplier has no catalog prices yet.",
+  "@purchaseEmptyCatalog": {
+    "description": "Shown when supplier has no price quotes"
+  },
+  "purchaseNotesHint": "Optional notes (max 2000 characters)",
+  "@purchaseNotesHint": {
+    "description": "Hint for purchase request notes field"
+  },
+  "purchaseEstimatedTotal": "Estimated total",
+  "@purchaseEstimatedTotal": {
+    "description": "Sticky footer label for purchase total"
+  },
+  "purchaseLineTotal": "Line total",
+  "@purchaseLineTotal": {
+    "description": "Estimated total for one purchase line"
+  },
+  "purchaseSubmit": "Submit request",
+  "@purchaseSubmit": {
+    "description": "Submit purchase request button"
+  },
+  "purchaseSupplierRequired": "Select a supplier",
+  "@purchaseSupplierRequired": {
+    "description": "Validation when supplier is missing"
+  },
+  "purchaseAtLeastOneItem": "Add at least one line item",
+  "@purchaseAtLeastOneItem": {
+    "description": "Validation when no line items"
+  },
+  "purchaseDuplicateItemError": "Each supply can only appear once",
+  "@purchaseDuplicateItemError": {
+    "description": "Validation when duplicate food supplies in request"
+  },
+  "purchaseQuantityRequired": "Enter a quantity greater than 0",
+  "@purchaseQuantityRequired": {
+    "description": "Validation when line quantity is invalid"
+  },
+  "purchaseSelectCatalogItem": "Select catalog item",
+  "@purchaseSelectCatalogItem": {
+    "description": "Title for catalog item picker sheet"
+  },
   "searchStock": "Search supplies",
   "@searchStock": {
     "description": "Search field hint on stock list"

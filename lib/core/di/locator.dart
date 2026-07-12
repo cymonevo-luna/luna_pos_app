@@ -7,6 +7,8 @@ import '../printer/bluetooth_printer_service.dart';
 import '../storage/preferences_service.dart';
 import '../storage/secure_storage_service.dart';
 import '../../features/menu/data/menu_repository.dart';
+import '../../features/purchase/data/purchase_request_repository.dart';
+import '../../features/purchase/data/supplier_repository.dart';
 import '../../features/stock/data/food_supply_repository.dart';
 import '../../features/store_settings/data/store_settings_repository.dart';
 import '../../features/production_request/data/production_request_repository.dart';
@@ -45,6 +47,14 @@ Future<void> setupLocator() async {
 
   locator.registerLazySingleton<TransactionRepository>(
     () => TransactionRepository(locator<ApiClient>()),
+  );
+
+  locator.registerLazySingleton<PurchaseRequestRepository>(
+    () => PurchaseRequestRepository(locator<ApiClient>()),
+  );
+
+  locator.registerLazySingleton<SupplierRepository>(
+    () => SupplierRepository(locator<ApiClient>()),
   );
 
   locator.registerLazySingleton<StoreSettingsRepository>(

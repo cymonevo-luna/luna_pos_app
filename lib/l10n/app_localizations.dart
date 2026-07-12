@@ -872,6 +872,144 @@ abstract class AppLocalizations {
   /// **'You do not have permission to access procurement features.'**
   String get procurementAccessDenied;
 
+  /// Empty state when there are no purchase requests
+  ///
+  /// In en, this message translates to:
+  /// **'No purchase requests yet'**
+  String get noPurchaseRequests;
+
+  /// Purchase list filter showing all statuses
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get purchaseFilterAll;
+
+  /// Purchase request status: pending
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get purchaseStatusPending;
+
+  /// Purchase request status: requested
+  ///
+  /// In en, this message translates to:
+  /// **'Requested'**
+  String get purchaseStatusRequested;
+
+  /// Purchase request status: paid
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get purchaseStatusPaid;
+
+  /// Purchase request status: delivered
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get purchaseStatusDelivered;
+
+  /// Label for purchase request creator username
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get purchaseCreatedBy;
+
+  /// Number of items in a purchase request
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 item} other{{count} items}}'**
+  String purchaseItemCount(int count);
+
+  /// Label for supplier selector on purchase create form
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier'**
+  String get purchaseSupplierLabel;
+
+  /// Placeholder and sheet title for supplier picker
+  ///
+  /// In en, this message translates to:
+  /// **'Select supplier'**
+  String get purchaseSelectSupplier;
+
+  /// Search hint in supplier picker
+  ///
+  /// In en, this message translates to:
+  /// **'Search suppliers'**
+  String get purchaseSearchSuppliers;
+
+  /// Section title for purchase line items
+  ///
+  /// In en, this message translates to:
+  /// **'Line items'**
+  String get purchaseLineItems;
+
+  /// Button to add a catalog line item
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get purchaseAddItem;
+
+  /// Shown when supplier has no price quotes
+  ///
+  /// In en, this message translates to:
+  /// **'This supplier has no catalog prices yet.'**
+  String get purchaseEmptyCatalog;
+
+  /// Hint for purchase request notes field
+  ///
+  /// In en, this message translates to:
+  /// **'Optional notes (max 2000 characters)'**
+  String get purchaseNotesHint;
+
+  /// Sticky footer label for purchase total
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated total'**
+  String get purchaseEstimatedTotal;
+
+  /// Estimated total for one purchase line
+  ///
+  /// In en, this message translates to:
+  /// **'Line total'**
+  String get purchaseLineTotal;
+
+  /// Submit purchase request button
+  ///
+  /// In en, this message translates to:
+  /// **'Submit request'**
+  String get purchaseSubmit;
+
+  /// Validation when supplier is missing
+  ///
+  /// In en, this message translates to:
+  /// **'Select a supplier'**
+  String get purchaseSupplierRequired;
+
+  /// Validation when no line items
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one line item'**
+  String get purchaseAtLeastOneItem;
+
+  /// Validation when duplicate food supplies in request
+  ///
+  /// In en, this message translates to:
+  /// **'Each supply can only appear once'**
+  String get purchaseDuplicateItemError;
+
+  /// Validation when line quantity is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a quantity greater than 0'**
+  String get purchaseQuantityRequired;
+
+  /// Title for catalog item picker sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Select catalog item'**
+  String get purchaseSelectCatalogItem;
+
   /// Search field hint on stock list
   ///
   /// In en, this message translates to:

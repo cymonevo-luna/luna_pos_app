@@ -15,6 +15,8 @@ import 'package:luna_pos/features/auth/auth_controller.dart';
 import 'package:luna_pos/features/auth/login_page.dart';
 import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
+import 'package:luna_pos/features/production_request/data/production_request_repository.dart';
+import 'package:luna_pos/features/production_request/production_request_list_page.dart';
 import 'package:luna_pos/features/stock/data/food_supply_repository.dart';
 import 'package:luna_pos/features/stock/stock_list_page.dart';
 import 'package:luna_pos/l10n/app_localizations_en.dart';
@@ -121,6 +123,9 @@ Future<IntegrationTestHarness> setUpIntegrationHarness() async {
     )
     ..registerLazySingleton<FoodSupplyRepository>(
       () => FoodSupplyRepository(locator<ApiClient>()),
+    )
+    ..registerLazySingleton<ProductionRequestRepository>(
+      () => ProductionRequestRepository(locator<ApiClient>()),
     );
 
   return IntegrationTestHarness(
@@ -141,6 +146,7 @@ class IntegrationTestHarness {
   final FakeSecureStorage secure;
   final DioAdapter adapter;
   final ProviderContainer container;
+  bool _productionDeliveryMarkedDone = false;
 
   GoRouter readRouter() => container.read(routerProvider);
 
@@ -282,6 +288,99 @@ class IntegrationTestHarness {
     );
   }
 
+  /// Stubs production delivery list/detail/mark-done for cashier E2E flows.
+  ///
+  /// After [markDone] is called, subsequent list fetches return an empty page.
+  void stubProductionDeliveryFlow({
+    String requestId = 'pr-1',
+    String menuTitle = 'Nasi Goreng',
+    num quantity = 2,
+    String? notes,
+  }) {
+    _productionDeliveryMarkedDone = false;
+
+    adapter.onGet(
+      ProductionRequestRepository.listPath,
+      (server) => server.replyCallback(200, (_) => {
+            'success': true,
+            'data': _productionDeliveryMarkedDone
+                ? <Map<String, dynamic>>[]
+                : [
+                    {
+                      'id': requestId,
+                      'status': 'READY_TO_PICK',
+                      'item_count': 1,
+                      'items': [
+                        {
+                          'menu_title': menuTitle,
+                          'quantity': quantity,
+                          'is_finished': false,
+                        },
+                      ],
+                      'created_at': '2026-07-12T10:00:00Z',
+                    },
+                  ],
+            'meta': {
+              'page': 1,
+              'per_page': 20,
+              'total': _productionDeliveryMarkedDone ? 0 : 1,
+            },
+          }),
+      queryParameters: {
+        'status': 'READY_TO_PICK',
+        'page': '1',
+        'per_page': '20',
+      },
+    );
+
+    adapter.onGet(
+      '${ProductionRequestRepository.listPath}/$requestId',
+      (server) => server.replyCallback(200, (_) => {
+            'success': true,
+            'data': {
+              'id': requestId,
+              'status':
+                  _productionDeliveryMarkedDone ? 'DONE' : 'READY_TO_PICK',
+              'item_count': 1,
+              'notes?': notes,
+              'items': [
+                {
+                  'menu_title': menuTitle,
+                  'quantity': quantity,
+                  'is_finished': _productionDeliveryMarkedDone,
+                },
+              ],
+              'created_at': '2026-07-12T10:00:00Z',
+            },
+          }),
+    );
+
+    adapter.onPatch(
+      '${ProductionRequestRepository.listPath}/$requestId/status',
+      (server) => server.replyCallback(200, (_) {
+            _productionDeliveryMarkedDone = true;
+            return {
+              'success': true,
+              'data': {
+                'id': requestId,
+                'status': 'DONE',
+                'item_count': 1,
+                'notes?': notes,
+                'items': [
+                  {
+                    'menu_title': menuTitle,
+                    'quantity': quantity,
+                    'is_finished': true,
+                  },
+                ],
+                'created_at': '2026-07-12T10:00:00Z',
+              },
+            };
+          }),
+      data: {'status': 'DONE'},
+    );
+  }
+
   Future<void> pumpApp(WidgetTester tester) async {
     await tester.pumpWidget(
       UncontrolledProviderScope(
@@ -323,6 +422,17 @@ class IntegrationTestHarness {
     expect(find.byType(MenuPage), findsOneWidget);
     final l10n = AppLocalizationsEn();
     expect(find.text(l10n.menu), findsWidgets);
+  }
+
+  Future<void> openDeliveriesTab(WidgetTester tester) async {
+    final l10n = AppLocalizationsEn();
+    await tester.tap(find.text(l10n.deliveries));
+    await tester.pumpAndSettle(
+      const Duration(milliseconds: 100),
+      EnginePhase.sendSemanticsUpdate,
+      const Duration(seconds: 5),
+    );
+    expect(find.byType(ProductionRequestListPage), findsOneWidget);
   }
 
   Future<void> expectAuthenticatedProcurement(WidgetTester tester) async {

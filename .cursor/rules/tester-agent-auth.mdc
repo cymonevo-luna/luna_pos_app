@@ -1,0 +1,66 @@
+---
+description: Tester Agent and integration-test auth rules for luna_pos_app
+globs:
+  - integration_test/**
+  - test/**
+  - lib/testing/**
+---
+
+# Tester Agent authentication
+
+Automated tests and cloud agents **must not register new users**. The backend
+seeds four dedicated test accounts via the `luna_pos_service` migration
+"Add role constants and seed dedicated testing accounts migration".
+
+## Required login flow
+
+1. Authenticate with `POST /api/v1/auth/login` (or drive the app login UI with
+   the same credentials).
+2. Use the role-appropriate account from `lib/testing/test_accounts.dart`.
+3. Persist the returned `access_token` for the duration of the test scenario.
+
+## Dedicated accounts
+
+| Role | Email | Password |
+| --- | --- | --- |
+| Admin | `admin-test@cymonevo.com` | `LunaTesting123!` |
+| Manager | `manager-test@cymonevo.com` | `LunaTesting123!` |
+| Cashier | `cashier-test@cymonevo.com` | `LunaTesting123!` |
+| Operational | `operation-test@cymonevo.com` | `LunaTesting123!` |
+
+Import credentials via:
+
+```dart
+import 'package:luna_pos/testing/test_accounts.dart';
+
+// TestAccounts.cashierEmail, TestAccounts.password, TestAccountRole.cashier
+```
+
+Override for CI with `--dart-define` (e.g. `TEST_CASHIER_EMAIL`, `TEST_ACCOUNT_PASSWORD`).
+
+## Forbidden in test automation
+
+- Do **not** call `POST /api/v1/auth/register` in Tester Agent or integration
+  test flows.
+- Do **not** generate random emails or create throwaway users per run.
+- Do **not** complete the in-app signup/register screen during automated tests.
+
+End-user registration (`RegisterPage`, `AuthController.register()`) remains
+available in the production app and may still be covered by mocked unit tests.
+
+## Test helpers
+
+Use `test/helpers/auth_harness.dart`:
+
+- `stubDedicatedAccountLogin(adapter, TestAccountRole.cashier)` — mock login API
+- `seedAuthenticatedTestAccount(secure, adapter, TestAccountRole.cashier)` —
+  pre-seed session + profile stub
+
+## API target
+
+Ensure the seeded migration is applied on the API instance under test. For web
+builds without a `.env` file, pass the backend URL at build time:
+
+```bash
+flutter build web --dart-define=API_BASE_URL=https://pos-api.cymonevo.com
+```

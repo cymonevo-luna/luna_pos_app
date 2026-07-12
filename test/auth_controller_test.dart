@@ -6,6 +6,7 @@ import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
 import 'package:luna_pos/core/storage/secure_storage_service.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
+import 'package:luna_pos/testing/test_accounts.dart';
 
 import 'helpers/auth_harness.dart';
 
@@ -36,6 +37,9 @@ void main() {
   }
 
   test('login persists the session and authenticates', () async {
+    const email = TestAccounts.cashierEmail;
+    const password = TestAccounts.password;
+
     adapter.onPost(
       '/api/v1/auth/login',
       (server) => server.reply(200, {
@@ -48,24 +52,24 @@ void main() {
           },
           'user': {
             'id': 'u1',
-            'email': 'a@b.com',
-            'name': 'Alex',
-            'role': 'user',
+            'email': email,
+            'name': 'Cashier Test',
+            'role': 'cashier',
           },
         },
       }),
-      data: {'email': 'a@b.com', 'password': 'secret123'},
+      data: {'email': email, 'password': password},
     );
 
     final ok = await container
         .read(authProvider.notifier)
-        .login(email: 'a@b.com', password: 'secret123');
+        .login(email: email, password: password);
 
     expect(ok, isTrue);
     final state = container.read(authProvider);
     expect(state.status, AuthStatus.authenticated);
-    expect(state.user?.email, 'a@b.com');
-    expect(state.user?.role, 'user');
+    expect(state.user?.email, email);
+    expect(state.user?.role, 'cashier');
     expect(secure.store[SecureKeys.authToken], 'acc');
     expect(secure.store[SecureKeys.refreshToken], 'ref');
     expect(secure.store[SecureKeys.userId], 'u1');
@@ -73,18 +77,20 @@ void main() {
 
   test('login failure surfaces the server message and stays signed out',
       () async {
+    const email = TestAccounts.cashierEmail;
+
     adapter.onPost(
       '/api/v1/auth/login',
       (server) => server.reply(401, {
         'success': false,
         'error': {'code': 'unauthorized', 'message': 'invalid credentials'},
       }),
-      data: {'email': 'a@b.com', 'password': 'wrong'},
+      data: {'email': email, 'password': 'wrong'},
     );
 
     final ok = await container
         .read(authProvider.notifier)
-        .login(email: 'a@b.com', password: 'wrong');
+        .login(email: email, password: 'wrong');
 
     expect(ok, isFalse);
     final state = container.read(authProvider);
@@ -149,9 +155,9 @@ void main() {
         'success': true,
         'data': {
           'id': 'u1',
-          'email': 'a@b.com',
-          'name': 'Alex',
-          'role': 'user',
+          'email': TestAccounts.cashierEmail,
+          'name': 'Cashier Test',
+          'role': 'cashier',
         },
       }),
     );
@@ -162,6 +168,6 @@ void main() {
 
     final state = container.read(authProvider);
     expect(state.status, AuthStatus.authenticated);
-    expect(state.user?.name, 'Alex');
+    expect(state.user?.name, 'Cashier Test');
   });
 }

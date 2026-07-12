@@ -30,7 +30,7 @@ void main() {
 
   Map<String, dynamic> sampleItem(String id, int amount) => {
         'id': id,
-        'method': 'OFFLINE',
+        'method': 'CASH',
         'amount': amount,
         'cashier_username': 'Cashier Test',
         'transaction_date': '2026-07-12T10:00:00Z',

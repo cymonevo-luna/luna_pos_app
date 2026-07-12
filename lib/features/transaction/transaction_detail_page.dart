@@ -11,6 +11,7 @@ import '../../features/auth/auth_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/widgets.dart';
 import 'models/transaction.dart';
+import 'payment_method_label.dart';
 import 'transaction_detail_controller.dart';
 
 class TransactionDetailPage extends ConsumerWidget {
@@ -30,7 +31,7 @@ class TransactionDetailPage extends ConsumerWidget {
       body: _TransactionDetailBody(
         state: state,
         dateFormat: dateFormat,
-        paymentMethodLabel: _paymentMethodLabel(l10n, state.detail?.method),
+        paymentMethodLabel: paymentMethodLabel(l10n, state.detail?.method),
         onRetry: () =>
             ref.read(transactionDetailProvider(transactionId).notifier).retry(),
         onLogout: () async {
@@ -46,13 +47,6 @@ class TransactionDetailPage extends ConsumerWidget {
     );
   }
 
-  String _paymentMethodLabel(AppLocalizations l10n, String? method) {
-    if (method == null) return '—';
-    return switch (method.toUpperCase()) {
-      'OFFLINE' => l10n.paymentMethodOffline,
-      _ => method,
-    };
-  }
 }
 
 class _TransactionDetailBody extends StatelessWidget {
@@ -174,12 +168,12 @@ class _TransactionDetailBody extends StatelessWidget {
                   label: l10n.cashReceived,
                   amount: detail.cashTendered!,
                 ),
+                const VGap(AppSpacing.sm),
+                _TotalRow(
+                  label: l10n.change,
+                  amount: detail.changeAmount,
+                ),
               ],
-              const VGap(AppSpacing.sm),
-              _TotalRow(
-                label: l10n.change,
-                amount: detail.changeAmount,
-              ),
             ],
           ),
         ),

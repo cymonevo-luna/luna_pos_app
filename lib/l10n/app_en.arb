@@ -236,6 +236,10 @@
       }
     }
   },
+  "saleCompleteQrisMessage": "Payment received via QRIS.",
+  "@saleCompleteQrisMessage": {
+    "description": "Success message after completing a QRIS sale"
+  },
   "ok": "OK",
   "@ok": {
     "description": "Dismiss confirmation dialog"
@@ -301,6 +305,14 @@
   "paymentMethodOffline": "Cash",
   "@paymentMethodOffline": {
     "description": "Display label for OFFLINE payment method"
+  },
+  "paymentMethodCash": "Cash",
+  "@paymentMethodCash": {
+    "description": "Display label for CASH payment method"
+  },
+  "paymentMethodQris": "QRIS",
+  "@paymentMethodQris": {
+    "description": "Display label for QRIS payment method"
   },
   "cashier": "Cashier",
   "@cashier": {

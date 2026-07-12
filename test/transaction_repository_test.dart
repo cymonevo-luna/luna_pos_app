@@ -22,14 +22,14 @@ void main() {
       );
   });
 
-  test('createOfflineTransaction posts expected payload', () async {
+  test('createTransaction posts cash payload with cash fields', () async {
     adapter.onPost(
       '/api/v1/pos/transactions',
       (server) => server.reply(201, {
         'success': true,
         'data': {
           'id': 'tx-1',
-          'method': 'OFFLINE',
+          'method': 'CASH',
           'subtotal_amount': 51000,
           'amount': 51000,
           'cash_tendered': 60000,
@@ -37,7 +37,7 @@ void main() {
         },
       }),
       data: {
-        'method': 'OFFLINE',
+        'method': 'CASH',
         'items': [
           {
             'menu_id': 'm1',
@@ -63,7 +63,7 @@ void main() {
     );
 
     final request = CreateTransactionRequest(
-      method: 'OFFLINE',
+      method: 'CASH',
       items: const [
         TransactionItemRequest(
           menuId: 'm1',
@@ -87,15 +87,68 @@ void main() {
     );
 
     final response =
-        await locator<TransactionRepository>().createOfflineTransaction(
+        await locator<TransactionRepository>().createTransaction(
       request,
     );
 
     expect(response.id, 'tx-1');
-    expect(response.method, 'OFFLINE');
+    expect(response.method, 'CASH');
     expect(response.amount, 51000);
     expect(response.cashTendered, 60000);
     expect(response.changeAmount, 9000);
+  });
+
+  test('createTransaction omits cash fields for qris', () async {
+    adapter.onPost(
+      '/api/v1/pos/transactions',
+      (server) => server.reply(201, {
+        'success': true,
+        'data': {
+          'id': 'tx-qris-1',
+          'method': 'QRIS',
+          'subtotal_amount': 35000,
+          'amount': 35000,
+        },
+      }),
+      data: {
+        'method': 'QRIS',
+        'items': [
+          {
+            'menu_id': 'm2',
+            'title': 'Nasi Goreng',
+            'quantity': 1,
+            'unit_price': 35000,
+            'line_total': 35000,
+          },
+        ],
+        'subtotal_amount': 35000,
+        'discount_amount': 0,
+        'amount': 35000,
+      },
+    );
+
+    final request = CreateTransactionRequest(
+      method: 'QRIS',
+      items: const [
+        TransactionItemRequest(
+          menuId: 'm2',
+          title: 'Nasi Goreng',
+          quantity: 1,
+          unitPrice: 35000,
+          lineTotal: 35000,
+        ),
+      ],
+      subtotalAmount: 35000,
+      amount: 35000,
+    );
+
+    final response =
+        await locator<TransactionRepository>().createTransaction(request);
+
+    expect(response.id, 'tx-qris-1');
+    expect(response.method, 'QRIS');
+    expect(response.cashTendered, isNull);
+    expect(response.changeAmount, isNull);
   });
 
   test('fetchTransactions parses paginated list', () async {
@@ -106,14 +159,14 @@ void main() {
         'data': [
           {
             'id': 'tx-1',
-            'method': 'OFFLINE',
+            'method': 'CASH',
             'amount': 25000,
             'cashier_username': 'Cashier Test',
             'transaction_date': '2026-07-12T10:00:00Z',
           },
           {
             'id': 'tx-2',
-            'method': 'OFFLINE',
+            'method': 'QRIS',
             'amount': 35000,
             'cashier_username': 'Cashier Test',
             'transaction_date': '2026-07-11T10:00:00Z',
@@ -166,7 +219,7 @@ void main() {
         'success': true,
         'data': {
           'id': 'tx-1',
-          'method': 'OFFLINE',
+          'method': 'CASH',
           'items': [
             {
               'menu_id': 'm1',

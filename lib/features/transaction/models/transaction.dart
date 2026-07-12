@@ -11,8 +11,8 @@ abstract class CreateTransactionRequest with _$CreateTransactionRequest {
     @JsonKey(name: 'subtotal_amount') required int subtotalAmount,
     @JsonKey(name: 'discount_amount') @Default(0) int discountAmount,
     required int amount,
-    @JsonKey(name: 'cash_tendered') required int cashTendered,
-    @JsonKey(name: 'change_amount') required int changeAmount,
+    @JsonKey(name: 'cash_tendered') int? cashTendered,
+    @JsonKey(name: 'change_amount') int? changeAmount,
   }) = _CreateTransactionRequest;
 
   factory CreateTransactionRequest.fromJson(Map<String, dynamic> json) =>

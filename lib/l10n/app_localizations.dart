@@ -686,6 +686,12 @@ abstract class AppLocalizations {
   /// **'Change due: {amount}'**
   String saleCompleteMessage(String amount);
 
+  /// Success message after completing a QRIS sale
+  ///
+  /// In en, this message translates to:
+  /// **'Payment received via QRIS.'**
+  String get saleCompleteQrisMessage;
+
   /// Dismiss confirmation dialog
   ///
   /// In en, this message translates to:
@@ -775,6 +781,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cash'**
   String get paymentMethodOffline;
+
+  /// Display label for CASH payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get paymentMethodCash;
+
+  /// Display label for QRIS payment method
+  ///
+  /// In en, this message translates to:
+  /// **'QRIS'**
+  String get paymentMethodQris;
 
   /// Cashier name label on transaction rows and detail
   ///

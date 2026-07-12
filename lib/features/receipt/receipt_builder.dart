@@ -79,16 +79,25 @@ class ReceiptBuilder {
       );
     }
 
-    bytes
-      ..addAll(
-        _totalRow(
-          generator,
-          'TOTAL',
-          formatRupiah(data.totalAmount),
-          bold: true,
-        ),
-      )
-      ..addAll(_totalRow(generator, 'Bayar', formatRupiah(data.cashTendered)));
+    bytes.addAll(
+      _totalRow(
+        generator,
+        'TOTAL',
+        formatRupiah(data.totalAmount),
+        bold: true,
+      ),
+    );
+
+    final paymentLabel = _paymentMethodReceiptLabel(data.paymentMethod);
+    if (paymentLabel != null) {
+      bytes.addAll(_totalRow(generator, 'Metode', paymentLabel));
+    }
+
+    if (data.cashTendered != null) {
+      bytes.addAll(
+        _totalRow(generator, 'Bayar', formatRupiah(data.cashTendered!)),
+      );
+    }
 
     if (data.changeAmount > 0) {
       bytes.addAll(
@@ -164,6 +173,14 @@ class ReceiptBuilder {
         styles: PosStyles(align: PosAlign.right, bold: bold),
       ),
     ]);
+  }
+
+  String? _paymentMethodReceiptLabel(String method) {
+    return switch (method.toUpperCase()) {
+      'CASH' || 'OFFLINE' => 'Tunai',
+      'QRIS' => 'QRIS',
+      _ => null,
+    };
   }
 
   String _truncate(String value, int maxLength) {

@@ -69,7 +69,7 @@ void main() {
           'data': [
             {
               'id': 'tx-1',
-              'method': 'OFFLINE',
+              'method': 'CASH',
               'amount': 35000,
               'cashier_username': 'Cashier Test',
               'transaction_date': '2026-07-12T10:00:00Z',
@@ -85,7 +85,7 @@ void main() {
           'success': true,
           'data': {
             'id': 'tx-1',
-            'method': 'OFFLINE',
+            'method': 'CASH',
             'items': [
               {
                 'menu_id': 'm1',
@@ -119,5 +119,63 @@ void main() {
     expect(find.textContaining('Cashier Test'), findsWidgets);
     expect(find.text('Rp 50.000'), findsOneWidget);
     expect(find.text('Rp 15.000'), findsOneWidget);
+  });
+
+  testWidgets('transaction detail hides cash fields for qris', (tester) async {
+    adapter
+      ..onGet(
+        '/api/v1/pos/transactions',
+        (server) => server.reply(200, {
+          'success': true,
+          'data': [
+            {
+              'id': 'tx-qris-1',
+              'method': 'QRIS',
+              'amount': 35000,
+              'cashier_username': 'Cashier Test',
+              'transaction_date': '2026-07-12T10:00:00Z',
+            },
+          ],
+          'meta': {'page': 1, 'per_page': 20, 'total': 1},
+        }),
+        queryParameters: {'page': '1', 'per_page': '20'},
+      )
+      ..onGet(
+        '/api/v1/pos/transactions/tx-qris-1',
+        (server) => server.reply(200, {
+          'success': true,
+          'data': {
+            'id': 'tx-qris-1',
+            'method': 'QRIS',
+            'items': [
+              {
+                'menu_id': 'm1',
+                'title': 'Nasi Goreng',
+                'quantity': 1,
+                'unit_price': 35000,
+                'line_total': 35000,
+              },
+            ],
+            'subtotal_amount': 35000,
+            'discount_amount': 0,
+            'amount': 35000,
+            'cashier_username': 'Cashier Test',
+            'transaction_date': '2026-07-12T10:00:00Z',
+          },
+        }),
+      );
+
+    await pumpApp(tester);
+
+    await tester.tap(find.text('History'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Rp 35.000'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(TransactionDetailPage), findsOneWidget);
+    expect(find.textContaining('QRIS'), findsWidgets);
+    expect(find.text('Cash received'), findsNothing);
+    expect(find.text('Change'), findsNothing);
   });
 }

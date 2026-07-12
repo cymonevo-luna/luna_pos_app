@@ -245,7 +245,7 @@ class IntegrationTestHarness {
         'success': true,
         'data': {
           'id': 'tx-1',
-          'method': 'OFFLINE',
+          'method': 'CASH',
           'amount': 35000,
           'subtotal_amount': 35000,
           'tax_amount': 0,

@@ -405,4 +405,36 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get procurementAccessDenied =>
       'You do not have permission to access procurement features.';
+
+  @override
+  String get noPurchaseRequests => 'No purchase requests yet';
+
+  @override
+  String get purchaseFilterAll => 'All';
+
+  @override
+  String get purchaseStatusPending => 'Pending';
+
+  @override
+  String get purchaseStatusRequested => 'Requested';
+
+  @override
+  String get purchaseStatusPaid => 'Paid';
+
+  @override
+  String get purchaseStatusDelivered => 'Delivered';
+
+  @override
+  String get purchaseCreatedBy => 'Created by';
+
+  @override
+  String purchaseItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
 }

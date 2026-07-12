@@ -125,5 +125,13 @@
   "purchasesNew": "Pembelian baru",
   "purchaseDetail": "Detail pembelian",
   "posAccessDenied": "Akun ini tidak memiliki akses POS atau operasional",
-  "procurementAccessDenied": "Anda tidak memiliki izin untuk mengakses fitur pengadaan."
+  "procurementAccessDenied": "Anda tidak memiliki izin untuk mengakses fitur pengadaan.",
+  "noPurchaseRequests": "Belum ada permintaan pembelian",
+  "purchaseFilterAll": "Semua",
+  "purchaseStatusPending": "Menunggu",
+  "purchaseStatusRequested": "Diminta",
+  "purchaseStatusPaid": "Dibayar",
+  "purchaseStatusDelivered": "Diterima",
+  "purchaseCreatedBy": "Dibuat oleh",
+  "purchaseItemCount": "{count, plural, =1{1 item} other{{count} item}}"
 }

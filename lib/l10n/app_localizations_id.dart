@@ -405,4 +405,36 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get procurementAccessDenied =>
       'Anda tidak memiliki izin untuk mengakses fitur pengadaan.';
+
+  @override
+  String get noPurchaseRequests => 'Belum ada permintaan pembelian';
+
+  @override
+  String get purchaseFilterAll => 'Semua';
+
+  @override
+  String get purchaseStatusPending => 'Menunggu';
+
+  @override
+  String get purchaseStatusRequested => 'Diminta';
+
+  @override
+  String get purchaseStatusPaid => 'Dibayar';
+
+  @override
+  String get purchaseStatusDelivered => 'Diterima';
+
+  @override
+  String get purchaseCreatedBy => 'Dibuat oleh';
+
+  @override
+  String purchaseItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count item',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
 }

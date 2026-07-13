@@ -69,6 +69,102 @@ class _LoadedProductionRequestDetailController
 }
 
 void main() {
+  testWidgets('production request list AppBar shows Production title',
+      (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          productionRequestListProvider
+              .overrideWith(_EmptyProductionRequestListController.new),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light(AppAccent.blue),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+          home: const ProductionRequestListPage(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Production'), findsOneWidget);
+    expect(find.text('Production deliveries'), findsNothing);
+  });
+
+  testWidgets('production request list shows Produksi title in Indonesian',
+      (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          productionRequestListProvider
+              .overrideWith(_EmptyProductionRequestListController.new),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light(AppAccent.blue),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('id'),
+          home: const ProductionRequestListPage(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Produksi'), findsOneWidget);
+  });
+
+  testWidgets('bottom nav Production label uses Produksi in Indonesian',
+      (tester) async {
+    final l10n = lookupAppLocalizations(const Locale('id'));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light(AppAccent.blue),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('id'),
+        home: Scaffold(
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: 1,
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            destinations: [
+              const NavigationDestination(
+                icon: Icon(Icons.restaurant_menu_outlined),
+                label: 'Menu',
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.lunch_dining_outlined),
+                selectedIcon: const Icon(Icons.lunch_dining),
+                label: l10n.deliveries,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Produksi'), findsOneWidget);
+    expect(find.text('Pengiriman'), findsNothing);
+    expect(find.byIcon(Icons.lunch_dining), findsOneWidget);
+    expect(find.byIcon(Icons.local_shipping_outlined), findsNothing);
+  });
+
   testWidgets('production request list renders pending deliveries',
       (tester) async {
     await tester.pumpWidget(

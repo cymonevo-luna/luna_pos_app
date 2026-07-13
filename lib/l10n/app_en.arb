@@ -535,13 +535,13 @@
   "@stockQuantityInvalid": {
     "description": "Validation when food supply quantity is invalid"
   },
-  "deliveries": "Deliveries",
+  "deliveries": "Production",
   "@deliveries": {
-    "description": "Production deliveries bottom navigation label"
+    "description": "Production bottom navigation label"
   },
-  "productionDeliveries": "Production deliveries",
+  "productionDeliveries": "Production",
   "@productionDeliveries": {
-    "description": "Production delivery inbox screen title"
+    "description": "Production inbox screen title"
   },
   "productionDeliveryDetail": "Delivery details",
   "@productionDeliveryDetail": {

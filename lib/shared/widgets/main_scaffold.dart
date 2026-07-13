@@ -67,8 +67,8 @@ class MainScaffold extends ConsumerWidget {
           label: l10n.transactionHistory,
         ),
       2 => NavigationDestination(
-          icon: const Icon(Icons.local_shipping_outlined),
-          selectedIcon: const Icon(Icons.local_shipping),
+          icon: const Icon(Icons.lunch_dining_outlined),
+          selectedIcon: const Icon(Icons.lunch_dining),
           label: l10n.deliveries,
         ),
       3 => NavigationDestination(

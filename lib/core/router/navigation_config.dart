@@ -6,10 +6,9 @@ enum ShellBranch {
   home(0),
   transactions(1),
   calendar(2),
-  messages(3),
-  stock(4),
-  purchases(5),
-  profile(6);
+  stock(3),
+  purchases(4),
+  profile(5);
 
   const ShellBranch(this.branchIndex);
   final int branchIndex;
@@ -31,7 +30,6 @@ bool isCashierRoute(String location) {
   return location == AppRoute.home.path ||
       location == AppRoute.transactionHistory.path ||
       location == AppRoute.calendar.path ||
-      location == AppRoute.messages.path ||
       location == AppRoute.cart.path ||
       location == AppRoute.checkout.path ||
       _matchesPrefix(location, AppRoute.transactionDetail.path.split(':').first) ||
@@ -56,7 +54,6 @@ List<int> visibleShellBranches(User? user) {
       ShellBranch.home.branchIndex,
       ShellBranch.transactions.branchIndex,
       ShellBranch.calendar.branchIndex,
-      ShellBranch.messages.branchIndex,
     ]);
   }
   if (user.hasOperationalAccess) {

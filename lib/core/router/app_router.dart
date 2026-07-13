@@ -10,7 +10,6 @@ import '../../features/menu/menu_page.dart';
 import '../../features/order/cart_page.dart';
 import '../../features/order/checkout_page.dart';
 import '../../features/order/order_controller.dart';
-import '../../features/placeholder/coming_soon_page.dart';
 import '../../features/production_request/production_request_detail_page.dart';
 import '../../features/production_request/production_request_list_page.dart';
 import '../../features/purchase/purchase_create_page.dart';
@@ -23,7 +22,6 @@ import '../../features/transaction/transaction_history_page.dart';
 import '../../features/profile/profile_page.dart';
 import '../../features/settings/settings_page.dart';
 import '../../features/user/models/user.dart';
-import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/main_scaffold.dart';
 import 'navigation_config.dart';
 
@@ -107,9 +105,22 @@ String? _roleRedirect(Ref ref, GoRouterState state) {
   return null;
 }
 
+String? _legacyRouteRedirect(Ref ref, GoRouterState state) {
+  final auth = ref.read(authProvider);
+  if (auth.status != AuthStatus.authenticated) return null;
+
+  if (state.matchedLocation == AppRoute.messages.path) {
+    return defaultAuthenticatedRoute(auth.user);
+  }
+
+  return null;
+}
+
 String? _redirect(Ref ref, GoRouterState state) {
   final authResult = _authRedirect(ref, state);
   if (authResult != null) return authResult;
+  final legacyResult = _legacyRouteRedirect(ref, state);
+  if (legacyResult != null) return legacyResult;
   final roleResult = _roleRedirect(ref, state);
   if (roleResult != null) return roleResult;
   return _orderRedirect(ref, state);
@@ -194,18 +205,6 @@ final routerProvider = Provider<GoRouter>((ref) {
                 name: AppRoute.calendar.name,
                 builder: (context, state) =>
                     const ProductionRequestListPage(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: AppRoute.messages.path,
-                name: AppRoute.messages.name,
-                builder: (context, state) => ComingSoonPage(
-                  title: AppLocalizations.of(context).messages,
-                  icon: Icons.chat_bubble_outline,
-                ),
               ),
             ],
           ),

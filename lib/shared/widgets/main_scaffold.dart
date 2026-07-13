@@ -72,21 +72,16 @@ class MainScaffold extends ConsumerWidget {
           label: l10n.deliveries,
         ),
       3 => NavigationDestination(
-          icon: const Icon(Icons.chat_bubble_outline),
-          selectedIcon: const Icon(Icons.chat_bubble),
-          label: l10n.messages,
-        ),
-      4 => NavigationDestination(
           icon: const Icon(Icons.inventory_2_outlined),
           selectedIcon: const Icon(Icons.inventory_2),
           label: l10n.stock,
         ),
-      5 => NavigationDestination(
+      4 => NavigationDestination(
           icon: const Icon(Icons.shopping_cart_outlined),
           selectedIcon: const Icon(Icons.shopping_cart),
           label: l10n.purchases,
         ),
-      6 => NavigationDestination(
+      5 => NavigationDestination(
           icon: const Icon(Icons.person_outline),
           selectedIcon: const Icon(Icons.person),
           label: l10n.profile,

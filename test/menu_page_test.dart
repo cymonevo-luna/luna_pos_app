@@ -160,6 +160,23 @@ void main() {
     },
   };
 
+  Map<String, dynamic> cashierUserPayload() => {
+        'id': 'u1',
+        'email': 'a@b.com',
+        'name': 'Alex',
+        'merchant_id': 'merchant-1',
+        'roles': ['cashier'],
+      };
+
+  void stubCashierSession() {
+    seedRestorableSecureTokens(secure);
+    stubSessionRestoreApis(
+      adapter,
+      userId: 'u1',
+      userData: cashierUserPayload(),
+    );
+  }
+
   Future<void> pumpApp(WidgetTester tester) async {
     await tester.pumpWidget(const ProviderScope(child: App()));
     await tester.pump(const Duration(seconds: 2));
@@ -171,27 +188,17 @@ void main() {
     required Map<String, dynamic> menusResponse,
     Size surfaceSize = const Size(360, 640),
   }) async {
-    secure.store[SecureKeys.authToken] = 'acc';
-    secure.store[SecureKeys.userId] = 'u1';
+    seedRestorableSecureTokens(secure);
+    stubSessionRestoreApis(
+      adapter,
+      userId: 'u1',
+      userData: cashierUserPayload(),
+    );
 
-    adapter
-      ..onGet(
-        '/api/v1/users/u1',
-        (server) => server.reply(200, {
-          'success': true,
-          'data': {
-            'id': 'u1',
-            'email': 'a@b.com',
-            'name': 'Alex',
-            'merchant_id': 'merchant-1',
-            'roles': ['cashier'],
-          },
-        }),
-      )
-      ..onGet(
-        '/api/v1/pos/menus',
-        (server) => server.reply(200, menusResponse),
-      );
+    adapter.onGet(
+      '/api/v1/pos/menus',
+      (server) => server.reply(200, menusResponse),
+    );
 
     await tester.binding.setSurfaceSize(surfaceSize);
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -232,27 +239,12 @@ void main() {
   testWidgets('authenticated user sees menus grouped by category', (
     WidgetTester tester,
   ) async {
-    secure.store[SecureKeys.authToken] = 'acc';
-    secure.store[SecureKeys.userId] = 'u1';
+    stubCashierSession();
 
-    adapter
-      ..onGet(
-        '/api/v1/users/u1',
-        (server) => server.reply(200, {
-          'success': true,
-          'data': {
-            'id': 'u1',
-            'email': 'a@b.com',
-            'name': 'Alex',
-            'merchant_id': 'merchant-1',
-            'roles': ['cashier'],
-          },
-        }),
-      )
-      ..onGet(
-        '/api/v1/pos/menus',
-        (server) => server.reply(200, sampleMenusResponse()),
-      );
+    adapter.onGet(
+      '/api/v1/pos/menus',
+      (server) => server.reply(200, sampleMenusResponse()),
+    );
 
     await pumpApp(tester);
 
@@ -266,27 +258,12 @@ void main() {
   testWidgets('menu page renders cart bottom bar with total', (
     WidgetTester tester,
   ) async {
-    secure.store[SecureKeys.authToken] = 'acc';
-    secure.store[SecureKeys.userId] = 'u1';
+    stubCashierSession();
 
-    adapter
-      ..onGet(
-        '/api/v1/users/u1',
-        (server) => server.reply(200, {
-          'success': true,
-          'data': {
-            'id': 'u1',
-            'email': 'a@b.com',
-            'name': 'Alex',
-            'merchant_id': 'merchant-1',
-            'roles': ['cashier'],
-          },
-        }),
-      )
-      ..onGet(
-        '/api/v1/pos/menus',
-        (server) => server.reply(200, sampleMenusResponse()),
-      );
+    adapter.onGet(
+      '/api/v1/pos/menus',
+      (server) => server.reply(200, sampleMenusResponse()),
+    );
 
     await pumpApp(tester);
 
@@ -309,27 +286,12 @@ void main() {
   testWidgets('checkout button disabled on empty cart', (
     WidgetTester tester,
   ) async {
-    secure.store[SecureKeys.authToken] = 'acc';
-    secure.store[SecureKeys.userId] = 'u1';
+    stubCashierSession();
 
-    adapter
-      ..onGet(
-        '/api/v1/users/u1',
-        (server) => server.reply(200, {
-          'success': true,
-          'data': {
-            'id': 'u1',
-            'email': 'a@b.com',
-            'name': 'Alex',
-            'merchant_id': 'merchant-1',
-            'roles': ['cashier'],
-          },
-        }),
-      )
-      ..onGet(
-        '/api/v1/pos/menus',
-        (server) => server.reply(200, sampleMenusResponse()),
-      );
+    adapter.onGet(
+      '/api/v1/pos/menus',
+      (server) => server.reply(200, sampleMenusResponse()),
+    );
 
     await pumpApp(tester);
 
@@ -343,27 +305,12 @@ void main() {
   testWidgets('add item from menu updates cart count', (
     WidgetTester tester,
   ) async {
-    secure.store[SecureKeys.authToken] = 'acc';
-    secure.store[SecureKeys.userId] = 'u1';
+    stubCashierSession();
 
-    adapter
-      ..onGet(
-        '/api/v1/users/u1',
-        (server) => server.reply(200, {
-          'success': true,
-          'data': {
-            'id': 'u1',
-            'email': 'a@b.com',
-            'name': 'Alex',
-            'merchant_id': 'merchant-1',
-            'roles': ['cashier'],
-          },
-        }),
-      )
-      ..onGet(
-        '/api/v1/pos/menus',
-        (server) => server.reply(200, sampleMenusResponse()),
-      );
+    adapter.onGet(
+      '/api/v1/pos/menus',
+      (server) => server.reply(200, sampleMenusResponse()),
+    );
 
     await pumpApp(tester);
 
@@ -382,27 +329,12 @@ void main() {
   testWidgets('out-of-stock item cannot open add sheet', (
     WidgetTester tester,
   ) async {
-    secure.store[SecureKeys.authToken] = 'acc';
-    secure.store[SecureKeys.userId] = 'u1';
+    stubCashierSession();
 
-    adapter
-      ..onGet(
-        '/api/v1/users/u1',
-        (server) => server.reply(200, {
-          'success': true,
-          'data': {
-            'id': 'u1',
-            'email': 'a@b.com',
-            'name': 'Alex',
-            'merchant_id': 'merchant-1',
-            'roles': ['cashier'],
-          },
-        }),
-      )
-      ..onGet(
-        '/api/v1/pos/menus',
-        (server) => server.reply(200, sampleMenusResponse()),
-      );
+    adapter.onGet(
+      '/api/v1/pos/menus',
+      (server) => server.reply(200, sampleMenusResponse()),
+    );
 
     await pumpApp(tester);
 
@@ -423,30 +355,15 @@ void main() {
   testWidgets('menu fetch error shows retry control', (
     WidgetTester tester,
   ) async {
-    secure.store[SecureKeys.authToken] = 'acc';
-    secure.store[SecureKeys.userId] = 'u1';
+    stubCashierSession();
 
-    adapter
-      ..onGet(
-        '/api/v1/users/u1',
-        (server) => server.reply(200, {
-          'success': true,
-          'data': {
-            'id': 'u1',
-            'email': 'a@b.com',
-            'name': 'Alex',
-            'merchant_id': 'merchant-1',
-            'roles': ['cashier'],
-          },
-        }),
-      )
-      ..onGet(
-        '/api/v1/pos/menus',
-        (server) => server.reply(500, {
-          'success': false,
-          'error': {'message': 'server error'},
-        }),
-      );
+    adapter.onGet(
+      '/api/v1/pos/menus',
+      (server) => server.reply(500, {
+        'success': false,
+        'error': {'message': 'server error'},
+      }),
+    );
 
     await pumpApp(tester);
 
@@ -511,27 +428,12 @@ void main() {
   testWidgets('menu page renders categories in API order', (
     WidgetTester tester,
   ) async {
-    secure.store[SecureKeys.authToken] = 'acc';
-    secure.store[SecureKeys.userId] = 'u1';
+    stubCashierSession();
 
-    adapter
-      ..onGet(
-        '/api/v1/users/u1',
-        (server) => server.reply(200, {
-          'success': true,
-          'data': {
-            'id': 'u1',
-            'email': 'a@b.com',
-            'name': 'Alex',
-            'merchant_id': 'merchant-1',
-            'roles': ['cashier'],
-          },
-        }),
-      )
-      ..onGet(
-        '/api/v1/pos/menus',
-        (server) => server.reply(200, orderedCategoriesResponse()),
-      );
+    adapter.onGet(
+      '/api/v1/pos/menus',
+      (server) => server.reply(200, orderedCategoriesResponse()),
+    );
 
     await tester.binding.setSurfaceSize(const Size(800, 2000));
     addTearDown(() => tester.binding.setSurfaceSize(null));

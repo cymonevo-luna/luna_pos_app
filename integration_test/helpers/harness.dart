@@ -89,6 +89,7 @@ void stubDedicatedAccountLogin(
           'access_token': accessToken,
           'refresh_token': refreshToken,
           'expires_in': 900,
+          'refresh_expires_in': 604800,
         },
         'user': _loginUserPayload(
           role,

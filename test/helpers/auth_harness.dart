@@ -59,6 +59,8 @@ void stubDedicatedAccountLogin(
   String? userId,
   String accessToken = 'acc',
   String refreshToken = 'ref',
+  int expiresIn = 900,
+  int refreshExpiresIn = 604800,
   List<String> additionalRoles = const [],
 }) {
   final email = TestAccounts.emailFor(role);
@@ -71,7 +73,8 @@ void stubDedicatedAccountLogin(
         'tokens': {
           'access_token': accessToken,
           'refresh_token': refreshToken,
-          'expires_in': 900,
+          'expires_in': expiresIn,
+          'refresh_expires_in': refreshExpiresIn,
         },
         'user': _loginUserPayload(
           role,
@@ -86,18 +89,92 @@ void stubDedicatedAccountLogin(
   );
 }
 
-/// Seeds secure storage and stubs the profile endpoint for [role].
+/// Stubs `POST /api/v1/auth/refresh` with rotated tokens.
+void stubTokenRefresh(
+  DioAdapter adapter, {
+  String refreshToken = 'ref',
+  String accessToken = 'acc-new',
+  String newRefreshToken = 'ref-new',
+  int expiresIn = 900,
+  int refreshExpiresIn = 604800,
+}) {
+  adapter.onPost(
+    '/api/v1/auth/refresh',
+    (server) => server.reply(200, {
+      'success': true,
+      'data': {
+        'tokens': {
+          'access_token': accessToken,
+          'refresh_token': newRefreshToken,
+          'expires_in': expiresIn,
+          'refresh_expires_in': refreshExpiresIn,
+        },
+      },
+    }),
+    data: {'refresh_token': refreshToken},
+  );
+}
+
+/// Minimum secure-storage fields for cold-start session restore in tests.
+void seedRestorableSecureTokens(
+  FakeSecureStorage secure, {
+  String userId = 'u1',
+  String accessToken = 'acc',
+  String refreshToken = 'ref',
+  DateTime? refreshExpiresAt,
+}) {
+  final expiresAt =
+      refreshExpiresAt ?? DateTime.now().add(const Duration(days: 7));
+
+  secure.store[SecureKeys.authToken] = accessToken;
+  secure.store[SecureKeys.refreshToken] = refreshToken;
+  secure.store[SecureKeys.userId] = userId;
+  secure.store[SecureKeys.refreshExpiresAt] =
+      '${expiresAt.millisecondsSinceEpoch}';
+}
+
+/// Stubs refresh + profile endpoints used during session restore.
+void stubSessionRestoreApis(
+  DioAdapter adapter, {
+  required String userId,
+  required Map<String, dynamic> userData,
+  String refreshToken = 'ref',
+}) {
+  stubTokenRefresh(adapter, refreshToken: refreshToken);
+  adapter.onGet(
+    '/api/v1/users/$userId',
+    (server) => server.reply(200, {
+      'success': true,
+      'data': userData,
+    }),
+  );
+}
+
+/// Seeds secure storage and stubs the profile + refresh endpoints for [role].
 void seedAuthenticatedTestAccount(
   FakeSecureStorage secure,
   DioAdapter adapter,
   TestAccountRole role, {
   String? userId,
   String accessToken = 'acc',
+  String refreshToken = 'ref',
   List<String> additionalRoles = const [],
+  DateTime? refreshExpiresAt,
 }) {
   final resolvedUserId = userId ?? TestAccounts.userIdFor(role);
+  final expiresAt =
+      refreshExpiresAt ?? DateTime.now().add(const Duration(days: 7));
+
   secure.store[SecureKeys.authToken] = accessToken;
+  secure.store[SecureKeys.refreshToken] = refreshToken;
   secure.store[SecureKeys.userId] = resolvedUserId;
+  secure.store[SecureKeys.refreshExpiresAt] =
+      '${expiresAt.millisecondsSinceEpoch}';
+
+  stubTokenRefresh(
+    adapter,
+    refreshToken: refreshToken,
+  );
 
   adapter.onGet(
     '/api/v1/users/$resolvedUserId',

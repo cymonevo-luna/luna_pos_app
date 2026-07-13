@@ -5,13 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:luna_pos/core/auth/session_guard.dart';
 import 'package:luna_pos/core/config/app_config.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
 import 'package:luna_pos/core/router/app_router.dart';
 import 'package:luna_pos/core/storage/preferences_service.dart';
-import 'package:luna_pos/core/storage/secure_storage_service.dart';
 import 'package:luna_pos/features/purchase/data/purchase_request_repository.dart';
 import 'package:luna_pos/features/purchase/purchase_list_page.dart';
 import 'package:luna_pos/l10n/app_localizations.dart';
@@ -45,11 +43,9 @@ void main() {
     final mocked = buildMockedApiClient();
     adapter = mocked.adapter;
     secure = FakeSecureStorage();
+    registerAuthTestServices(secure: secure, client: mocked.client);
     locator
       ..registerSingleton<PreferencesService>(await PreferencesService.create())
-      ..registerSingleton<SessionGuard>(SessionGuard())
-      ..registerSingleton<SecureStorageService>(secure)
-      ..registerSingleton<ApiClient>(mocked.client)
       ..registerLazySingleton<PurchaseRequestRepository>(
         () => PurchaseRequestRepository(locator<ApiClient>()),
       );

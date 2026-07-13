@@ -12,7 +12,6 @@ import 'package:luna_pos/core/network/api_client.dart';
 import 'package:luna_pos/core/printer/bluetooth_printer_service.dart';
 import 'package:luna_pos/core/router/app_router.dart';
 import 'package:luna_pos/core/storage/preferences_service.dart';
-import 'package:luna_pos/core/storage/secure_storage_service.dart';
 import 'package:luna_pos/core/theme/app_palette.dart';
 import 'package:luna_pos/core/theme/app_theme.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
@@ -57,10 +56,9 @@ void main() {
     secure = FakeSecureStorage();
     final mocked = buildMockedApiClient();
     adapter = mocked.adapter;
+    registerAuthTestServices(secure: secure, client: mocked.client);
     locator
       ..registerSingleton<PreferencesService>(await PreferencesService.create())
-      ..registerSingleton<SecureStorageService>(secure)
-      ..registerSingleton<ApiClient>(mocked.client)
       ..registerLazySingleton<MenuRepository>(
         () => MenuRepository(locator<ApiClient>()),
       )

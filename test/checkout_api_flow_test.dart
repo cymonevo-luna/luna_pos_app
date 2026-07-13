@@ -8,7 +8,6 @@ import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
 import 'package:luna_pos/core/printer/bluetooth_printer_service.dart';
 import 'package:luna_pos/core/storage/preferences_service.dart';
-import 'package:luna_pos/core/storage/secure_storage_service.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
 import 'package:luna_pos/features/menu/models/pos_menu.dart';
 import 'package:luna_pos/features/order/checkout_controller.dart';
@@ -54,10 +53,10 @@ void main() {
     adapter = mocked.adapter;
     printer = MockBluetoothPrinterService();
 
+    final secure = FakeSecureStorage();
+    registerAuthTestServices(secure: secure, client: mocked.client);
     locator
       ..registerSingleton<PreferencesService>(await PreferencesService.create())
-      ..registerSingleton<SecureStorageService>(FakeSecureStorage())
-      ..registerSingleton<ApiClient>(mocked.client)
       ..registerLazySingleton<TransactionRepository>(
         () => TransactionRepository(locator<ApiClient>()),
       )

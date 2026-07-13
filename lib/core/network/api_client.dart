@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import '../auth/token_refresh_service.dart';
 import 'api_exception.dart';
+import 'auth_token_interceptor.dart';
 
 /// Decodes a raw JSON body (`Map`/`List`) into a typed model.
 typedef JsonDecoder<T> = T Function(dynamic data);
@@ -11,7 +13,7 @@ typedef JsonDecoder<T> = T Function(dynamic data);
 /// Registered in the service locator; resolve via `locator<ApiClient>()`:
 /// ```dart
 /// final user = await locator<ApiClient>().get<User>(
-///   '/me',
+///   '/api/v1/users/$id',
 ///   decoder: (json) => User.fromJson(json),
 /// );
 /// ```
@@ -37,18 +39,42 @@ class ApiClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          if (_authToken != null) {
+          if (!_authInterceptorAttached &&
+              _authToken != null &&
+              !TokenRefreshService.isAuthEndpoint(options.path) &&
+              !options.headers.containsKey('Authorization')) {
             options.headers['Authorization'] = 'Bearer $_authToken';
           }
           handler.next(options);
         },
-        onError: (e, handler) {
-          final code = e.response?.statusCode;
-          if (code == 401 || code == 403) onSessionExpired?.call();
-          handler.next(e);
-        },
       ),
     );
+  }
+
+  final Dio _dio;
+  String? _authToken;
+  bool _authInterceptorAttached = false;
+
+  /// Called when the server returns 401/403 (e.g. to trigger logout).
+  final VoidCallback? onSessionExpired;
+
+  /// Escape hatch for advanced Dio usage (uploads, custom options, etc.).
+  Dio get raw => _dio;
+
+  /// Attach the auth interceptor once. Called from [setupLocator] after
+  /// [TokenRefreshService] is registered.
+  void attachAuthInterceptor(TokenRefreshService tokenRefresh) {
+    if (_authInterceptorAttached) return;
+    _authInterceptorAttached = true;
+
+    _dio.interceptors.add(
+      AuthTokenInterceptor(
+        tokenRefresh: tokenRefresh,
+        dio: _dio,
+        onSessionExpired: () => onSessionExpired?.call(),
+      ),
+    );
+
     if (kDebugMode) {
       _dio.interceptors.add(LogInterceptor(
         requestBody: true,
@@ -58,16 +84,8 @@ class ApiClient {
     }
   }
 
-  final Dio _dio;
-  String? _authToken;
-
-  /// Called when the server returns 401/403 (e.g. to trigger logout).
-  final VoidCallback? onSessionExpired;
-
-  /// Escape hatch for advanced Dio usage (uploads, custom options, etc.).
-  Dio get raw => _dio;
-
-  /// Attach (or clear with `null`) the bearer token sent on every request.
+  /// Attach (or clear with `null`) the bearer token for clients without the
+  /// full auth interceptor (e.g. lightweight live API tests).
   void setAuthToken(String? token) => _authToken = token;
 
   // --- Verbs ---------------------------------------------------------------

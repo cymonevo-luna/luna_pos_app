@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/auth/session_guard.dart';
+import '../../core/auth/token_refresh_service.dart';
 import '../../core/di/locator.dart';
 import '../../core/network/api_client.dart';
 import '../../core/network/api_envelope.dart';
@@ -74,6 +75,7 @@ class AuthController extends Notifier<AuthState> {
   SecureStorageService get _secure => locator<SecureStorageService>();
   ApiClient get _api => locator<ApiClient>();
   SessionGuard get _sessionGuard => locator<SessionGuard>();
+  TokenRefreshService get _tokenRefresh => locator<TokenRefreshService>();
 
   @override
   AuthState build() {
@@ -102,7 +104,7 @@ class AuthController extends Notifier<AuthState> {
         return;
       }
 
-      if (!await _tryRefresh()) {
+      if (!await _tokenRefresh.refresh()) {
         await _clearSession();
         state = state.copyWith(status: AuthStatus.unauthenticated);
         return;
@@ -229,23 +231,6 @@ class AuthController extends Notifier<AuthState> {
       '/api/v1/users/$id',
       decoder: (raw) => User.fromJson(unwrapApiEnvelope(raw)),
     );
-  }
-
-  Future<bool> _tryRefresh() async {
-    final refresh = await _secure.readRefreshToken();
-    if (refresh == null) return false;
-    try {
-      final data = await _api.post<Map<String, dynamic>>(
-        '/api/v1/auth/refresh',
-        body: {'refresh_token': refresh},
-        decoder: unwrapApiEnvelope,
-      );
-      final tokens = (data['tokens'] as Map).cast<String, dynamic>();
-      await _persistTokens(tokens);
-      return true;
-    } on ApiException {
-      return false;
-    }
   }
 
   Future<void> _persistTokens(Map<String, dynamic> tokens) async {

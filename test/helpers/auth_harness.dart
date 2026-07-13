@@ -1,3 +1,6 @@
+import 'package:luna_pos/core/auth/session_guard.dart';
+import 'package:luna_pos/core/auth/token_refresh_service.dart';
+import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
 import 'package:luna_pos/core/storage/secure_storage_service.dart';
 import 'package:luna_pos/testing/test_accounts.dart';
@@ -24,10 +27,97 @@ class FakeSecureStorage extends SecureStorageService {
 
 /// Builds an [ApiClient] whose underlying Dio is backed by a mock adapter so
 /// requests can be stubbed without a live backend.
-({ApiClient client, DioAdapter adapter}) buildMockedApiClient() {
-  final client = ApiClient(baseUrl: 'https://api.test');
+({ApiClient client, DioAdapter adapter, TokenRefreshService? tokenRefresh})
+    buildMockedApiClient({
+  SessionGuard? sessionGuard,
+  FakeSecureStorage? secure,
+  bool withAuthInterceptor = false,
+}) {
+  final guard = sessionGuard ?? SessionGuard();
+  final client = ApiClient(
+    baseUrl: 'https://api.test',
+    onSessionExpired: () => guard.notifyExpired(),
+  );
   final adapter = DioAdapter(dio: client.raw);
-  return (client: client, adapter: adapter);
+
+  TokenRefreshService? tokenRefresh;
+  if (withAuthInterceptor) {
+    final storage = secure ?? FakeSecureStorage();
+    tokenRefresh = TokenRefreshService(
+      secureStorage: storage,
+      dio: client.raw,
+      onSessionExpired: () => guard.notifyExpired(),
+    );
+    client.attachAuthInterceptor(tokenRefresh);
+  }
+
+  return (client: client, adapter: adapter, tokenRefresh: tokenRefresh);
+}
+
+/// Registers the common auth stack used by controller/interceptor tests.
+TestAuthStack registerAuthTestServices({
+  required FakeSecureStorage secure,
+  required ApiClient client,
+  SessionGuard? sessionGuard,
+  bool withAuthInterceptor = true,
+  bool registerInLocator = true,
+}) {
+  final guard = sessionGuard ?? SessionGuard();
+  TokenRefreshService? tokenRefresh;
+
+  if (withAuthInterceptor) {
+    tokenRefresh = TokenRefreshService(
+      secureStorage: secure,
+      dio: client.raw,
+      onSessionExpired: () => guard.notifyExpired(),
+    );
+    client.attachAuthInterceptor(tokenRefresh);
+  }
+
+  if (registerInLocator) {
+    locator
+      ..registerSingleton<SessionGuard>(guard)
+      ..registerSingleton<SecureStorageService>(secure)
+      ..registerSingleton<ApiClient>(client);
+    if (tokenRefresh != null) {
+      locator.registerSingleton<TokenRefreshService>(tokenRefresh);
+    }
+  }
+
+  return TestAuthStack(
+    secure: secure,
+    sessionGuard: guard,
+    client: client,
+    tokenRefresh: tokenRefresh,
+  );
+}
+
+class TestAuthStack {
+  const TestAuthStack({
+    required this.secure,
+    required this.sessionGuard,
+    required this.client,
+    required this.tokenRefresh,
+  });
+
+  final FakeSecureStorage secure;
+  final SessionGuard sessionGuard;
+  final ApiClient client;
+  final TokenRefreshService? tokenRefresh;
+}
+
+/// Full locator reset + auth stack for widget/controller tests.
+Future<TestAuthStack> setupTestAuthStack() async {
+  await locator.reset();
+  final secure = FakeSecureStorage();
+  final mocked = buildMockedApiClient();
+  final stack = registerAuthTestServices(secure: secure, client: mocked.client);
+  return TestAuthStack(
+    secure: secure,
+    sessionGuard: stack.sessionGuard,
+    client: mocked.client,
+    tokenRefresh: stack.tokenRefresh,
+  );
 }
 
 Map<String, dynamic> _loginUserPayload(

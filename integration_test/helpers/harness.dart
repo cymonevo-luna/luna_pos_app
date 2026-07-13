@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:luna_pos/app.dart';
 import 'package:luna_pos/core/auth/session_guard.dart';
+import 'package:luna_pos/core/auth/token_refresh_service.dart';
 import 'package:luna_pos/core/config/app_config.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
@@ -106,6 +107,29 @@ void stubDedicatedAccountLogin(
   );
 }
 
+void stubTokenRefresh(
+  DioAdapter adapter, {
+  String refreshToken = 'ref',
+  String accessToken = 'acc-new',
+  String newRefreshToken = 'ref-new',
+}) {
+  adapter.onPost(
+    '/api/v1/auth/refresh',
+    (server) => server.reply(200, {
+      'success': true,
+      'data': {
+        'tokens': {
+          'access_token': accessToken,
+          'refresh_token': newRefreshToken,
+          'expires_in': 900,
+          'refresh_expires_in': 604800,
+        },
+      },
+    }),
+    data: {'refresh_token': refreshToken},
+  );
+}
+
 /// Boots shared preferences mocks and a mocked API for automation tests.
 Future<IntegrationTestHarness> setUpIntegrationHarness() async {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -116,10 +140,17 @@ Future<IntegrationTestHarness> setUpIntegrationHarness() async {
   final secure = FakeSecureStorage();
   final sessionGuard = SessionGuard();
   final mocked = buildMockedApiClient();
+  final tokenRefresh = TokenRefreshService(
+    secureStorage: secure,
+    dio: mocked.client.raw,
+    onSessionExpired: () => sessionGuard.notifyExpired(),
+  );
+  mocked.client.attachAuthInterceptor(tokenRefresh);
   locator
     ..registerSingleton<PreferencesService>(await PreferencesService.create())
     ..registerSingleton<SecureStorageService>(secure)
     ..registerSingleton<SessionGuard>(sessionGuard)
+    ..registerSingleton<TokenRefreshService>(tokenRefresh)
     ..registerSingleton<ApiClient>(mocked.client)
     ..registerLazySingleton<MenuRepository>(
       () => MenuRepository(locator<ApiClient>()),

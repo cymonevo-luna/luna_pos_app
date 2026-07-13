@@ -4,7 +4,6 @@ import 'package:http_mock_adapter/http_mock_adapter.dart';
 
 import 'package:luna_pos/core/auth/session_guard.dart';
 import 'package:luna_pos/core/di/locator.dart';
-import 'package:luna_pos/core/network/api_client.dart';
 import 'package:luna_pos/core/storage/secure_storage_service.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
 import 'package:luna_pos/testing/test_accounts.dart';
@@ -21,10 +20,7 @@ void main() {
     secure = FakeSecureStorage();
     final mocked = buildMockedApiClient();
     adapter = mocked.adapter;
-    locator
-      ..registerSingleton<SessionGuard>(SessionGuard())
-      ..registerSingleton<SecureStorageService>(secure)
-      ..registerSingleton<ApiClient>(mocked.client);
+    registerAuthTestServices(secure: secure, client: mocked.client);
     container = ProviderContainer();
   });
 

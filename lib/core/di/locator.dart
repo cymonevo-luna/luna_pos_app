@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 
 import '../auth/session_guard.dart';
+import '../auth/token_refresh_service.dart';
 import '../config/app_config.dart';
 import '../network/api_client.dart';
 import '../printer/bluetooth_printer_service.dart';
@@ -37,11 +38,20 @@ Future<void> setupLocator() async {
     onSessionExpired: () => sessionGuard.notifyExpired(),
   );
 
+  final tokenRefresh = TokenRefreshService(
+    secureStorage: secureStorage,
+    dio: apiClient.raw,
+    onSessionExpired: () => sessionGuard.notifyExpired(),
+  );
+  apiClient.attachAuthInterceptor(tokenRefresh);
+
   // Restore a previously saved auth token (if any) onto the client.
   final savedToken = await secureStorage.readToken();
   if (savedToken != null) apiClient.setAuthToken(savedToken);
 
-  locator.registerSingleton<ApiClient>(apiClient);
+  locator
+    ..registerSingleton<TokenRefreshService>(tokenRefresh)
+    ..registerSingleton<ApiClient>(apiClient);
 
   locator.registerLazySingleton<MenuRepository>(
     () => MenuRepository(locator<ApiClient>()),

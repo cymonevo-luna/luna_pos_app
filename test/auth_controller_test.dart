@@ -56,6 +56,8 @@ void main() {
     expect(state.merchant?.id, TestAccounts.testMerchantId);
     expect(secure.store[SecureKeys.authToken], 'acc');
     expect(secure.store[SecureKeys.refreshToken], 'ref');
+    expect(secure.store[SecureKeys.accessExpiresAt], isNotNull);
+    expect(secure.store[SecureKeys.refreshExpiresAt], isNotNull);
     expect(secure.store[SecureKeys.userId], 'u1');
     expect(secure.store[SecureKeys.userJson], isNotNull);
     expect(secure.store[SecureKeys.merchantJson], isNotNull);
@@ -181,6 +183,7 @@ void main() {
             'access_token': 'acc2',
             'refresh_token': 'ref2',
             'expires_in': 900,
+            'refresh_expires_in': 604800,
           },
           'user': {
             'id': 'u2',
@@ -209,14 +212,13 @@ void main() {
     expect(secure.store[SecureKeys.userId], 'u2');
   });
 
-  test('restore re-fetches the profile from a saved session', () async {
+  test('restore refreshes tokens from secure storage on launch', () async {
     seedAuthenticatedTestAccount(
       secure,
       adapter,
       TestAccountRole.cashier,
       userId: 'u1',
     );
-    secure.store[SecureKeys.refreshToken] = 'ref';
     secure.store[SecureKeys.merchantJson] =
         '{"id":"${TestAccounts.testMerchantId}","name":"${TestAccounts.testMerchantName}"}';
 
@@ -228,6 +230,49 @@ void main() {
     expect(state.user?.name, 'Cashier Test');
     expect(state.user?.roles, contains('cashier'));
     expect(state.merchant?.id, TestAccounts.testMerchantId);
+    expect(secure.store[SecureKeys.authToken], 'acc-new');
+    expect(secure.store[SecureKeys.refreshToken], 'ref-new');
+    expect(secure.store[SecureKeys.accessExpiresAt], isNotNull);
+    expect(secure.store[SecureKeys.refreshExpiresAt], isNotNull);
+  });
+
+  test('expired refresh token on launch clears storage and stays signed out',
+      () async {
+    seedAuthenticatedTestAccount(
+      secure,
+      adapter,
+      TestAccountRole.cashier,
+      userId: 'u1',
+      refreshExpiresAt: DateTime.now().subtract(const Duration(hours: 1)),
+    );
+
+    container.read(authProvider.notifier);
+    await waitForResolution();
+
+    final state = container.read(authProvider);
+    expect(state.status, AuthStatus.unauthenticated);
+    expect(secure.store[SecureKeys.authToken], isNull);
+    expect(secure.store[SecureKeys.refreshToken], isNull);
+    expect(secure.store[SecureKeys.refreshExpiresAt], isNull);
+  });
+
+  test('logout clears all stored credentials including expiry', () async {
+    stubDedicatedAccountLogin(adapter, TestAccountRole.cashier, userId: 'u1');
+
+    await container.read(authProvider.notifier).login(
+          email: TestAccounts.cashierEmail,
+          password: TestAccounts.password,
+        );
+    expect(container.read(authProvider).status, AuthStatus.authenticated);
+
+    await container.read(authProvider.notifier).logout();
+
+    expect(container.read(authProvider).status, AuthStatus.unauthenticated);
+    expect(secure.store[SecureKeys.authToken], isNull);
+    expect(secure.store[SecureKeys.refreshToken], isNull);
+    expect(secure.store[SecureKeys.accessExpiresAt], isNull);
+    expect(secure.store[SecureKeys.refreshExpiresAt], isNull);
+    expect(secure.store[SecureKeys.userId], isNull);
   });
 
   test('session expired callback clears auth state', () async {
@@ -249,5 +294,7 @@ void main() {
     expect(state.status, AuthStatus.unauthenticated);
     expect(state.error, kSessionExpiredMessage);
     expect(secure.store[SecureKeys.authToken], isNull);
+    expect(secure.store[SecureKeys.refreshToken], isNull);
+    expect(secure.store[SecureKeys.refreshExpiresAt], isNull);
   });
 }

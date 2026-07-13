@@ -32,6 +32,32 @@ class SecureStorageService {
       write(SecureKeys.refreshToken, token);
   Future<void> deleteRefreshToken() => delete(SecureKeys.refreshToken);
 
+  Future<DateTime?> readAccessExpiresAt() async {
+    final raw = await read(SecureKeys.accessExpiresAt);
+    if (raw == null) return null;
+    final ms = int.tryParse(raw);
+    if (ms == null) return null;
+    return DateTime.fromMillisecondsSinceEpoch(ms);
+  }
+
+  Future<void> writeAccessExpiresAt(DateTime expiresAt) =>
+      write(SecureKeys.accessExpiresAt, '${expiresAt.millisecondsSinceEpoch}');
+
+  Future<void> deleteAccessExpiresAt() => delete(SecureKeys.accessExpiresAt);
+
+  Future<DateTime?> readRefreshExpiresAt() async {
+    final raw = await read(SecureKeys.refreshExpiresAt);
+    if (raw == null) return null;
+    final ms = int.tryParse(raw);
+    if (ms == null) return null;
+    return DateTime.fromMillisecondsSinceEpoch(ms);
+  }
+
+  Future<void> writeRefreshExpiresAt(DateTime expiresAt) =>
+      write(SecureKeys.refreshExpiresAt, '${expiresAt.millisecondsSinceEpoch}');
+
+  Future<void> deleteRefreshExpiresAt() => delete(SecureKeys.refreshExpiresAt);
+
   // Authenticated user id (used to re-fetch the profile on startup).
   Future<String?> readUserId() => read(SecureKeys.userId);
   Future<void> writeUserId(String id) => write(SecureKeys.userId, id);
@@ -64,6 +90,8 @@ class SecureStorageService {
 abstract final class SecureKeys {
   static const String authToken = 'auth_token';
   static const String refreshToken = 'refresh_token';
+  static const String accessExpiresAt = 'access_expires_at';
+  static const String refreshExpiresAt = 'refresh_expires_at';
   static const String userId = 'user_id';
   static const String userJson = 'user_json';
   static const String merchantJson = 'merchant_json';

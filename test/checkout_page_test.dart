@@ -315,30 +315,26 @@ void main() {
 
   testWidgets('empty cart cannot access checkout route',
       (WidgetTester tester) async {
-    secure.store[SecureKeys.authToken] = 'acc';
-    secure.store[SecureKeys.userId] = 'u1';
+    seedRestorableSecureTokens(secure);
+    stubSessionRestoreApis(
+      adapter,
+      userId: 'u1',
+      userData: {
+        'id': 'u1',
+        'email': 'a@b.com',
+        'name': 'Alex',
+        'merchant_id': 'merchant-1',
+        'roles': ['cashier'],
+      },
+    );
 
-    adapter
-      ..onGet(
-        '/api/v1/users/u1',
-        (server) => server.reply(200, {
-          'success': true,
-          'data': {
-            'id': 'u1',
-            'email': 'a@b.com',
-            'name': 'Alex',
-            'merchant_id': 'merchant-1',
-            'roles': ['cashier'],
-          },
-        }),
-      )
-      ..onGet(
-        '/api/v1/pos/menus',
-        (server) => server.reply(200, {
-          'success': true,
-          'data': {'categories': []},
-        }),
-      );
+    adapter.onGet(
+      '/api/v1/pos/menus',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {'categories': []},
+      }),
+    );
 
     final router = container.read(routerProvider);
 

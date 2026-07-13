@@ -40,10 +40,23 @@ Future<AuthSession> loginAsTestRole(
   final user = User.fromJson((data['user'] as Map).cast<String, dynamic>());
   final accessToken = tokens['access_token'] as String;
   final refreshToken = tokens['refresh_token'] as String?;
+  final expiresIn = tokens['expires_in'];
+  final refreshExpiresIn = tokens['refresh_expires_in'];
+  final now = DateTime.now();
 
   await secure.writeToken(accessToken);
   if (refreshToken != null) {
     await secure.writeRefreshToken(refreshToken);
+  }
+  if (expiresIn is num) {
+    await secure.writeAccessExpiresAt(
+      now.add(Duration(seconds: expiresIn.round())),
+    );
+  }
+  if (refreshExpiresIn is num) {
+    await secure.writeRefreshExpiresAt(
+      now.add(Duration(seconds: refreshExpiresIn.round())),
+    );
   }
   await secure.writeUserId(user.id);
   api.setAuthToken(accessToken);

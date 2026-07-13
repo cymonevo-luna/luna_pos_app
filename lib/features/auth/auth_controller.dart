@@ -82,57 +82,48 @@ class AuthController extends Notifier<AuthState> {
     return const AuthState();
   }
 
-  /// Restores a previously saved session: re-fetches the profile with the saved
-  /// access token, transparently refreshing it once on a 401 before giving up.
-  /// Any unexpected failure resolves to an unauthenticated state so the splash
-  /// gate never blocks.
+  /// Restores a previously saved session by refreshing tokens when the refresh
+  /// token is still valid, then re-fetching the user profile. Any failure
+  /// resolves to an unauthenticated state so the splash gate never blocks.
   Future<void> _restore() async {
     try {
-      final token = await _secure.readToken();
+      final refresh = await _secure.readRefreshToken();
       final userId = await _secure.readUserId();
-      if (token == null || userId == null) {
+      if (refresh == null || userId == null) {
         state = state.copyWith(status: AuthStatus.unauthenticated);
         return;
       }
 
-      _api.setAuthToken(token);
-      final storedMerchant = await _secure.readMerchant();
-
-      try {
-        final user = await _fetchUser(userId);
-        if (!user.canAccessPosApp) {
-          await _clearSession();
-          state = state.copyWith(status: AuthStatus.unauthenticated);
-          return;
-        }
-        await _secure.writeUser(user);
-        state = state.copyWith(
-          status: AuthStatus.authenticated,
-          user: user,
-          merchant: storedMerchant,
-        );
+      final refreshExpiresAt = await _secure.readRefreshExpiresAt();
+      if (refreshExpiresAt != null &&
+          refreshExpiresAt.isBefore(DateTime.now())) {
+        await _clearSession();
+        state = state.copyWith(status: AuthStatus.unauthenticated);
         return;
-      } on ApiException catch (e) {
-        if (e.type == ApiErrorType.unauthorized && await _tryRefresh()) {
-          final user = await _fetchUser(userId);
-          if (!user.canAccessPosApp) {
-            await _clearSession();
-            state = state.copyWith(status: AuthStatus.unauthenticated);
-            return;
-          }
-          await _secure.writeUser(user);
-          state = state.copyWith(
-            status: AuthStatus.authenticated,
-            user: user,
-            merchant: storedMerchant,
-          );
-          return;
-        }
       }
 
-      await _clearSession();
-      state = state.copyWith(status: AuthStatus.unauthenticated);
+      if (!await _tryRefresh()) {
+        await _clearSession();
+        state = state.copyWith(status: AuthStatus.unauthenticated);
+        return;
+      }
+
+      final storedMerchant = await _secure.readMerchant();
+      final user = await _fetchUser(userId);
+      if (!user.canAccessPosApp) {
+        await _clearSession();
+        state = state.copyWith(status: AuthStatus.unauthenticated);
+        return;
+      }
+
+      await _secure.writeUser(user);
+      state = state.copyWith(
+        status: AuthStatus.authenticated,
+        user: user,
+        merchant: storedMerchant,
+      );
     } catch (_) {
+      await _clearSession();
       state = state.copyWith(status: AuthStatus.unauthenticated);
     }
   }
@@ -226,8 +217,7 @@ class AuthController extends Notifier<AuthState> {
     }
 
     await _persistSession(
-      access: tokens['access_token'] as String,
-      refresh: tokens['refresh_token'] as String?,
+      tokens: tokens,
       user: user,
       merchant: merchant,
     );
@@ -251,34 +241,52 @@ class AuthController extends Notifier<AuthState> {
         decoder: unwrapApiEnvelope,
       );
       final tokens = (data['tokens'] as Map).cast<String, dynamic>();
-      await _secure.writeToken(tokens['access_token'] as String);
-      final newRefresh = tokens['refresh_token'] as String?;
-      if (newRefresh != null) await _secure.writeRefreshToken(newRefresh);
-      _api.setAuthToken(tokens['access_token'] as String);
+      await _persistTokens(tokens);
       return true;
     } on ApiException {
       return false;
     }
   }
 
+  Future<void> _persistTokens(Map<String, dynamic> tokens) async {
+    final access = tokens['access_token'] as String;
+    final refresh = tokens['refresh_token'] as String?;
+    final expiresIn = tokens['expires_in'];
+    final refreshExpiresIn = tokens['refresh_expires_in'];
+    final now = DateTime.now();
+
+    await _secure.writeToken(access);
+    if (refresh != null) await _secure.writeRefreshToken(refresh);
+    if (expiresIn is num) {
+      await _secure.writeAccessExpiresAt(
+        now.add(Duration(seconds: expiresIn.round())),
+      );
+    }
+    if (refreshExpiresIn is num) {
+      await _secure.writeRefreshExpiresAt(
+        now.add(Duration(seconds: refreshExpiresIn.round())),
+      );
+    }
+    _api.setAuthToken(access);
+  }
+
   Future<void> _persistSession({
-    required String access,
-    String? refresh,
+    required Map<String, dynamic> tokens,
     required User user,
     required Merchant merchant,
   }) async {
-    await _secure.writeToken(access);
-    if (refresh != null) await _secure.writeRefreshToken(refresh);
+    await _persistTokens(tokens);
     await _secure.writeUserId(user.id);
     await _secure.writeUser(user);
     await _secure.writeMerchant(merchant);
-    _api.setAuthToken(access);
   }
 
   Future<void> _clearSession() async {
     _api.setAuthToken(null);
     await _secure.deleteToken();
     await _secure.deleteRefreshToken();
+    await _secure.deleteAccessExpiresAt();
+    await _secure.deleteRefreshExpiresAt();
     await _secure.deleteUserId();
     await _secure.deleteUser();
     await _secure.deleteMerchant();

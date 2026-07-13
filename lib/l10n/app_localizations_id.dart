@@ -549,10 +549,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get stockQuantityInvalid => 'Masukkan jumlah 0 atau lebih';
 
   @override
-  String get deliveries => 'Pengiriman';
+  String get deliveries => 'Produksi';
 
   @override
-  String get productionDeliveries => 'Pengiriman produksi';
+  String get productionDeliveries => 'Produksi';
 
   @override
   String get productionDeliveryDetail => 'Detail pengiriman';

@@ -8,6 +8,7 @@ import 'package:luna_pos/core/auth/session_guard.dart';
 import 'package:luna_pos/core/config/app_config.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
+import 'package:luna_pos/core/localization/locale_provider.dart';
 import 'package:luna_pos/core/router/app_router.dart';
 import 'package:luna_pos/core/storage/preferences_service.dart';
 import 'package:luna_pos/core/storage/secure_storage_service.dart';
@@ -20,6 +21,7 @@ import 'package:luna_pos/features/production_request/production_request_list_pag
 import 'package:luna_pos/features/stock/data/food_supply_repository.dart';
 import 'package:luna_pos/features/stock/stock_list_page.dart';
 import 'package:luna_pos/l10n/app_localizations_en.dart';
+import 'package:luna_pos/l10n/app_localizations_id.dart';
 import 'package:luna_pos/shared/widgets/main_scaffold.dart';
 import 'package:luna_pos/testing/test_accounts.dart';
 import 'package:luna_pos/testing/test_auth.dart' as test_auth;
@@ -455,9 +457,13 @@ class IntegrationTestHarness {
     expect(find.text(l10n.menu), findsWidgets);
   }
 
-  Future<void> tapDeliveriesTab(WidgetTester tester) async {
-    final l10n = AppLocalizationsEn();
-    await tester.tap(find.text(l10n.deliveries));
+  Future<void> tapProductionTab(WidgetTester tester) async {
+    final locale = container.read(localeProvider) ?? const Locale('en');
+    final label = switch (locale.languageCode) {
+      'id' => AppLocalizationsId().deliveries,
+      _ => AppLocalizationsEn().deliveries,
+    };
+    await tester.tap(find.text(label));
     await tester.pumpAndSettle(
       const Duration(milliseconds: 100),
       EnginePhase.sendSemanticsUpdate,

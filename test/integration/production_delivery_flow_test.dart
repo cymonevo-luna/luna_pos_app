@@ -9,7 +9,7 @@ import '../../integration_test/helpers/harness.dart';
 
 /// Cashier production delivery integration test runnable via `flutter test`.
 void main() {
-  testWidgets('cashier marks production delivery done from Deliveries tab',
+  testWidgets('cashier marks production delivery done from Production tab',
       (tester) async {
     const requestId = 'pr-e2e-1';
 
@@ -26,10 +26,18 @@ void main() {
     await harness.loginViaUi(tester, TestAccountRole.cashier);
     await harness.expectAuthenticatedHome(tester);
 
-    await harness.tapDeliveriesTab(tester);
-
     final l10n = AppLocalizationsEn();
-    expect(find.text(l10n.productionDeliveries), findsOneWidget);
+    expect(find.text(l10n.deliveries), findsWidgets);
+    expect(find.text('Deliveries'), findsNothing);
+    expect(find.byIcon(Icons.lunch_dining_outlined), findsWidgets);
+    expect(find.byIcon(Icons.local_shipping_outlined), findsNothing);
+    expect(find.byIcon(Icons.local_shipping), findsNothing);
+
+    await harness.tapProductionTab(tester);
+
+    expect(find.byIcon(Icons.lunch_dining), findsWidgets);
+    expect(find.byIcon(Icons.local_shipping), findsNothing);
+    expect(find.text(l10n.productionDeliveries), findsWidgets);
     expect(find.text(l10n.productionItemCount(1)), findsOneWidget);
 
     await tester.tap(find.text(l10n.productionItemCount(1)));

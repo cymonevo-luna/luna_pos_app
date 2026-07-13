@@ -547,10 +547,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stockQuantityInvalid => 'Enter a quantity of 0 or more';
 
   @override
-  String get deliveries => 'Deliveries';
+  String get deliveries => 'Production';
 
   @override
-  String get productionDeliveries => 'Production deliveries';
+  String get productionDeliveries => 'Production';
 
   @override
   String get productionDeliveryDetail => 'Delivery details';

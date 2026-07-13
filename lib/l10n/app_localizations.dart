@@ -1118,16 +1118,16 @@ abstract class AppLocalizations {
   /// **'Enter a quantity of 0 or more'**
   String get stockQuantityInvalid;
 
-  /// Production deliveries bottom navigation label
+  /// Production bottom navigation label
   ///
   /// In en, this message translates to:
-  /// **'Deliveries'**
+  /// **'Production'**
   String get deliveries;
 
-  /// Production delivery inbox screen title
+  /// Production inbox screen title
   ///
   /// In en, this message translates to:
-  /// **'Production deliveries'**
+  /// **'Production'**
   String get productionDeliveries;
 
   /// Production delivery detail screen title

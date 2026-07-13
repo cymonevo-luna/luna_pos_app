@@ -109,7 +109,8 @@ String? _legacyRouteRedirect(Ref ref, GoRouterState state) {
   final auth = ref.read(authProvider);
   if (auth.status != AuthStatus.authenticated) return null;
 
-  if (state.matchedLocation == AppRoute.messages.path) {
+  final location = state.uri.path;
+  if (location == AppRoute.messages.path) {
     return defaultAuthenticatedRoute(auth.user);
   }
 

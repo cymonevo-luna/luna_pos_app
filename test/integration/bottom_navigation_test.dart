@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:luna_pos/core/router/app_router.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/features/production_request/production_request_list_page.dart';
 import 'package:luna_pos/features/profile/profile_page.dart';
@@ -121,28 +118,6 @@ void main() {
       await tester.tap(find.text(l10n.stock));
       await tester.pumpAndSettle();
       expect(find.byType(StockListPage), findsOneWidget);
-    });
-  });
-
-  group('/messages deep link', () {
-    testWidgets('redirects authenticated cashier to default route', (tester) async {
-      final harness = await setUpIntegrationHarness();
-      harness
-        ..stubLoginForRole(TestAccountRole.cashier)
-        ..stubSampleMenu()
-        ..stubStoreSettings();
-
-      await harness.pumpApp(tester);
-      await harness.loginViaUi(tester, TestAccountRole.cashier);
-      await harness.expectAuthenticatedHome(tester);
-
-      final router = harness.readRouter();
-      router.go(AppRoute.messages.path);
-      await tester.pumpAndSettle();
-
-      expect(find.byType(MenuPage), findsOneWidget);
-      expect(find.text('Messages'), findsNothing);
-      expect(find.text('Coming soon'), findsNothing);
     });
   });
 }

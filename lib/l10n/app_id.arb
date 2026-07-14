@@ -170,6 +170,8 @@
   "save": "Simpan",
   "stockTitleTooShort": "Judul minimal 2 karakter",
   "stockQuantityInvalid": "Masukkan jumlah 0 atau lebih",
+  "stockManualEditHistory": "Riwayat edit manual",
+  "stockNoManualEdits": "Belum ada edit jumlah manual",
   "deliveries": "Produksi",
   "productionDeliveries": "Produksi",
   "productionDeliveryDetail": "Detail pengiriman",

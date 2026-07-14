@@ -5,10 +5,12 @@ import 'package:go_router/go_router.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_tokens.dart';
+import '../../core/di/locator.dart';
 import '../../core/utils/units.dart';
 import '../../features/auth/auth_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/widgets.dart';
+import 'data/food_supply_repository.dart';
 import 'models/food_supply.dart';
 import 'stock_controller.dart';
 import 'stock_form_sheet.dart';
@@ -64,9 +66,18 @@ class _StockListPageState extends ConsumerState<StockListPage> {
   }
 
   Future<void> _openEdit(FoodSupply supply) async {
+    FoodSupply detail = supply;
+    try {
+      detail = await locator<FoodSupplyRepository>().fetchFoodSupply(supply.id);
+    } catch (_) {
+      // Fall back to list item when detail fetch fails.
+    }
+
+    if (!mounted) return;
+
     final width = MediaQuery.sizeOf(context).width;
     if (width >= 600) {
-      await StockFormSheet.show(context, existing: supply);
+      await StockFormSheet.show(context, existing: detail);
       return;
     }
     await context.pushNamed(

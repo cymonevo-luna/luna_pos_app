@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../../core/di/locator.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/network/validation_errors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_tokens.dart';
+import '../../core/utils/units.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/widgets.dart';
 import 'data/food_supply_repository.dart';
@@ -215,6 +217,13 @@ class _StockFormSheetState extends ConsumerState<StockFormSheet> {
               const VGap(AppSpacing.xs),
               AppText.body(_fieldErrors['unit']!, color: context.colors.error),
             ],
+            if (_isEditing) ...[
+              const VGap(AppSpacing.xl),
+              _ManualEditHistorySection(
+                history: widget.existing!.manualEditHistory,
+                unit: widget.existing!.unit,
+              ),
+            ],
             const VGap(AppSpacing.xl),
             AppButton(
               l10n.save,
@@ -224,6 +233,76 @@ class _StockFormSheetState extends ConsumerState<StockFormSheet> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ManualEditHistorySection extends StatelessWidget {
+  const _ManualEditHistorySection({
+    required this.history,
+    required this.unit,
+  });
+
+  final List<FoodSupplyManualEditHistory> history;
+  final String unit;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context);
+    final dateFormat = DateFormat.yMMMd(locale.toString()).add_jm();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AppText.title(l10n.stockManualEditHistory),
+        const VGap(AppSpacing.md),
+        if (history.isEmpty)
+          AppText.body(l10n.stockNoManualEdits, muted: true)
+        else
+          ListView.separated(
+            key: const Key('stock_manual_edit_history_list'),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: history.length,
+            separatorBuilder: (_, _) => const VGap(AppSpacing.sm),
+            itemBuilder: (context, index) {
+              final entry = history[index];
+              final deltaLabel =
+                  formatDeltaMeasurementQuantity(entry.deltaQuantity, unit);
+              final deltaColor = entry.deltaQuantity >= 0
+                  ? context.colors.primary
+                  : context.colors.error;
+
+              return AppCard(
+                key: Key('stock_manual_edit_history_$index'),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AppText.body(
+                            deltaLabel,
+                            weight: FontWeight.w600,
+                            color: deltaColor,
+                          ),
+                          const VGap(AppSpacing.xs),
+                          AppText.body(entry.changedByUsername, muted: true),
+                        ],
+                      ),
+                    ),
+                    AppText.body(
+                      dateFormat.format(entry.createdAt.toLocal()),
+                      muted: true,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+      ],
     );
   }
 }

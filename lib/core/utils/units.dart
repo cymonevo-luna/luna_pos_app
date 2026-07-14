@@ -36,3 +36,13 @@ String _formatNum(num value) {
       .replaceAll(RegExp(r'0+$'), '')
       .replaceAll(RegExp(r'\.$'), '');
 }
+
+/// Formats a signed quantity delta with the supply unit (no kg/L conversion).
+String formatDeltaMeasurementQuantity(num delta, String unit) {
+  final sign = delta >= 0 ? '+' : '-';
+  final unitLabel = switch (unit) {
+    'piece' => 'pcs',
+    _ => unit,
+  };
+  return '$sign${_formatNum(delta.abs())} $unitLabel';
+}

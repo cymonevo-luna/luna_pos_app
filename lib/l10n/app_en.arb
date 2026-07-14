@@ -535,6 +535,14 @@
   "@stockQuantityInvalid": {
     "description": "Validation when food supply quantity is invalid"
   },
+  "stockManualEditHistory": "Manual edit history",
+  "@stockManualEditHistory": {
+    "description": "Section title for manual food supply quantity edit history"
+  },
+  "stockNoManualEdits": "No manual quantity edits yet",
+  "@stockNoManualEdits": {
+    "description": "Empty state when a food supply has no manual quantity edits"
+  },
   "deliveries": "Production",
   "@deliveries": {
     "description": "Production bottom navigation label"

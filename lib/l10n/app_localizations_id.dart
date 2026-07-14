@@ -549,6 +549,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get stockQuantityInvalid => 'Masukkan jumlah 0 atau lebih';
 
   @override
+  String get stockManualEditHistory => 'Riwayat edit manual';
+
+  @override
+  String get stockNoManualEdits => 'Belum ada edit jumlah manual';
+
+  @override
   String get deliveries => 'Produksi';
 
   @override

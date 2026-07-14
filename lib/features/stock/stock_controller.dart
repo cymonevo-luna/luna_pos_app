@@ -106,16 +106,21 @@ class StockController extends Notifier<StockState> {
   }
 
   Future<FoodSupply?> createSupply(FoodSupplyRequest request) async {
+    if (!ref.mounted) return null;
     state = state.copyWith(submitting: true, clearError: true);
     try {
       final created = await _repository.create(request);
+      if (!ref.mounted) return created;
       await refresh();
+      if (!ref.mounted) return created;
       state = state.copyWith(submitting: false);
       return created;
     } on ApiException catch (e) {
+      if (!ref.mounted) rethrow;
       state = state.copyWith(submitting: false, error: e.message);
       rethrow;
     } catch (_) {
+      if (!ref.mounted) rethrow;
       state = state.copyWith(
         submitting: false,
         error: 'Failed to create supply',
@@ -125,18 +130,23 @@ class StockController extends Notifier<StockState> {
   }
 
   Future<FoodSupply?> updateSupply(String id, FoodSupplyRequest request) async {
+    if (!ref.mounted) return null;
     state = state.copyWith(submitting: true, clearError: true);
     try {
-      final updated = await _repository.update(id, request);
+      await _repository.update(id, request);
+      final updated = await _repository.fetchFoodSupply(id);
+      if (!ref.mounted) return updated;
       final items = state.items
           .map((item) => item.id == id ? updated : item)
           .toList(growable: false);
       state = state.copyWith(items: items, submitting: false);
       return updated;
     } on ApiException catch (e) {
+      if (!ref.mounted) rethrow;
       state = state.copyWith(submitting: false, error: e.message);
       rethrow;
     } catch (_) {
+      if (!ref.mounted) rethrow;
       state = state.copyWith(
         submitting: false,
         error: 'Failed to update supply',
@@ -152,6 +162,7 @@ class StockController extends Notifier<StockState> {
     bool loadingMore = false,
     bool forceLoading = false,
   }) async {
+    if (!ref.mounted) return;
     state = state.copyWith(
       loading: forceLoading || (!refreshing && !loadingMore && !append),
       refreshing: refreshing,
@@ -168,6 +179,8 @@ class StockController extends Notifier<StockState> {
         search: state.search,
       );
 
+      if (!ref.mounted) return;
+
       final merged = append ? [...state.items, ...response.items] : response.items;
 
       state = state.copyWith(
@@ -180,6 +193,7 @@ class StockController extends Notifier<StockState> {
         hasMore: response.hasMore,
       );
     } on ApiException catch (e) {
+      if (!ref.mounted) return;
       if (e.type == ApiErrorType.forbidden) {
         state = state.copyWith(
           loading: false,
@@ -199,6 +213,7 @@ class StockController extends Notifier<StockState> {
         items: append ? state.items : const [],
       );
     } catch (_) {
+      if (!ref.mounted) return;
       state = state.copyWith(
         loading: false,
         refreshing: false,

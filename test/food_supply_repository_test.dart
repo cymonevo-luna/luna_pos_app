@@ -93,4 +93,55 @@ void main() {
     expect(response.items, hasLength(1));
     expect(response.items.first.title, 'Flour');
   });
+
+  test('fetchFoodSupply decodes manual_edit_history', () async {
+    adapter.onGet(
+      '${FoodSupplyRepository.listPath}/fs-1',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'id': 'fs-1',
+          'title': 'Flour',
+          'description': '',
+          'stock_quantity': '1500',
+          'unit': 'gr',
+          'manual_edit_history': [
+            {
+              'delta_quantity': '500',
+              'previous_quantity': '1000',
+              'new_quantity': '1500',
+              'changed_by_username': 'ops-user',
+              'created_at': '2026-07-14T10:00:00Z',
+            },
+          ],
+        },
+      }),
+    );
+
+    final supply = await locator<FoodSupplyRepository>().fetchFoodSupply('fs-1');
+
+    expect(supply.manualEditHistory, hasLength(1));
+    expect(supply.manualEditHistory.first.deltaQuantity, 500);
+    expect(supply.manualEditHistory.first.changedByUsername, 'ops-user');
+  });
+
+  test('fetchFoodSupply defaults missing manual_edit_history to empty list', () async {
+    adapter.onGet(
+      '${FoodSupplyRepository.listPath}/fs-2',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'id': 'fs-2',
+          'title': 'Sugar',
+          'description': '',
+          'stock_quantity': 100,
+          'unit': 'gr',
+        },
+      }),
+    );
+
+    final supply = await locator<FoodSupplyRepository>().fetchFoodSupply('fs-2');
+
+    expect(supply.manualEditHistory, isEmpty);
+  });
 }

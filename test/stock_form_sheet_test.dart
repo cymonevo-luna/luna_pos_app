@@ -50,9 +50,18 @@ void main() {
       );
     container = ProviderContainer();
     container.read(stockProvider.notifier);
+    await Future<void>.delayed(Duration.zero);
+    for (var i = 0; i < 100 && container.read(stockProvider).loading; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 5));
+    }
   });
 
-  tearDown(() {
+  tearDown(() async {
+    for (var i = 0; i < 100; i++) {
+      final state = container.read(stockProvider);
+      if (!state.loading && !state.refreshing && !state.submitting) break;
+      await Future<void>.delayed(const Duration(milliseconds: 5));
+    }
     container.dispose();
   });
 
@@ -129,6 +138,28 @@ void main() {
         'unit': 'gr',
       },
     );
+    adapter.onGet(
+      '${FoodSupplyRepository.listPath}/fs-1',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'id': 'fs-1',
+          'title': 'Flour',
+          'description': '',
+          'stock_quantity': '1500',
+          'unit': 'gr',
+          'manual_edit_history': [
+            {
+              'delta_quantity': 500,
+              'previous_quantity': 1000,
+              'new_quantity': 1500,
+              'changed_by_username': 'ops-user',
+              'created_at': '2026-07-14T10:00:00Z',
+            },
+          ],
+        },
+      }),
+    );
 
     await tester.pumpWidget(buildFormApp(existing: existing));
     await tester.pumpAndSettle();
@@ -136,5 +167,56 @@ void main() {
     await tester.enterText(find.byKey(const Key('stock_quantity_field')), '1500');
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
+  });
+
+  testWidgets('edit supply shows empty manual edit history state', (tester) async {
+    const existing = FoodSupply(
+      id: 'fs-1',
+      title: 'Flour',
+      description: '',
+      stockQuantity: 1000,
+      unit: 'gr',
+    );
+
+    await tester.pumpWidget(buildFormApp(existing: existing));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Manual edit history'), findsOneWidget);
+    expect(find.text('No manual quantity edits yet'), findsOneWidget);
+  });
+
+  testWidgets('edit supply shows manual edit history rows', (tester) async {
+    final existing = FoodSupply(
+      id: 'fs-1',
+      title: 'Flour',
+      description: '',
+      stockQuantity: 1500,
+      unit: 'gr',
+      manualEditHistory: [
+        FoodSupplyManualEditHistory(
+          deltaQuantity: 500,
+          previousQuantity: 1000,
+          newQuantity: 1500,
+          changedByUsername: 'ops-user',
+          createdAt: DateTime.utc(2026, 7, 14, 10),
+        ),
+        FoodSupplyManualEditHistory(
+          deltaQuantity: -200,
+          previousQuantity: 1700,
+          newQuantity: 1500,
+          changedByUsername: 'manager-user',
+          createdAt: DateTime.utc(2026, 7, 14, 11),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(buildFormApp(existing: existing));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('stock_manual_edit_history_list')), findsOneWidget);
+    expect(find.text('+500 gr'), findsOneWidget);
+    expect(find.text('-200 gr'), findsOneWidget);
+    expect(find.text('ops-user'), findsOneWidget);
+    expect(find.text('manager-user'), findsOneWidget);
   });
 }

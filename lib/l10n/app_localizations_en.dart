@@ -547,6 +547,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stockQuantityInvalid => 'Enter a quantity of 0 or more';
 
   @override
+  String get stockManualEditHistory => 'Manual edit history';
+
+  @override
+  String get stockNoManualEdits => 'No manual quantity edits yet';
+
+  @override
   String get deliveries => 'Production';
 
   @override

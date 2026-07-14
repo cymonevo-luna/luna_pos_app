@@ -1118,6 +1118,18 @@ abstract class AppLocalizations {
   /// **'Enter a quantity of 0 or more'**
   String get stockQuantityInvalid;
 
+  /// Section title for manual food supply quantity edit history
+  ///
+  /// In en, this message translates to:
+  /// **'Manual edit history'**
+  String get stockManualEditHistory;
+
+  /// Empty state when a food supply has no manual quantity edits
+  ///
+  /// In en, this message translates to:
+  /// **'No manual quantity edits yet'**
+  String get stockNoManualEdits;
+
   /// Production bottom navigation label
   ///
   /// In en, this message translates to:

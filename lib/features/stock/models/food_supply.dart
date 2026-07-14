@@ -12,6 +12,23 @@ num _stockQuantityFromJson(dynamic value) {
 dynamic _stockQuantityToJson(num value) => value;
 
 @freezed
+abstract class FoodSupplyManualEditHistory with _$FoodSupplyManualEditHistory {
+  const factory FoodSupplyManualEditHistory({
+    @JsonKey(name: 'delta_quantity', fromJson: _stockQuantityFromJson, toJson: _stockQuantityToJson)
+    required num deltaQuantity,
+    @JsonKey(name: 'previous_quantity', fromJson: _stockQuantityFromJson, toJson: _stockQuantityToJson)
+    required num previousQuantity,
+    @JsonKey(name: 'new_quantity', fromJson: _stockQuantityFromJson, toJson: _stockQuantityToJson)
+    required num newQuantity,
+    @JsonKey(name: 'changed_by_username') required String changedByUsername,
+    @JsonKey(name: 'created_at') required DateTime createdAt,
+  }) = _FoodSupplyManualEditHistory;
+
+  factory FoodSupplyManualEditHistory.fromJson(Map<String, dynamic> json) =>
+      _$FoodSupplyManualEditHistoryFromJson(json);
+}
+
+@freezed
 abstract class FoodSupply with _$FoodSupply {
   const factory FoodSupply({
     required String id,
@@ -22,6 +39,9 @@ abstract class FoodSupply with _$FoodSupply {
     required String unit,
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
+    @JsonKey(name: 'manual_edit_history', defaultValue: <FoodSupplyManualEditHistory>[])
+    @Default(<FoodSupplyManualEditHistory>[])
+    List<FoodSupplyManualEditHistory> manualEditHistory,
   }) = _FoodSupply;
 
   factory FoodSupply.fromJson(Map<String, dynamic> json) =>

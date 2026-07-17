@@ -24,10 +24,14 @@ abstract class User with _$User {
 extension UserRoleAccess on User {
   static const cashierRole = 'cashier';
   static const operationalRole = 'operational';
+  static const managerRole = 'manager';
 
   bool get hasCashierAccess => roles.contains(cashierRole);
 
   bool get hasOperationalAccess => roles.contains(operationalRole);
 
-  bool get canAccessPosApp => hasCashierAccess || hasOperationalAccess;
+  bool get hasManagerAccess => roles.contains(managerRole);
+
+  bool get canAccessPosApp =>
+      hasCashierAccess || hasOperationalAccess || hasManagerAccess;
 }

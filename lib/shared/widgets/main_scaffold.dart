@@ -82,6 +82,11 @@ class MainScaffold extends ConsumerWidget {
           label: l10n.purchases,
         ),
       5 => NavigationDestination(
+          icon: const Icon(Icons.event_repeat_outlined),
+          selectedIcon: const Icon(Icons.event_repeat),
+          label: l10n.recurringExpensesTitle,
+        ),
+      6 => NavigationDestination(
           icon: const Icon(Icons.person_outline),
           selectedIcon: const Icon(Icons.person),
           label: l10n.profile,

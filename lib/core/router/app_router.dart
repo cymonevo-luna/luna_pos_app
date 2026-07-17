@@ -15,6 +15,8 @@ import '../../features/production_request/production_request_list_page.dart';
 import '../../features/purchase/purchase_create_page.dart';
 import '../../features/purchase/purchase_detail_page.dart';
 import '../../features/purchase/purchase_list_page.dart';
+import '../../features/recurring_expense/recurring_expense_form_sheet.dart';
+import '../../features/recurring_expense/recurring_expense_list_page.dart';
 import '../../features/stock/stock_form_sheet.dart';
 import '../../features/stock/stock_list_page.dart';
 import '../../features/transaction/transaction_detail_page.dart';
@@ -41,6 +43,9 @@ enum AppRoute {
   purchases('/purchases'),
   purchasesNew('/purchases/new'),
   purchaseDetail('/purchases/:id'),
+  recurringExpenses('/recurring-expenses'),
+  recurringExpensesNew('/recurring-expenses/new'),
+  recurringExpensesEdit('/recurring-expenses/:id/edit'),
   profile('/profile'),
   settings('/settings'),
   details('/details'),
@@ -99,6 +104,10 @@ String? _roleRedirect(Ref ref, GoRouterState state) {
   }
 
   if (isOperationalRoute(location) && !user.hasOperationalAccess) {
+    return defaultAuthenticatedRoute(user);
+  }
+
+  if (isRecurringExpenseRoute(location) && !hasRecurringExpenseAccess(user)) {
     return defaultAuthenticatedRoute(user);
   }
 
@@ -253,6 +262,32 @@ final routerProvider = Provider<GoRouter>((ref) {
                     parentNavigatorKey: _rootNavigatorKey,
                     builder: (context, state) => PurchaseDetailPage(
                       purchaseId: state.pathParameters['id']!,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoute.recurringExpenses.path,
+                name: AppRoute.recurringExpenses.name,
+                builder: (context, state) => const RecurringExpenseListPage(),
+                routes: [
+                  GoRoute(
+                    path: 'new',
+                    name: AppRoute.recurringExpensesNew.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) =>
+                        const RecurringExpenseFormPage(),
+                  ),
+                  GoRoute(
+                    path: ':id/edit',
+                    name: AppRoute.recurringExpensesEdit.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => RecurringExpenseEditPage(
+                      id: state.pathParameters['id']!,
                     ),
                   ),
                 ],

@@ -3,6 +3,7 @@ import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/features/production_request/production_request_list_page.dart';
 import 'package:luna_pos/features/profile/profile_page.dart';
 import 'package:luna_pos/features/purchase/purchase_list_page.dart';
+import 'package:luna_pos/features/recurring_expense/recurring_expense_list_page.dart';
 import 'package:luna_pos/features/stock/stock_list_page.dart';
 import 'package:luna_pos/features/transaction/transaction_history_page.dart';
 import 'package:luna_pos/l10n/app_localizations_en.dart';
@@ -90,9 +91,19 @@ void main() {
         }),
         queryParameters: {'page': '1', 'per_page': '20'},
       );
+      harness.adapter.onGet(
+        '/api/admin/recurring-expenses',
+        (server) => server.reply(200, {
+          'success': true,
+          'data': [],
+          'meta': {'page': 1, 'per_page': 20, 'total': 0},
+        }),
+        queryParameters: {'page': '1', 'per_page': '20'},
+      );
     });
 
-    testWidgets('shows Stock and Purchases without Messages', (tester) async {
+    testWidgets('shows Stock, Purchases, and Recurring without Messages',
+        (tester) async {
       await harness.pumpApp(tester);
       await harness.loginViaUi(tester, TestAccountRole.operational);
       await harness.expectAuthenticatedProcurement(tester);
@@ -101,10 +112,12 @@ void main() {
       expect(find.text('Pesan'), findsNothing);
       expect(find.text(l10n.stock), findsWidgets);
       expect(find.text(l10n.purchases), findsWidgets);
+      expect(find.text(l10n.recurringExpensesTitle), findsWidgets);
       expect(find.text(l10n.profile), findsWidgets);
     });
 
-    testWidgets('Stock and Purchases tabs open the correct pages', (tester) async {
+    testWidgets('Stock, Purchases, and Recurring tabs open the correct pages',
+        (tester) async {
       await harness.pumpApp(tester);
       await harness.loginViaUi(tester, TestAccountRole.operational);
       await harness.expectAuthenticatedProcurement(tester);
@@ -114,6 +127,10 @@ void main() {
       await tester.tap(find.text(l10n.purchases));
       await tester.pumpAndSettle();
       expect(find.byType(PurchaseListPage), findsOneWidget);
+
+      await tester.tap(find.text(l10n.recurringExpensesTitle));
+      await tester.pumpAndSettle();
+      expect(find.byType(RecurringExpenseListPage), findsOneWidget);
 
       await tester.tap(find.text(l10n.stock));
       await tester.pumpAndSettle();

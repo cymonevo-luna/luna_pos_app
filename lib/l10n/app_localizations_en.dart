@@ -583,4 +583,130 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get recurringExpensesTitle => 'Recurring';
+
+  @override
+  String get createRecurringExpense => 'New recurring expense';
+
+  @override
+  String get editRecurringExpense => 'Edit recurring expense';
+
+  @override
+  String get searchRecurringExpenses => 'Search recurring expenses';
+
+  @override
+  String get noRecurringExpenses => 'No recurring expenses yet';
+
+  @override
+  String get intervalDaily => 'Daily';
+
+  @override
+  String get intervalDay => 'Weekly';
+
+  @override
+  String get intervalDate => 'Monthly';
+
+  @override
+  String get dayOfMonth => 'Day of month';
+
+  @override
+  String get weekday => 'Weekday';
+
+  @override
+  String get nextRunAt => 'Next run';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get inactive => 'Inactive';
+
+  @override
+  String get recurringExpenseAmountLabel => 'Amount';
+
+  @override
+  String get recurringExpenseIntervalLabel => 'Schedule interval';
+
+  @override
+  String get recurringExpenseTimeLabel => 'Run time';
+
+  @override
+  String get hourLabel => 'Hour';
+
+  @override
+  String get minuteLabel => 'Minute';
+
+  @override
+  String get secondLabel => 'Second';
+
+  @override
+  String get recurringExpenseTitleTooShort =>
+      'Title must be at least 2 characters';
+
+  @override
+  String get recurringExpenseAmountInvalid => 'Enter an amount greater than 0';
+
+  @override
+  String get recurringExpenseDayOfMonthInvalid =>
+      'Enter a day between 1 and 31';
+
+  @override
+  String get recurringExpenseWeekdayInvalid =>
+      'Select a weekday between 1 and 7';
+
+  @override
+  String recurringScheduleDaily(String time) {
+    return 'Every day at $time';
+  }
+
+  @override
+  String recurringScheduleDate(int day, String time) {
+    return 'Day $day of month at $time';
+  }
+
+  @override
+  String recurringScheduleDay(String weekday, String time) {
+    return 'Every $weekday at $time';
+  }
+
+  @override
+  String get weekdayMonday => 'Monday';
+
+  @override
+  String get weekdayTuesday => 'Tuesday';
+
+  @override
+  String get weekdayWednesday => 'Wednesday';
+
+  @override
+  String get weekdayThursday => 'Thursday';
+
+  @override
+  String get weekdayFriday => 'Friday';
+
+  @override
+  String get weekdaySaturday => 'Saturday';
+
+  @override
+  String get weekdaySunday => 'Sunday';
+
+  @override
+  String get deleteRecurringExpense => 'Delete recurring expense';
+
+  @override
+  String deleteRecurringExpenseConfirm(String title) {
+    return 'Delete \"$title\"? This cannot be undone.';
+  }
+
+  @override
+  String get deleteRecurringExpenseFailed =>
+      'Failed to delete recurring expense';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
 }

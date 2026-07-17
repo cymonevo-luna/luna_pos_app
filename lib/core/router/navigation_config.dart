@@ -8,7 +8,8 @@ enum ShellBranch {
   calendar(2),
   stock(3),
   purchases(4),
-  profile(5);
+  recurringExpenses(5),
+  profile(6);
 
   const ShellBranch(this.branchIndex);
   final int branchIndex;
@@ -19,6 +20,7 @@ String defaultAuthenticatedRoute(User? user) {
   if (user == null) return AppRoute.login.path;
   if (user.hasCashierAccess) return AppRoute.home.path;
   if (user.hasOperationalAccess) return AppRoute.stock.path;
+  if (user.hasManagerAccess) return AppRoute.recurringExpenses.path;
   return AppRoute.login.path;
 }
 
@@ -44,6 +46,14 @@ bool isOperationalRoute(String location) {
       _matchesPrefix(location, AppRoute.purchases.path);
 }
 
+bool isRecurringExpenseRoute(String location) {
+  return _matchesPrefix(location, AppRoute.recurringExpenses.path);
+}
+
+bool hasRecurringExpenseAccess(User user) {
+  return user.hasOperationalAccess || user.hasManagerAccess;
+}
+
 /// Shell branch indices visible for the given user roles.
 List<int> visibleShellBranches(User? user) {
   if (user == null) return const [];
@@ -60,7 +70,10 @@ List<int> visibleShellBranches(User? user) {
     branches.addAll([
       ShellBranch.stock.branchIndex,
       ShellBranch.purchases.branchIndex,
+      ShellBranch.recurringExpenses.branchIndex,
     ]);
+  } else if (user.hasManagerAccess) {
+    branches.add(ShellBranch.recurringExpenses.branchIndex);
   }
   branches.add(ShellBranch.profile.branchIndex);
   return branches;

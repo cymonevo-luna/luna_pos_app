@@ -1177,6 +1177,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 item} other{{count} items}}'**
   String productionItemCount(int count);
+
+  /// Recurring expenses tab and screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Recurring'**
+  String get recurringExpensesTitle;
+
+  /// Create recurring expense screen title and FAB label
+  ///
+  /// In en, this message translates to:
+  /// **'New recurring expense'**
+  String get createRecurringExpense;
+
+  /// Edit recurring expense screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit recurring expense'**
+  String get editRecurringExpense;
+
+  /// Search field hint on recurring expense list
+  ///
+  /// In en, this message translates to:
+  /// **'Search recurring expenses'**
+  String get searchRecurringExpenses;
+
+  /// Empty state on recurring expense list
+  ///
+  /// In en, this message translates to:
+  /// **'No recurring expenses yet'**
+  String get noRecurringExpenses;
+
+  /// Recurring schedule interval: every day
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get intervalDaily;
+
+  /// Recurring schedule interval: specific weekday
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get intervalDay;
+
+  /// Recurring schedule interval: day of month
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get intervalDate;
+
+  /// Label for monthly recurring day-of-month field
+  ///
+  /// In en, this message translates to:
+  /// **'Day of month'**
+  String get dayOfMonth;
+
+  /// Label for weekly recurring weekday field
+  ///
+  /// In en, this message translates to:
+  /// **'Weekday'**
+  String get weekday;
+
+  /// Label for next scheduled run timestamp
+  ///
+  /// In en, this message translates to:
+  /// **'Next run'**
+  String get nextRunAt;
+
+  /// Active status label for recurring expense
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get active;
+
+  /// Inactive status label for recurring expense
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get inactive;
+
+  /// Amount field label on recurring expense form
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get recurringExpenseAmountLabel;
+
+  /// Interval dropdown label on recurring expense form
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule interval'**
+  String get recurringExpenseIntervalLabel;
+
+  /// Time picker section label on recurring expense form
+  ///
+  /// In en, this message translates to:
+  /// **'Run time'**
+  String get recurringExpenseTimeLabel;
+
+  /// Hour picker label
+  ///
+  /// In en, this message translates to:
+  /// **'Hour'**
+  String get hourLabel;
+
+  /// Minute picker label
+  ///
+  /// In en, this message translates to:
+  /// **'Minute'**
+  String get minuteLabel;
+
+  /// Second picker label
+  ///
+  /// In en, this message translates to:
+  /// **'Second'**
+  String get secondLabel;
+
+  /// Validation when recurring expense title is too short
+  ///
+  /// In en, this message translates to:
+  /// **'Title must be at least 2 characters'**
+  String get recurringExpenseTitleTooShort;
+
+  /// Validation when recurring expense amount is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount greater than 0'**
+  String get recurringExpenseAmountInvalid;
+
+  /// Validation when day of month is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a day between 1 and 31'**
+  String get recurringExpenseDayOfMonthInvalid;
+
+  /// Validation when weekday value is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Select a weekday between 1 and 7'**
+  String get recurringExpenseWeekdayInvalid;
+
+  /// Schedule summary for daily recurring expense
+  ///
+  /// In en, this message translates to:
+  /// **'Every day at {time}'**
+  String recurringScheduleDaily(String time);
+
+  /// Schedule summary for monthly recurring expense
+  ///
+  /// In en, this message translates to:
+  /// **'Day {day} of month at {time}'**
+  String recurringScheduleDate(int day, String time);
+
+  /// Schedule summary for weekly recurring expense
+  ///
+  /// In en, this message translates to:
+  /// **'Every {weekday} at {time}'**
+  String recurringScheduleDay(String weekday, String time);
+
+  /// No description provided for @weekdayMonday.
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
+  String get weekdayMonday;
+
+  /// No description provided for @weekdayTuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuesday'**
+  String get weekdayTuesday;
+
+  /// No description provided for @weekdayWednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Wednesday'**
+  String get weekdayWednesday;
+
+  /// No description provided for @weekdayThursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Thursday'**
+  String get weekdayThursday;
+
+  /// No description provided for @weekdayFriday.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday'**
+  String get weekdayFriday;
+
+  /// No description provided for @weekdaySaturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday'**
+  String get weekdaySaturday;
+
+  /// No description provided for @weekdaySunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
+  String get weekdaySunday;
+
+  /// Title for delete recurring expense confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Delete recurring expense'**
+  String get deleteRecurringExpense;
+
+  /// Message for delete recurring expense confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{title}\"? This cannot be undone.'**
+  String deleteRecurringExpenseConfirm(String title);
+
+  /// SnackBar when delete recurring expense fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete recurring expense'**
+  String get deleteRecurringExpenseFailed;
+
+  /// Cancel button label
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// Delete button label
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
 }
 
 class _AppLocalizationsDelegate

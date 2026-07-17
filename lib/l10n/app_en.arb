@@ -580,5 +580,162 @@
         "example": "3"
       }
     }
+  },
+  "recurringExpensesTitle": "Recurring",
+  "@recurringExpensesTitle": {
+    "description": "Recurring expenses tab and screen title"
+  },
+  "createRecurringExpense": "New recurring expense",
+  "@createRecurringExpense": {
+    "description": "Create recurring expense screen title and FAB label"
+  },
+  "editRecurringExpense": "Edit recurring expense",
+  "@editRecurringExpense": {
+    "description": "Edit recurring expense screen title"
+  },
+  "searchRecurringExpenses": "Search recurring expenses",
+  "@searchRecurringExpenses": {
+    "description": "Search field hint on recurring expense list"
+  },
+  "noRecurringExpenses": "No recurring expenses yet",
+  "@noRecurringExpenses": {
+    "description": "Empty state on recurring expense list"
+  },
+  "intervalDaily": "Daily",
+  "@intervalDaily": {
+    "description": "Recurring schedule interval: every day"
+  },
+  "intervalDay": "Weekly",
+  "@intervalDay": {
+    "description": "Recurring schedule interval: specific weekday"
+  },
+  "intervalDate": "Monthly",
+  "@intervalDate": {
+    "description": "Recurring schedule interval: day of month"
+  },
+  "dayOfMonth": "Day of month",
+  "@dayOfMonth": {
+    "description": "Label for monthly recurring day-of-month field"
+  },
+  "weekday": "Weekday",
+  "@weekday": {
+    "description": "Label for weekly recurring weekday field"
+  },
+  "nextRunAt": "Next run",
+  "@nextRunAt": {
+    "description": "Label for next scheduled run timestamp"
+  },
+  "active": "Active",
+  "@active": {
+    "description": "Active status label for recurring expense"
+  },
+  "inactive": "Inactive",
+  "@inactive": {
+    "description": "Inactive status label for recurring expense"
+  },
+  "recurringExpenseAmountLabel": "Amount",
+  "@recurringExpenseAmountLabel": {
+    "description": "Amount field label on recurring expense form"
+  },
+  "recurringExpenseIntervalLabel": "Schedule interval",
+  "@recurringExpenseIntervalLabel": {
+    "description": "Interval dropdown label on recurring expense form"
+  },
+  "recurringExpenseTimeLabel": "Run time",
+  "@recurringExpenseTimeLabel": {
+    "description": "Time picker section label on recurring expense form"
+  },
+  "hourLabel": "Hour",
+  "@hourLabel": {
+    "description": "Hour picker label"
+  },
+  "minuteLabel": "Minute",
+  "@minuteLabel": {
+    "description": "Minute picker label"
+  },
+  "secondLabel": "Second",
+  "@secondLabel": {
+    "description": "Second picker label"
+  },
+  "recurringExpenseTitleTooShort": "Title must be at least 2 characters",
+  "@recurringExpenseTitleTooShort": {
+    "description": "Validation when recurring expense title is too short"
+  },
+  "recurringExpenseAmountInvalid": "Enter an amount greater than 0",
+  "@recurringExpenseAmountInvalid": {
+    "description": "Validation when recurring expense amount is invalid"
+  },
+  "recurringExpenseDayOfMonthInvalid": "Enter a day between 1 and 31",
+  "@recurringExpenseDayOfMonthInvalid": {
+    "description": "Validation when day of month is invalid"
+  },
+  "recurringExpenseWeekdayInvalid": "Select a weekday between 1 and 7",
+  "@recurringExpenseWeekdayInvalid": {
+    "description": "Validation when weekday value is invalid"
+  },
+  "recurringScheduleDaily": "Every day at {time}",
+  "@recurringScheduleDaily": {
+    "description": "Schedule summary for daily recurring expense",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringScheduleDate": "Day {day} of month at {time}",
+  "@recurringScheduleDate": {
+    "description": "Schedule summary for monthly recurring expense",
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "recurringScheduleDay": "Every {weekday} at {time}",
+  "@recurringScheduleDay": {
+    "description": "Schedule summary for weekly recurring expense",
+    "placeholders": {
+      "weekday": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "weekdayMonday": "Monday",
+  "weekdayTuesday": "Tuesday",
+  "weekdayWednesday": "Wednesday",
+  "weekdayThursday": "Thursday",
+  "weekdayFriday": "Friday",
+  "weekdaySaturday": "Saturday",
+  "weekdaySunday": "Sunday",
+  "deleteRecurringExpense": "Delete recurring expense",
+  "@deleteRecurringExpense": {
+    "description": "Title for delete recurring expense confirmation dialog"
+  },
+  "deleteRecurringExpenseConfirm": "Delete \"{title}\"? This cannot be undone.",
+  "@deleteRecurringExpenseConfirm": {
+    "description": "Message for delete recurring expense confirmation dialog",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteRecurringExpenseFailed": "Failed to delete recurring expense",
+  "@deleteRecurringExpenseFailed": {
+    "description": "SnackBar when delete recurring expense fails"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button label"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete button label"
   }
 }

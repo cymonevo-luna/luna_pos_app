@@ -585,4 +585,128 @@ class AppLocalizationsId extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get recurringExpensesTitle => 'Berulang';
+
+  @override
+  String get createRecurringExpense => 'Pengeluaran berulang baru';
+
+  @override
+  String get editRecurringExpense => 'Ubah pengeluaran berulang';
+
+  @override
+  String get searchRecurringExpenses => 'Cari pengeluaran berulang';
+
+  @override
+  String get noRecurringExpenses => 'Belum ada pengeluaran berulang';
+
+  @override
+  String get intervalDaily => 'Harian';
+
+  @override
+  String get intervalDay => 'Mingguan';
+
+  @override
+  String get intervalDate => 'Bulanan';
+
+  @override
+  String get dayOfMonth => 'Tanggal';
+
+  @override
+  String get weekday => 'Hari dalam minggu';
+
+  @override
+  String get nextRunAt => 'Jalankan berikutnya';
+
+  @override
+  String get active => 'Aktif';
+
+  @override
+  String get inactive => 'Tidak aktif';
+
+  @override
+  String get recurringExpenseAmountLabel => 'Jumlah';
+
+  @override
+  String get recurringExpenseIntervalLabel => 'Interval jadwal';
+
+  @override
+  String get recurringExpenseTimeLabel => 'Waktu jalan';
+
+  @override
+  String get hourLabel => 'Jam';
+
+  @override
+  String get minuteLabel => 'Menit';
+
+  @override
+  String get secondLabel => 'Detik';
+
+  @override
+  String get recurringExpenseTitleTooShort => 'Judul minimal 2 karakter';
+
+  @override
+  String get recurringExpenseAmountInvalid => 'Masukkan jumlah lebih dari 0';
+
+  @override
+  String get recurringExpenseDayOfMonthInvalid =>
+      'Masukkan tanggal antara 1 dan 31';
+
+  @override
+  String get recurringExpenseWeekdayInvalid => 'Pilih hari antara 1 dan 7';
+
+  @override
+  String recurringScheduleDaily(String time) {
+    return 'Setiap hari pukul $time';
+  }
+
+  @override
+  String recurringScheduleDate(int day, String time) {
+    return 'Tanggal $day setiap bulan pukul $time';
+  }
+
+  @override
+  String recurringScheduleDay(String weekday, String time) {
+    return 'Setiap $weekday pukul $time';
+  }
+
+  @override
+  String get weekdayMonday => 'Senin';
+
+  @override
+  String get weekdayTuesday => 'Selasa';
+
+  @override
+  String get weekdayWednesday => 'Rabu';
+
+  @override
+  String get weekdayThursday => 'Kamis';
+
+  @override
+  String get weekdayFriday => 'Jumat';
+
+  @override
+  String get weekdaySaturday => 'Sabtu';
+
+  @override
+  String get weekdaySunday => 'Minggu';
+
+  @override
+  String get deleteRecurringExpense => 'Hapus pengeluaran berulang';
+
+  @override
+  String deleteRecurringExpenseConfirm(String title) {
+    return 'Hapus \"$title\"? Tindakan ini tidak dapat dibatalkan.';
+  }
+
+  @override
+  String get deleteRecurringExpenseFailed =>
+      'Gagal menghapus pengeluaran berulang';
+
+  @override
+  String get cancel => 'Batal';
+
+  @override
+  String get delete => 'Hapus';
 }

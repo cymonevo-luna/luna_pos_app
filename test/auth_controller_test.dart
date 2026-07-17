@@ -59,7 +59,7 @@ void main() {
     expect(secure.store[SecureKeys.merchantJson], isNotNull);
   });
 
-  test('manager-only login is rejected without storing tokens', () async {
+  test('manager-only login persists the session and authenticates', () async {
     stubDedicatedAccountLogin(adapter, TestAccountRole.manager, userId: 'mgr');
 
     final ok = await container.read(authProvider.notifier).login(
@@ -67,12 +67,12 @@ void main() {
           password: TestAccounts.password,
         );
 
-    expect(ok, isFalse);
+    expect(ok, isTrue);
     final state = container.read(authProvider);
-    expect(state.status, isNot(AuthStatus.authenticated));
-    expect(state.error, kPosAccessDeniedMessage);
-    expect(secure.store[SecureKeys.authToken], isNull);
-    expect(secure.store[SecureKeys.userJson], isNull);
+    expect(state.status, AuthStatus.authenticated);
+    expect(state.user?.roles, contains('manager'));
+    expect(secure.store[SecureKeys.authToken], 'acc');
+    expect(secure.store[SecureKeys.userJson], isNotNull);
   });
 
   test('admin-only login is rejected without storing tokens', () async {

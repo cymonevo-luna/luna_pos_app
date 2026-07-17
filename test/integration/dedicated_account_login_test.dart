@@ -30,12 +30,25 @@ void main() {
       await harness.expectAuthenticatedHome(tester);
     });
 
-    testWidgets('manager-only login rejected', (tester) async {
-      harness.stubLoginForRole(TestAccountRole.manager);
+    testWidgets('manager-only login succeeds and lands on recurring expenses',
+        (tester) async {
+      harness
+        ..stubLoginForRole(TestAccountRole.manager)
+        ..adapter.onGet(
+          '/api/admin/recurring-expenses',
+          (server) => server.reply(200, {
+            'success': true,
+            'data': [],
+            'meta': {'page': 1, 'per_page': 20, 'total': 0},
+          }),
+          queryParameters: {'page': '1', 'per_page': '20'},
+        );
 
       await harness.pumpApp(tester);
       await harness.loginViaUi(tester, TestAccountRole.manager);
-      await harness.expectLoginRejected(tester);
+
+      final router = harness.readRouter();
+      expect(router.state.matchedLocation, AppRoute.recurringExpenses.path);
     });
 
     testWidgets('operational-only login succeeds', (tester) async {

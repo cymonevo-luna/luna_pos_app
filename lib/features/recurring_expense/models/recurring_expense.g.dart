@@ -58,6 +58,7 @@ _RecurringExpense _$RecurringExpenseFromJson(Map<String, dynamic> json) =>
       lastRunAt: _nullableDateTimeFromJson(json['last_run_at']),
       createdAt: _nullableDateTimeFromJson(json['created_at']),
       updatedAt: _nullableDateTimeFromJson(json['updated_at']),
+      staffId: json['staff_id'] as String?,
     );
 
 Map<String, dynamic> _$RecurringExpenseToJson(_RecurringExpense instance) =>
@@ -72,6 +73,7 @@ Map<String, dynamic> _$RecurringExpenseToJson(_RecurringExpense instance) =>
       'last_run_at': instance.lastRunAt?.toIso8601String(),
       'created_at': instance.createdAt?.toIso8601String(),
       'updated_at': instance.updatedAt?.toIso8601String(),
+      'staff_id': instance.staffId,
     };
 
 _RecurringExpenseRequest _$RecurringExpenseRequestFromJson(

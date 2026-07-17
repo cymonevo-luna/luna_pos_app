@@ -571,7 +571,7 @@ $RecurringScheduleTimeCopyWith<$Res> get time {
 /// @nodoc
 mixin _$RecurringExpense {
 
- String get id; String get title; String? get description;@JsonKey(fromJson: _amountFromJson, toJson: _amountToJson) int get amount; RecurringSchedule get recurring;@JsonKey(name: 'is_active') bool get isActive;@JsonKey(name: 'next_run_at', fromJson: _nullableDateTimeFromJson) DateTime? get nextRunAt;@JsonKey(name: 'last_run_at', fromJson: _nullableDateTimeFromJson) DateTime? get lastRunAt;@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? get createdAt;@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? get updatedAt;
+ String get id; String get title; String? get description;@JsonKey(fromJson: _amountFromJson, toJson: _amountToJson) int get amount; RecurringSchedule get recurring;@JsonKey(name: 'is_active') bool get isActive;@JsonKey(name: 'next_run_at', fromJson: _nullableDateTimeFromJson) DateTime? get nextRunAt;@JsonKey(name: 'last_run_at', fromJson: _nullableDateTimeFromJson) DateTime? get lastRunAt;@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? get createdAt;@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? get updatedAt;@JsonKey(name: 'staff_id') String? get staffId;
 /// Create a copy of RecurringExpense
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -584,16 +584,16 @@ $RecurringExpenseCopyWith<RecurringExpense> get copyWith => _$RecurringExpenseCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecurringExpense&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.recurring, recurring) || other.recurring == recurring)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.nextRunAt, nextRunAt) || other.nextRunAt == nextRunAt)&&(identical(other.lastRunAt, lastRunAt) || other.lastRunAt == lastRunAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecurringExpense&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.recurring, recurring) || other.recurring == recurring)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.nextRunAt, nextRunAt) || other.nextRunAt == nextRunAt)&&(identical(other.lastRunAt, lastRunAt) || other.lastRunAt == lastRunAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.staffId, staffId) || other.staffId == staffId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,amount,recurring,isActive,nextRunAt,lastRunAt,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,title,description,amount,recurring,isActive,nextRunAt,lastRunAt,createdAt,updatedAt,staffId);
 
 @override
 String toString() {
-  return 'RecurringExpense(id: $id, title: $title, description: $description, amount: $amount, recurring: $recurring, isActive: $isActive, nextRunAt: $nextRunAt, lastRunAt: $lastRunAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'RecurringExpense(id: $id, title: $title, description: $description, amount: $amount, recurring: $recurring, isActive: $isActive, nextRunAt: $nextRunAt, lastRunAt: $lastRunAt, createdAt: $createdAt, updatedAt: $updatedAt, staffId: $staffId)';
 }
 
 
@@ -604,7 +604,7 @@ abstract mixin class $RecurringExpenseCopyWith<$Res>  {
   factory $RecurringExpenseCopyWith(RecurringExpense value, $Res Function(RecurringExpense) _then) = _$RecurringExpenseCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String? description,@JsonKey(fromJson: _amountFromJson, toJson: _amountToJson) int amount, RecurringSchedule recurring,@JsonKey(name: 'is_active') bool isActive,@JsonKey(name: 'next_run_at', fromJson: _nullableDateTimeFromJson) DateTime? nextRunAt,@JsonKey(name: 'last_run_at', fromJson: _nullableDateTimeFromJson) DateTime? lastRunAt,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt,@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? updatedAt
+ String id, String title, String? description,@JsonKey(fromJson: _amountFromJson, toJson: _amountToJson) int amount, RecurringSchedule recurring,@JsonKey(name: 'is_active') bool isActive,@JsonKey(name: 'next_run_at', fromJson: _nullableDateTimeFromJson) DateTime? nextRunAt,@JsonKey(name: 'last_run_at', fromJson: _nullableDateTimeFromJson) DateTime? lastRunAt,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt,@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? updatedAt,@JsonKey(name: 'staff_id') String? staffId
 });
 
 
@@ -621,7 +621,7 @@ class _$RecurringExpenseCopyWithImpl<$Res>
 
 /// Create a copy of RecurringExpense
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? amount = null,Object? recurring = null,Object? isActive = null,Object? nextRunAt = freezed,Object? lastRunAt = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? amount = null,Object? recurring = null,Object? isActive = null,Object? nextRunAt = freezed,Object? lastRunAt = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? staffId = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -633,7 +633,8 @@ as bool,nextRunAt: freezed == nextRunAt ? _self.nextRunAt : nextRunAt // ignore:
 as DateTime?,lastRunAt: freezed == lastRunAt ? _self.lastRunAt : lastRunAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,staffId: freezed == staffId ? _self.staffId : staffId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 /// Create a copy of RecurringExpense
@@ -727,10 +728,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String? description, @JsonKey(fromJson: _amountFromJson, toJson: _amountToJson)  int amount,  RecurringSchedule recurring, @JsonKey(name: 'is_active')  bool isActive, @JsonKey(name: 'next_run_at', fromJson: _nullableDateTimeFromJson)  DateTime? nextRunAt, @JsonKey(name: 'last_run_at', fromJson: _nullableDateTimeFromJson)  DateTime? lastRunAt, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String? description, @JsonKey(fromJson: _amountFromJson, toJson: _amountToJson)  int amount,  RecurringSchedule recurring, @JsonKey(name: 'is_active')  bool isActive, @JsonKey(name: 'next_run_at', fromJson: _nullableDateTimeFromJson)  DateTime? nextRunAt, @JsonKey(name: 'last_run_at', fromJson: _nullableDateTimeFromJson)  DateTime? lastRunAt, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt, @JsonKey(name: 'staff_id')  String? staffId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RecurringExpense() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.amount,_that.recurring,_that.isActive,_that.nextRunAt,_that.lastRunAt,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.title,_that.description,_that.amount,_that.recurring,_that.isActive,_that.nextRunAt,_that.lastRunAt,_that.createdAt,_that.updatedAt,_that.staffId);case _:
   return orElse();
 
 }
@@ -748,10 +749,10 @@ return $default(_that.id,_that.title,_that.description,_that.amount,_that.recurr
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String? description, @JsonKey(fromJson: _amountFromJson, toJson: _amountToJson)  int amount,  RecurringSchedule recurring, @JsonKey(name: 'is_active')  bool isActive, @JsonKey(name: 'next_run_at', fromJson: _nullableDateTimeFromJson)  DateTime? nextRunAt, @JsonKey(name: 'last_run_at', fromJson: _nullableDateTimeFromJson)  DateTime? lastRunAt, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String? description, @JsonKey(fromJson: _amountFromJson, toJson: _amountToJson)  int amount,  RecurringSchedule recurring, @JsonKey(name: 'is_active')  bool isActive, @JsonKey(name: 'next_run_at', fromJson: _nullableDateTimeFromJson)  DateTime? nextRunAt, @JsonKey(name: 'last_run_at', fromJson: _nullableDateTimeFromJson)  DateTime? lastRunAt, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt, @JsonKey(name: 'staff_id')  String? staffId)  $default,) {final _that = this;
 switch (_that) {
 case _RecurringExpense():
-return $default(_that.id,_that.title,_that.description,_that.amount,_that.recurring,_that.isActive,_that.nextRunAt,_that.lastRunAt,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.title,_that.description,_that.amount,_that.recurring,_that.isActive,_that.nextRunAt,_that.lastRunAt,_that.createdAt,_that.updatedAt,_that.staffId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -768,10 +769,10 @@ return $default(_that.id,_that.title,_that.description,_that.amount,_that.recurr
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String? description, @JsonKey(fromJson: _amountFromJson, toJson: _amountToJson)  int amount,  RecurringSchedule recurring, @JsonKey(name: 'is_active')  bool isActive, @JsonKey(name: 'next_run_at', fromJson: _nullableDateTimeFromJson)  DateTime? nextRunAt, @JsonKey(name: 'last_run_at', fromJson: _nullableDateTimeFromJson)  DateTime? lastRunAt, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String? description, @JsonKey(fromJson: _amountFromJson, toJson: _amountToJson)  int amount,  RecurringSchedule recurring, @JsonKey(name: 'is_active')  bool isActive, @JsonKey(name: 'next_run_at', fromJson: _nullableDateTimeFromJson)  DateTime? nextRunAt, @JsonKey(name: 'last_run_at', fromJson: _nullableDateTimeFromJson)  DateTime? lastRunAt, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)  DateTime? updatedAt, @JsonKey(name: 'staff_id')  String? staffId)?  $default,) {final _that = this;
 switch (_that) {
 case _RecurringExpense() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.amount,_that.recurring,_that.isActive,_that.nextRunAt,_that.lastRunAt,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.title,_that.description,_that.amount,_that.recurring,_that.isActive,_that.nextRunAt,_that.lastRunAt,_that.createdAt,_that.updatedAt,_that.staffId);case _:
   return null;
 
 }
@@ -782,8 +783,8 @@ return $default(_that.id,_that.title,_that.description,_that.amount,_that.recurr
 /// @nodoc
 @JsonSerializable()
 
-class _RecurringExpense implements RecurringExpense {
-  const _RecurringExpense({required this.id, required this.title, this.description, @JsonKey(fromJson: _amountFromJson, toJson: _amountToJson) required this.amount, required this.recurring, @JsonKey(name: 'is_active') this.isActive = true, @JsonKey(name: 'next_run_at', fromJson: _nullableDateTimeFromJson) this.nextRunAt, @JsonKey(name: 'last_run_at', fromJson: _nullableDateTimeFromJson) this.lastRunAt, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) this.createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) this.updatedAt});
+class _RecurringExpense extends RecurringExpense {
+  const _RecurringExpense({required this.id, required this.title, this.description, @JsonKey(fromJson: _amountFromJson, toJson: _amountToJson) required this.amount, required this.recurring, @JsonKey(name: 'is_active') this.isActive = true, @JsonKey(name: 'next_run_at', fromJson: _nullableDateTimeFromJson) this.nextRunAt, @JsonKey(name: 'last_run_at', fromJson: _nullableDateTimeFromJson) this.lastRunAt, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) this.createdAt, @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) this.updatedAt, @JsonKey(name: 'staff_id') this.staffId}): super._();
   factory _RecurringExpense.fromJson(Map<String, dynamic> json) => _$RecurringExpenseFromJson(json);
 
 @override final  String id;
@@ -796,6 +797,7 @@ class _RecurringExpense implements RecurringExpense {
 @override@JsonKey(name: 'last_run_at', fromJson: _nullableDateTimeFromJson) final  DateTime? lastRunAt;
 @override@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) final  DateTime? createdAt;
 @override@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) final  DateTime? updatedAt;
+@override@JsonKey(name: 'staff_id') final  String? staffId;
 
 /// Create a copy of RecurringExpense
 /// with the given fields replaced by the non-null parameter values.
@@ -810,16 +812,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecurringExpense&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.recurring, recurring) || other.recurring == recurring)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.nextRunAt, nextRunAt) || other.nextRunAt == nextRunAt)&&(identical(other.lastRunAt, lastRunAt) || other.lastRunAt == lastRunAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecurringExpense&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.recurring, recurring) || other.recurring == recurring)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.nextRunAt, nextRunAt) || other.nextRunAt == nextRunAt)&&(identical(other.lastRunAt, lastRunAt) || other.lastRunAt == lastRunAt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.staffId, staffId) || other.staffId == staffId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,amount,recurring,isActive,nextRunAt,lastRunAt,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,title,description,amount,recurring,isActive,nextRunAt,lastRunAt,createdAt,updatedAt,staffId);
 
 @override
 String toString() {
-  return 'RecurringExpense(id: $id, title: $title, description: $description, amount: $amount, recurring: $recurring, isActive: $isActive, nextRunAt: $nextRunAt, lastRunAt: $lastRunAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'RecurringExpense(id: $id, title: $title, description: $description, amount: $amount, recurring: $recurring, isActive: $isActive, nextRunAt: $nextRunAt, lastRunAt: $lastRunAt, createdAt: $createdAt, updatedAt: $updatedAt, staffId: $staffId)';
 }
 
 
@@ -830,7 +832,7 @@ abstract mixin class _$RecurringExpenseCopyWith<$Res> implements $RecurringExpen
   factory _$RecurringExpenseCopyWith(_RecurringExpense value, $Res Function(_RecurringExpense) _then) = __$RecurringExpenseCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String? description,@JsonKey(fromJson: _amountFromJson, toJson: _amountToJson) int amount, RecurringSchedule recurring,@JsonKey(name: 'is_active') bool isActive,@JsonKey(name: 'next_run_at', fromJson: _nullableDateTimeFromJson) DateTime? nextRunAt,@JsonKey(name: 'last_run_at', fromJson: _nullableDateTimeFromJson) DateTime? lastRunAt,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt,@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? updatedAt
+ String id, String title, String? description,@JsonKey(fromJson: _amountFromJson, toJson: _amountToJson) int amount, RecurringSchedule recurring,@JsonKey(name: 'is_active') bool isActive,@JsonKey(name: 'next_run_at', fromJson: _nullableDateTimeFromJson) DateTime? nextRunAt,@JsonKey(name: 'last_run_at', fromJson: _nullableDateTimeFromJson) DateTime? lastRunAt,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt,@JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson) DateTime? updatedAt,@JsonKey(name: 'staff_id') String? staffId
 });
 
 
@@ -847,7 +849,7 @@ class __$RecurringExpenseCopyWithImpl<$Res>
 
 /// Create a copy of RecurringExpense
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? amount = null,Object? recurring = null,Object? isActive = null,Object? nextRunAt = freezed,Object? lastRunAt = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? amount = null,Object? recurring = null,Object? isActive = null,Object? nextRunAt = freezed,Object? lastRunAt = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? staffId = freezed,}) {
   return _then(_RecurringExpense(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -859,7 +861,8 @@ as bool,nextRunAt: freezed == nextRunAt ? _self.nextRunAt : nextRunAt // ignore:
 as DateTime?,lastRunAt: freezed == lastRunAt ? _self.lastRunAt : lastRunAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,staffId: freezed == staffId ? _self.staffId : staffId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

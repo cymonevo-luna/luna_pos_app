@@ -145,6 +145,8 @@ class RecurringExpenseListController extends Notifier<RecurringExpenseListState>
     RecurringExpenseRequest request,
   ) async {
     if (!ref.mounted) return null;
+    final existing = state.items.where((item) => item.id == id).firstOrNull;
+    if (existing != null && !canModify(existing)) return null;
     state = state.copyWith(submitting: true, clearError: true);
     try {
       await _repository.update(id, request);
@@ -171,6 +173,8 @@ class RecurringExpenseListController extends Notifier<RecurringExpenseListState>
 
   Future<bool> deleteExpense(String id) async {
     if (!ref.mounted) return false;
+    final existing = state.items.where((item) => item.id == id).firstOrNull;
+    if (existing != null && !canModify(existing)) return false;
     state = state.copyWith(deleting: true, clearError: true);
     try {
       await _repository.delete(id);
@@ -196,6 +200,8 @@ class RecurringExpenseListController extends Notifier<RecurringExpenseListState>
       rethrow;
     }
   }
+
+  bool canModify(RecurringExpense expense) => !expense.isStaffManaged;
 
   Future<void> _fetch({
     required int page,

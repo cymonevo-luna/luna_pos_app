@@ -3,6 +3,7 @@ import 'package:http_mock_adapter/http_mock_adapter.dart';
 
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
+import 'package:luna_pos/core/network/api_exception.dart';
 import 'package:luna_pos/features/recurring_expense/data/recurring_expense_repository.dart';
 import 'package:luna_pos/features/recurring_expense/models/recurring_expense.dart';
 
@@ -108,5 +109,71 @@ void main() {
     expect(created.id, 're-new');
     expect(created.recurring.interval, RecurringInterval.day);
     expect(created.recurring.value, 2);
+  });
+
+  test('update maps 409 to staff-managed conflict message', () async {
+    adapter.onPut(
+      '${RecurringExpenseRepository.listPath}/re-staff',
+      (server) => server.reply(409, {
+        'success': false,
+        'message': 'Conflict',
+      }),
+      data: {
+        'title': 'Salary',
+        'description': '',
+        'amount': 100000,
+        'recurring': {
+          'interval': 'DAILY',
+          'time': {'hour': 9, 'minute': 0, 'second': 0},
+        },
+      },
+    );
+
+    expect(
+      () => locator<RecurringExpenseRepository>().update(
+        're-staff',
+        const RecurringExpenseRequest(
+          title: 'Salary',
+          description: '',
+          amount: 100000,
+          recurring: RecurringSchedule(
+            interval: RecurringInterval.daily,
+            time: RecurringScheduleTime(hour: 9, minute: 0, second: 0),
+          ),
+        ),
+      ),
+      throwsA(
+        predicate(
+          (error) =>
+              error is ApiException &&
+              error.statusCode == 409 &&
+              error.message ==
+                  RecurringExpenseRepository.staffManagedConflictMessage,
+        ),
+      ),
+    );
+  });
+
+  test('delete maps 409 to staff-managed conflict message', () async {
+    adapter.onDelete(
+      '${RecurringExpenseRepository.listPath}/re-staff',
+      (server) => server.reply(409, {
+        'success': false,
+        'message': 'Conflict',
+      }),
+    );
+
+    expect(
+      () => locator<RecurringExpenseRepository>().delete('re-staff'),
+      throwsA(
+        predicate(
+          (error) =>
+              error is ApiException &&
+              error.statusCode == 409 &&
+              error.message ==
+                  RecurringExpenseRepository.staffManagedConflictMessage,
+        ),
+      ),
+    );
   });
 }

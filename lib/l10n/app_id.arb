@@ -216,6 +216,8 @@
   "deleteRecurringExpense": "Hapus pengeluaran berulang",
   "deleteRecurringExpenseConfirm": "Hapus \"{title}\"? Tindakan ini tidak dapat dibatalkan.",
   "deleteRecurringExpenseFailed": "Gagal menghapus pengeluaran berulang",
+  "recurringExpenseStaffSalaryBadge": "Gaji staf",
+  "recurringExpenseManagedByStaffSalary": "Pengeluaran berulang ini dikelola oleh gaji staf.",
   "cancel": "Batal",
   "delete": "Hapus"
 }

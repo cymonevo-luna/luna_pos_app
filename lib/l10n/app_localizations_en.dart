@@ -705,6 +705,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Failed to delete recurring expense';
 
   @override
+  String get recurringExpenseStaffSalaryBadge => 'Staff salary';
+
+  @override
+  String get recurringExpenseManagedByStaffSalary =>
+      'This recurring expense is managed by staff salary.';
+
+  @override
   String get cancel => 'Cancel';
 
   @override

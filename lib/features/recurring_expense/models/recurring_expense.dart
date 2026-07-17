@@ -68,7 +68,12 @@ abstract class RecurringExpense with _$RecurringExpense {
     DateTime? createdAt,
     @JsonKey(name: 'updated_at', fromJson: _nullableDateTimeFromJson)
     DateTime? updatedAt,
+    @JsonKey(name: 'staff_id') String? staffId,
   }) = _RecurringExpense;
+
+  const RecurringExpense._();
+
+  bool get isStaffManaged => staffId != null;
 
   factory RecurringExpense.fromJson(Map<String, dynamic> json) =>
       _$RecurringExpenseFromJson(json);

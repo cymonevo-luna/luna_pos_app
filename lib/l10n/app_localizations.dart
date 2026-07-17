@@ -1394,6 +1394,18 @@ abstract class AppLocalizations {
   /// **'Failed to delete recurring expense'**
   String get deleteRecurringExpenseFailed;
 
+  /// Badge label for recurring expenses linked to staff salary
+  ///
+  /// In en, this message translates to:
+  /// **'Staff salary'**
+  String get recurringExpenseStaffSalaryBadge;
+
+  /// Error when update/delete is rejected because expense is staff-managed
+  ///
+  /// In en, this message translates to:
+  /// **'This recurring expense is managed by staff salary.'**
+  String get recurringExpenseManagedByStaffSalary;
+
   /// Cancel button label
   ///
   /// In en, this message translates to:

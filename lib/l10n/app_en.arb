@@ -730,6 +730,14 @@
   "@deleteRecurringExpenseFailed": {
     "description": "SnackBar when delete recurring expense fails"
   },
+  "recurringExpenseStaffSalaryBadge": "Staff salary",
+  "@recurringExpenseStaffSalaryBadge": {
+    "description": "Badge label for recurring expenses linked to staff salary"
+  },
+  "recurringExpenseManagedByStaffSalary": "This recurring expense is managed by staff salary.",
+  "@recurringExpenseManagedByStaffSalary": {
+    "description": "Error when update/delete is rejected because expense is staff-managed"
+  },
   "cancel": "Cancel",
   "@cancel": {
     "description": "Cancel button label"

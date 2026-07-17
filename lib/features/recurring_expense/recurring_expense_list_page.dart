@@ -70,6 +70,10 @@ class _RecurringExpenseListPageState
   }
 
   Future<void> _openEdit(RecurringExpense expense) async {
+    if (!ref.read(recurringExpenseListProvider.notifier).canModify(expense)) {
+      return;
+    }
+
     RecurringExpense detail = expense;
     try {
       detail = await locator<RecurringExpenseRepository>()
@@ -92,6 +96,10 @@ class _RecurringExpenseListPageState
   }
 
   Future<void> _confirmDelete(RecurringExpense expense) async {
+    if (!ref.read(recurringExpenseListProvider.notifier).canModify(expense)) {
+      return;
+    }
+
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
@@ -316,6 +324,82 @@ class _RecurringExpenseCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context);
     final dateFormat = DateFormat.yMMMd(locale.toString()).add_jm();
+    final isStaffManaged = expense.isStaffManaged;
+
+    final card = AppCard(
+      key: Key('recurring_expense_card_${expense.id}'),
+      onTap: isStaffManaged ? null : onTap,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(child: AppText.title(expense.title)),
+                    if (isStaffManaged)
+                      Padding(
+                        padding: const EdgeInsets.only(left: AppSpacing.xs),
+                        child: _StaffSalaryBadge(label: l10n.recurringExpenseStaffSalaryBadge),
+                      ),
+                    if (!expense.isActive)
+                      Padding(
+                        padding: const EdgeInsets.only(left: AppSpacing.xs),
+                        child: Text(
+                          l10n.inactive,
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelSmall
+                              ?.copyWith(color: context.colors.error),
+                        ),
+                      ),
+                  ],
+                ),
+                if (expense.description != null &&
+                    expense.description!.isNotEmpty) ...[
+                  const VGap(AppSpacing.xs),
+                  AppText.body(
+                    expense.description!,
+                    muted: true,
+                    maxLines: 2,
+                  ),
+                ],
+                const VGap(AppSpacing.sm),
+                AppText.body(
+                  formatRupiah(expense.amount),
+                  color: context.colors.primary,
+                  weight: FontWeight.w600,
+                ),
+                const VGap(AppSpacing.sm),
+                ScheduleSummaryChip(
+                  schedule: expense.recurring,
+                  isActive: expense.isActive,
+                ),
+                if (expense.nextRunAt != null) ...[
+                  const VGap(AppSpacing.xs),
+                  AppText.body(
+                    '${l10n.nextRunAt}: ${dateFormat.format(expense.nextRunAt!.toLocal())}',
+                    muted: true,
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (!isStaffManaged)
+            IconButton(
+              key: Key('recurring_expense_delete_${expense.id}'),
+              icon: const Icon(Icons.delete_outline),
+              onPressed: onDelete,
+            ),
+        ],
+      ),
+    );
+
+    if (isStaffManaged) {
+      return card;
+    }
 
     return Dismissible(
       key: Key('recurring_expense_dismiss_${expense.id}'),
@@ -330,69 +414,33 @@ class _RecurringExpenseCard extends StatelessWidget {
         color: context.colors.error.withValues(alpha: 0.15),
         child: Icon(Icons.delete_outline, color: context.colors.error),
       ),
-      child: AppCard(
-        key: Key('recurring_expense_card_${expense.id}'),
-        onTap: onTap,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(child: AppText.title(expense.title)),
-                      if (!expense.isActive)
-                        Padding(
-                          padding: const EdgeInsets.only(left: AppSpacing.xs),
-                          child: Text(
-                            l10n.inactive,
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelSmall
-                                ?.copyWith(color: context.colors.error),
-                          ),
-                        ),
-                    ],
-                  ),
-                  if (expense.description != null &&
-                      expense.description!.isNotEmpty) ...[
-                    const VGap(AppSpacing.xs),
-                    AppText.body(
-                      expense.description!,
-                      muted: true,
-                      maxLines: 2,
-                    ),
-                  ],
-                  const VGap(AppSpacing.sm),
-                  AppText.body(
-                    formatRupiah(expense.amount),
-                    color: context.colors.primary,
-                    weight: FontWeight.w600,
-                  ),
-                  const VGap(AppSpacing.sm),
-                  ScheduleSummaryChip(
-                    schedule: expense.recurring,
-                    isActive: expense.isActive,
-                  ),
-                  if (expense.nextRunAt != null) ...[
-                    const VGap(AppSpacing.xs),
-                    AppText.body(
-                      '${l10n.nextRunAt}: ${dateFormat.format(expense.nextRunAt!.toLocal())}',
-                      muted: true,
-                    ),
-                  ],
-                ],
-              ),
+      child: card,
+    );
+  }
+}
+
+class _StaffSalaryBadge extends StatelessWidget {
+  const _StaffSalaryBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: context.tokens.info.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: context.tokens.info,
+              fontWeight: FontWeight.w600,
             ),
-            IconButton(
-              key: Key('recurring_expense_delete_${expense.id}'),
-              icon: const Icon(Icons.delete_outline),
-              onPressed: onDelete,
-            ),
-          ],
-        ),
       ),
     );
   }

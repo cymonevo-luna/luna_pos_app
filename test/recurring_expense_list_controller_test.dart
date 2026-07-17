@@ -5,6 +5,7 @@ import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
 import 'package:luna_pos/features/recurring_expense/data/recurring_expense_repository.dart';
+import 'package:luna_pos/features/recurring_expense/models/recurring_expense.dart';
 import 'package:luna_pos/features/recurring_expense/recurring_expense_list_controller.dart';
 
 import 'helpers/auth_harness.dart';
@@ -176,5 +177,36 @@ void main() {
     expect(state.items, hasLength(1));
     expect(state.items.first.id, 're-2');
     expect(state.total, 1);
+  });
+
+  test('canModify returns false for staff-managed expense', () {
+    const expense = RecurringExpense(
+      id: 're-staff',
+      title: 'Salary',
+      amount: 100000,
+      staffId: 'staff-1',
+      recurring: RecurringSchedule(
+        interval: RecurringInterval.daily,
+        time: RecurringScheduleTime(hour: 9, minute: 0, second: 0),
+      ),
+    );
+
+    final controller = container.read(recurringExpenseListProvider.notifier);
+    expect(controller.canModify(expense), isFalse);
+  });
+
+  test('canModify returns true when staffId is null', () {
+    const expense = RecurringExpense(
+      id: 're-regular',
+      title: 'Rent',
+      amount: 100000,
+      recurring: RecurringSchedule(
+        interval: RecurringInterval.daily,
+        time: RecurringScheduleTime(hour: 9, minute: 0, second: 0),
+      ),
+    );
+
+    final controller = container.read(recurringExpenseListProvider.notifier);
+    expect(controller.canModify(expense), isTrue);
   });
 }

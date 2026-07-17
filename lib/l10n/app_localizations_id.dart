@@ -705,6 +705,13 @@ class AppLocalizationsId extends AppLocalizations {
       'Gagal menghapus pengeluaran berulang';
 
   @override
+  String get recurringExpenseStaffSalaryBadge => 'Gaji staf';
+
+  @override
+  String get recurringExpenseManagedByStaffSalary =>
+      'Pengeluaran berulang ini dikelola oleh gaji staf.';
+
+  @override
   String get cancel => 'Batal';
 
   @override

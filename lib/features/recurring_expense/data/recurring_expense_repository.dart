@@ -1,5 +1,6 @@
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_envelope.dart';
+import '../../../core/network/api_exception.dart';
 import '../../../core/network/paginated_response.dart';
 import '../models/recurring_expense.dart';
 
@@ -10,6 +11,8 @@ class RecurringExpenseRepository {
 
   static const defaultPerPage = 20;
   static const listPath = '/api/admin/recurring-expenses';
+  static const staffManagedConflictMessage =
+      'This recurring expense is managed by staff salary.';
 
   Future<PaginatedResponse<RecurringExpense>> fetchRecurringExpenses({
     int page = 1,
@@ -51,18 +54,38 @@ class RecurringExpenseRepository {
   }
 
   Future<RecurringExpense> update(String id, RecurringExpenseRequest request) {
-    return _api.put<RecurringExpense>(
-      '$listPath/$id',
-      body: _requestBody(request),
-      decoder: (raw) => RecurringExpense.fromJson(unwrapApiEnvelope(raw)),
+    return _guardStaffManagedConflict(
+      () => _api.put<RecurringExpense>(
+        '$listPath/$id',
+        body: _requestBody(request),
+        decoder: (raw) => RecurringExpense.fromJson(unwrapApiEnvelope(raw)),
+      ),
     );
   }
 
   Future<void> delete(String id) {
-    return _api.delete<void>(
-      '$listPath/$id',
-      decoder: (_) {},
+    return _guardStaffManagedConflict(
+      () => _api.delete<void>(
+        '$listPath/$id',
+        decoder: (_) {},
+      ),
     );
+  }
+
+  Future<T> _guardStaffManagedConflict<T>(Future<T> Function() action) async {
+    try {
+      return await action();
+    } on ApiException catch (e) {
+      if (e.statusCode == 409) {
+        throw ApiException(
+          type: ApiErrorType.conflict,
+          message: staffManagedConflictMessage,
+          statusCode: 409,
+          data: e.data,
+        );
+      }
+      rethrow;
+    }
   }
 
   Map<String, dynamic> _requestBody(RecurringExpenseRequest request) {

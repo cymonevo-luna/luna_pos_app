@@ -293,6 +293,7 @@ void main() {
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
           printReceipt: true,
+          orderOptionId: kTestOrderOptionId,
         );
 
     expect(result, isNotNull);
@@ -328,6 +329,7 @@ void main() {
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
           printReceipt: true,
+          orderOptionId: kTestOrderOptionId,
         );
 
     expect(result, isNotNull);

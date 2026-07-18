@@ -16,6 +16,7 @@ import '../../features/recurring_expense/data/recurring_expense_repository.dart'
 import '../../features/stock/data/food_supply_repository.dart';
 import '../../features/store_settings/data/store_settings_repository.dart';
 import '../../features/production_request/data/production_request_repository.dart';
+import '../../features/receipt/receipt_print_service.dart';
 import '../../features/transaction/data/transaction_repository.dart';
 
 /// Global service locator. Use `locator<T>()` to resolve singletons anywhere.
@@ -96,5 +97,9 @@ Future<void> setupLocator() async {
 
   locator.registerSingleton<BluetoothPrinterService>(
     PrintBluetoothThermalService(),
+  );
+
+  locator.registerLazySingleton<ReceiptPrintService>(
+    ReceiptPrintService.new,
   );
 }

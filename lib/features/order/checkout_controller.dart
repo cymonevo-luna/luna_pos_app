@@ -3,14 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/di/locator.dart';
 import '../../core/formatting/currency_formatter.dart';
 import '../../core/network/api_exception.dart';
-import '../../core/printer/bluetooth_printer_service.dart';
-import '../../core/storage/preferences_service.dart';
 import '../auth/auth_controller.dart';
 import '../user/models/user.dart';
 import '../receipt/models/receipt_data.dart';
 import '../receipt/models/receipt_line_item.dart';
 import '../receipt/models/transaction_response.dart' as receipt;
-import '../receipt/receipt_builder.dart';
+import '../receipt/receipt_print_service.dart';
 import '../store_settings/store_settings_controller.dart';
 import '../transaction/data/transaction_repository.dart';
 import '../transaction/models/transaction.dart';
@@ -78,8 +76,8 @@ int calculateCheckoutTotal({
 class CheckoutController extends Notifier<CheckoutState> {
   TransactionRepository get _transactionRepository =>
       locator<TransactionRepository>();
-  BluetoothPrinterService get _printer => locator<BluetoothPrinterService>();
-  PreferencesService get _prefs => locator<PreferencesService>();
+  ReceiptPrintService get _receiptPrintService =>
+      locator<ReceiptPrintService>();
 
   @override
   CheckoutState build() => const CheckoutState();
@@ -214,14 +212,12 @@ class CheckoutController extends Notifier<CheckoutState> {
         cashier: cashier,
       );
 
-      final builder = await ReceiptBuilder.create();
-      final receiptBytes = builder.build(receiptData);
-
-      final printResult = await _printReceipt(receiptBytes);
+      final printResult =
+          await _receiptPrintService.printReceiptData(receiptData);
 
       state = state.copyWith(
         submitting: false,
-        lastReceiptBytes: receiptBytes,
+        lastReceiptBytes: printResult.receiptBytes,
       );
 
       return CheckoutResult(
@@ -252,7 +248,7 @@ class CheckoutController extends Notifier<CheckoutState> {
     final bytes = state.lastReceiptBytes;
     if (bytes == null || bytes.isEmpty) return false;
 
-    final printResult = await _printReceipt(bytes);
+    final printResult = await _receiptPrintService.printBytes(bytes);
     return printResult.succeeded;
   }
 
@@ -293,43 +289,6 @@ class CheckoutController extends Notifier<CheckoutState> {
     );
   }
 
-  Future<({bool succeeded, String? error})> _printReceipt(
-    List<int> bytes,
-  ) async {
-    try {
-      final connected = await _ensurePrinterConnected();
-      if (!connected) {
-        return (
-          succeeded: false,
-          error: 'Printer is not connected.',
-        );
-      }
-
-      await _printer.printBytes(bytes);
-      return (succeeded: true, error: null);
-    } on BluetoothPrinterException catch (error) {
-      return (succeeded: false, error: error.message);
-    } catch (_) {
-      return (succeeded: false, error: 'Print failed.');
-    }
-  }
-
-  Future<bool> _ensurePrinterConnected() async {
-    if (_printer.isConnected) return true;
-
-    final deviceId = _prefs.getString(PrefKeys.printerDeviceId);
-    if (deviceId == null) return false;
-
-    try {
-      final granted = await _printer.requestPermissions();
-      if (!granted) return false;
-
-      await _printer.connect(deviceId);
-      return _printer.isConnected;
-    } catch (_) {
-      return false;
-    }
-  }
 }
 
 final checkoutProvider =

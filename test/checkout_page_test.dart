@@ -20,6 +20,7 @@ import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/features/menu/models/pos_menu.dart';
 import 'package:luna_pos/features/order/checkout_page.dart';
 import 'package:luna_pos/features/order/order_controller.dart';
+import 'package:luna_pos/features/receipt/receipt_print_service.dart';
 import 'package:luna_pos/features/store_settings/data/store_settings_repository.dart';
 import 'package:luna_pos/features/transaction/data/transaction_repository.dart';
 import 'package:luna_pos/features/user/models/user.dart';
@@ -68,7 +69,8 @@ void main() {
       ..registerLazySingleton<StoreSettingsRepository>(
         () => StoreSettingsRepository(locator<ApiClient>()),
       )
-      ..registerSingleton<BluetoothPrinterService>(MockBluetoothPrinterService());
+      ..registerSingleton<BluetoothPrinterService>(MockBluetoothPrinterService())
+      ..registerLazySingleton<ReceiptPrintService>(ReceiptPrintService.new);
     container = ProviderContainer(
       overrides: [
         authProvider.overrideWith(_FakeAuthController.new),

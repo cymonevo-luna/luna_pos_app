@@ -214,6 +214,7 @@ void main() {
       seedTwoLineCart();
 
       final result = await container.read(checkoutProvider.notifier).proceed(
+            orderOptionId: kTestOrderOptionId,
             discountAmount: 5000,
             paymentMethod: PaymentMethod.cash,
             cashTendered: 100000,

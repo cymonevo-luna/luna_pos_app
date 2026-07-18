@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 
+import 'validation_errors.dart';
+
 /// Normalized error categories so the UI can react without knowing about Dio.
 enum ApiErrorType {
   network, // no connection / dns failure
@@ -67,18 +69,19 @@ class ApiException implements Exception {
   static ApiException _fromStatus(DioException e) {
     final code = e.response?.statusCode;
     final data = e.response?.data;
-    final (type, message) = switch (code) {
+    final (type, defaultMessage) = switch (code) {
       400 => (ApiErrorType.badRequest, 'Invalid request.'),
       401 => (ApiErrorType.unauthorized, 'Your session has expired.'),
       403 => (ApiErrorType.forbidden, 'You don\'t have access to this.'),
       404 => (ApiErrorType.notFound, 'Not found.'),
       409 => (ApiErrorType.conflict, 'Conflict with the current state.'),
+      422 => (ApiErrorType.badRequest, 'Invalid request.'),
       _ when (code ?? 0) >= 500 => (ApiErrorType.server, 'Server error.'),
       _ => (ApiErrorType.unknown, 'Something went wrong.'),
     };
     return ApiException(
       type: type,
-      message: message,
+      message: apiEnvelopeMessage(data) ?? defaultMessage,
       statusCode: code,
       data: data,
     );

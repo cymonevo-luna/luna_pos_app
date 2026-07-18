@@ -288,6 +288,7 @@ void main() {
     await printer.connect('00:11:22:33:44:55');
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -322,6 +323,7 @@ void main() {
     locator.registerSingleton<BluetoothPrinterService>(printer);
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -375,9 +377,86 @@ void main() {
     expect(result, isNotNull);
     expect(result!.transactionId, 'tx-1');
     expect(result.printSucceeded, isFalse);
-    expect(result.printError, isNotNull);
+    expect(result.printError, 'settings unavailable');
     expect(transactionRepository.lastRequest, isNotNull);
     expect(container.read(orderProvider).lines, isEmpty);
     expect(container.read(checkoutProvider).error, isNull);
+  });
+
+  test('proceed surfaces validation message on 422 transaction POST', () async {
+    seedTwoLineCart();
+    adapter.reset();
+    adapter.onGet(
+      '/api/v1/pos/store-settings',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'brand_name': 'Luna Cafe',
+          'branch_name': 'Cabang Sudirman',
+          'address': 'Jl. Sudirman No. 10',
+          'phone': '021-1234567',
+          'thank_you_note': 'Terima kasih!',
+        },
+      }),
+    );
+    adapter.onPost(
+      '/api/v1/pos/transactions',
+      (server) => server.reply(422, {
+        'success': false,
+        'error': {
+          'code': 'validation_error',
+          'message': 'validation failed: order_option_id is required',
+          'fields': {'order_option_id': 'is required'},
+        },
+      }),
+      data: {
+        ...kTestOrderOptionIdBodyField,
+        'method': 'CASH',
+        'items': [
+          {
+            'menu_id': 'm1',
+            'title': 'Es Teh',
+            'quantity': 1,
+            'unit_price': 8000,
+            'line_total': 8000,
+            'note': 'less ice',
+          },
+          {
+            'menu_id': 'm2',
+            'title': 'Nasi Goreng',
+            'quantity': 2,
+            'unit_price': 35000,
+            'line_total': 70000,
+          },
+        ],
+        'subtotal_amount': 78000,
+        'discount_amount': 0,
+        'amount': 78000,
+        'cash_tendered': 80000,
+        'change_amount': 2000,
+      },
+    );
+
+    if (locator.isRegistered<TransactionRepository>()) {
+      locator.unregister<TransactionRepository>();
+    }
+    locator.registerLazySingleton<TransactionRepository>(
+      () => TransactionRepository(locator<ApiClient>()),
+    );
+
+    final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.cash,
+          cashTendered: 80000,
+          printReceipt: true,
+        );
+
+    expect(result, isNull);
+    final error = container.read(checkoutProvider).error;
+    expect(error, isNotNull);
+    expect(error, contains('is required'));
+    expect(container.read(orderProvider).lines, isNotEmpty);
+    expect(printer.lastPrintedBytes, isNull);
   });
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/di/locator.dart';
 import '../../core/formatting/currency_formatter.dart';
 import '../../core/network/api_exception.dart';
+import '../../core/network/validation_errors.dart';
 import '../../core/storage/preferences_service.dart';
 import '../auth/auth_controller.dart';
 import '../printer/printer_controller.dart';
@@ -83,6 +84,9 @@ class CheckoutController extends Notifier<CheckoutState> {
 
   @override
   CheckoutState build() => const CheckoutState();
+
+  String _userVisibleError(ApiException error) =>
+      validationMessageFor(error) ?? error.message;
 
   Future<CheckoutResult?> proceed({
     required String orderOptionId,
@@ -173,7 +177,10 @@ class CheckoutController extends Notifier<CheckoutState> {
         cashier: cashier,
       );
     } on ApiException catch (error) {
-      state = state.copyWith(submitting: false, error: error.message);
+      state = state.copyWith(
+        submitting: false,
+        error: _userVisibleError(error),
+      );
       return null;
     } catch (error) {
       state = state.copyWith(
@@ -244,7 +251,7 @@ class CheckoutController extends Notifier<CheckoutState> {
         changeAmount: changeAmount ?? 0,
         printSucceeded: false,
         printError: error is ApiException
-            ? error.message
+            ? _userVisibleError(error)
             : 'Receipt could not be printed.',
       );
     }

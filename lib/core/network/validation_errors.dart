@@ -1,5 +1,17 @@
 import 'api_exception.dart';
 
+/// Reads the top-level `error.message` from a standard API error envelope.
+String? apiEnvelopeMessage(dynamic data) {
+  if (data is! Map) return null;
+
+  final error = data['error'];
+  if (error is! Map) return null;
+
+  final message = error['message'];
+  if (message is String && message.trim().isNotEmpty) return message.trim();
+  return null;
+}
+
 /// Extracts per-field validation messages from a 422 API response body.
 Map<String, String> parseApiFieldErrors(dynamic data) {
   if (data is! Map) return const {};

@@ -107,12 +107,13 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                   if (retryResult.succeeded) {
                     Navigator.of(dialogContext).pop();
                   } else {
+                    final detail =
+                        retryResult.error ?? result.printError;
+                    final message = detail == null
+                        ? dialogL10n.printFailedWarning
+                        : '${dialogL10n.printFailedWarning} $detail';
                     ScaffoldMessenger.of(dialogContext).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          retryResult.error ?? dialogL10n.printFailedWarning,
-                        ),
-                      ),
+                      SnackBar(content: Text(message)),
                     );
                   }
                 },

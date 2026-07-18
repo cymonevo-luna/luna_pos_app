@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:luna_pos/features/cashier_balance/cashier_balance_page.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/features/production_request/production_request_list_page.dart';
 import 'package:luna_pos/features/profile/profile_page.dart';
@@ -24,7 +25,8 @@ void main() {
         ..stubLoginForRole(TestAccountRole.cashier)
         ..stubSampleMenu()
         ..stubStoreSettings()
-        ..stubProductionRequestInbox(requestId: 'pr-nav-1');
+        ..stubProductionRequestInbox(requestId: 'pr-nav-1')
+        ..stubCashierBalance(balance: 0);
       harness.adapter.onGet(
         '/api/v1/pos/transactions',
         (server) => server.reply(200, {
@@ -65,6 +67,10 @@ void main() {
 
       await harness.tapProductionTab(tester);
       expect(find.byType(ProductionRequestListPage), findsOneWidget);
+
+      await tester.tap(find.text(l10n.cashierBalanceTitle));
+      await tester.pumpAndSettle();
+      expect(find.byType(CashierBalancePage), findsOneWidget);
 
       await tester.tap(find.text(l10n.profile));
       await tester.pumpAndSettle();

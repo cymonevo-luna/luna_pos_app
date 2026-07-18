@@ -242,8 +242,14 @@ void main() {
 
     expect(result, isNotNull);
     expect(result!.printSucceeded, isTrue);
+    expect(result.printError, isNull);
     expect(printer.lastPrintedBytes, isNotNull);
     expect(printer.lastPrintedBytes, isNotEmpty);
+    expect(
+      printer.lastPrintedBytes!.length,
+      greaterThan(512),
+      reason: 'multi-item checkout receipt should exceed Bluetooth chunk size',
+    );
     expect(container.read(orderProvider).lines, isEmpty);
   });
 
@@ -288,6 +294,7 @@ void main() {
     await printer.connect('00:11:22:33:44:55');
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -322,6 +329,7 @@ void main() {
     locator.registerSingleton<BluetoothPrinterService>(printer);
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,

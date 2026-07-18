@@ -51,6 +51,7 @@ void main() {
   late ProviderContainer container;
   late FakeSecureStorage secure;
   late DioAdapter adapter;
+  late MockBluetoothPrinterService printer;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
@@ -59,6 +60,7 @@ void main() {
     secure = FakeSecureStorage();
     final mocked = buildMockedApiClient();
     adapter = mocked.adapter;
+    printer = MockBluetoothPrinterService();
     registerAuthTestServices(secure: secure, client: mocked.client);
     locator
       ..registerSingleton<PreferencesService>(await PreferencesService.create())
@@ -74,7 +76,7 @@ void main() {
       ..registerLazySingleton<StoreSettingsRepository>(
         () => StoreSettingsRepository(locator<ApiClient>()),
       )
-      ..registerSingleton<BluetoothPrinterService>(MockBluetoothPrinterService())
+      ..registerSingleton<BluetoothPrinterService>(printer)
       ..registerLazySingleton<ReceiptPrintService>(ReceiptPrintService.new);
     container = ProviderContainer(
       overrides: [
@@ -87,6 +89,7 @@ void main() {
 
   tearDown(() {
     container.dispose();
+    printer.dispose();
   });
 
   Widget buildLocalizedApp({required Widget child}) {
@@ -480,6 +483,100 @@ void main() {
 
     expect(find.byType(CheckoutPage), findsNothing);
     expect(find.byType(MenuPage), findsOneWidget);
+  });
+
+  testWidgets('retry print snackbar includes printer error',
+      (WidgetTester tester) async {
+    seedTwoLineCart();
+
+    const printerError = 'Could not connect to the printer.';
+    final prefs = locator<PreferencesService>();
+    await prefs.setString(PrefKeys.printerDeviceId, '00:11:22:33:44:55');
+    await prefs.setString(PrefKeys.printerDeviceName, 'Test Printer');
+    printer.dispose();
+    printer = MockBluetoothPrinterService(connectSucceeds: false);
+    locator.unregister<BluetoothPrinterService>();
+    locator.registerSingleton<BluetoothPrinterService>(printer);
+
+    adapter.onGet(
+      '/api/v1/pos/store-settings',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'brand_name': 'Luna Cafe',
+          'branch_name': 'Cabang Sudirman',
+          'address': 'Jl. Sudirman No. 10',
+          'phone': '021-1234567',
+          'thank_you_note': 'Terima kasih!',
+        },
+      }),
+    );
+    adapter.onPost(
+      '/api/v1/pos/transactions',
+      (server) => server.reply(201, {
+        'success': true,
+        'data': {
+          'id': 'tx-print-1',
+          'method': 'CASH',
+          'subtotal_amount': 78000,
+          'discount_amount': 0,
+          'amount': 78000,
+          'cash_tendered': 80000,
+          'change_amount': 2000,
+        },
+      }),
+      data: {
+        'order_option_id': kTestOrderOptionTakeAwayId,
+        'method': 'CASH',
+        'items': [
+          {
+            'menu_id': 'm1',
+            'title': 'Es Teh',
+            'quantity': 1,
+            'unit_price': 8000,
+            'line_total': 8000,
+            'note': 'less ice',
+          },
+          {
+            'menu_id': 'm2',
+            'title': 'Nasi Goreng',
+            'quantity': 2,
+            'unit_price': 35000,
+            'line_total': 70000,
+          },
+        ],
+        'subtotal_amount': 78000,
+        'discount_amount': 0,
+        'amount': 78000,
+        'cash_tendered': 80000,
+        'change_amount': 2000,
+      },
+    );
+
+    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
+    await tester.pumpAndSettle();
+
+    await selectTakeAwayOption(tester);
+    await tester.tap(find.byType(CheckboxListTile));
+    await tester.pumpAndSettle();
+    await scrollToCashFields(tester);
+    await tester.enterText(find.byKey(const Key('cash_tendered_field')), '80000');
+    await tester.pumpAndSettle();
+    await scrollToFooter(tester);
+
+    await tester.tap(find.widgetWithText(AppButton, 'Proceed'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Sale complete'), findsOneWidget);
+    expect(find.text(printerError), findsOneWidget);
+
+    await tester.tap(find.text('Print again'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.textContaining(printerError),
+      findsWidgets,
+    );
   });
 }
 

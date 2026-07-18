@@ -112,6 +112,9 @@ class CheckoutController extends Notifier<CheckoutState> {
     state = state.copyWith(clearSelectedOrderOption: true);
   }
 
+  String _userVisibleError(ApiException error) =>
+      validationMessageFor(error) ?? error.message;
+
   Future<CheckoutResult?> proceed({
     required int discountAmount,
     required PaymentMethod paymentMethod,
@@ -223,7 +226,7 @@ class CheckoutController extends Notifier<CheckoutState> {
       final message = error.statusCode == 422
           ? (validationMessageFor(error) ??
               insufficientPackagingStockMessage(selectedOptionName))
-          : error.message;
+          : _userVisibleError(error);
       state = state.copyWith(submitting: false, error: message);
       return null;
     } catch (error) {
@@ -298,7 +301,7 @@ class CheckoutController extends Notifier<CheckoutState> {
         changeAmount: changeAmount ?? 0,
         printSucceeded: false,
         printError: error is ApiException
-            ? error.message
+            ? _userVisibleError(error)
             : 'Receipt could not be printed.',
         orderOptionName: orderOptionName,
       );

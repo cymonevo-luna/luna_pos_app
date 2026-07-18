@@ -4,8 +4,12 @@
 
 _flutter_test_env_log() { printf '>> %s\n' "$*" >&2; }
 
-# Default shared AVD (Pixel_9_Pro -> x86_64 API 34 image on this host).
-: "${SHARED_AVD:=Pixel_9_Pro}"
+# Fixed shared AVD for all Luna agent device tests (Nexus 5X, API 34, 1536 MB, 1 core).
+# Do not override — agents must use this emulator only.
+SHARED_AVD="Luna_Test_Lite"
+SHARED_EMULATOR_MEMORY_MB=1536
+SHARED_EMULATOR_CORES=1
+readonly SHARED_AVD SHARED_EMULATOR_MEMORY_MB SHARED_EMULATOR_CORES
 
 : "${FLUTTER_BIN:=flutter}"
 : "${ANDROID_HOME:=${ANDROID_SDK_ROOT:-$HOME/Android/Sdk}}"
@@ -44,15 +48,40 @@ kvm_usable() {
   [ -r /dev/kvm ] && [ -w /dev/kvm ]
 }
 
+kvm_group_member() {
+  id -nG 2>/dev/null | grep -qw kvm \
+    || getent group kvm 2>/dev/null | grep -qE "(^|:)${USER}(,|$)"
+}
+
 kvm_status_message() {
   if kvm_usable; then
     echo "KVM acceleration is available."
     return 0
   fi
+  if kvm_group_member; then
+    echo "KVM group membership is set but this shell cannot access /dev/kvm yet."
+    echo "Log out and back in (or restart the user session) so the kvm group applies."
+    echo "start-shared-emulator.sh will use 'sg kvm' as a fallback until then."
+    return 1
+  fi
   echo "KVM is not writable for this user (/dev/kvm). Emulators will be slow."
   echo "Add your user to the kvm group, then log out and back in:"
   echo "  sudo usermod -aG kvm \"\$USER\""
   return 1
+}
+
+# Run a command with KVM device access when the user is in the kvm group but
+# the current shell session has not picked up the new group yet.
+run_with_kvm() {
+  if kvm_usable; then
+    "$@"
+    return $?
+  fi
+  if kvm_group_member; then
+    sg kvm -c "$(printf '%q ' "$@")"
+    return $?
+  fi
+  "$@"
 }
 
 adb_bin() {

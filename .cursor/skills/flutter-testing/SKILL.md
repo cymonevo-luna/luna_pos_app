@@ -31,7 +31,7 @@ images.
 | --- | --- |
 | Flutter | `/snap/bin/flutter` (or `flutter` on PATH) |
 | Android SDK | `$HOME/Android/Sdk` |
-| Shared AVD | `Pixel_9_Pro` (x86_64 API 34) |
+| Shared AVD | **`Luna_Test_Lite`** only (Nexus 5X, x86_64 API 34, 1536 MB, 1 vCPU) |
 
 Export (also printed by the ensure script):
 
@@ -39,8 +39,12 @@ Export (also printed by the ensure script):
 export ANDROID_HOME="$HOME/Android/Sdk"
 export ANDROID_SDK_ROOT="$ANDROID_HOME"
 export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH"
-export SHARED_AVD=Pixel_9_Pro
+export SHARED_AVD=Luna_Test_Lite
 ```
+
+**Agents must not use any other AVD** (including legacy `Pixel_9_Pro`). Tier 2
+tests go through `scripts/start-shared-emulator.sh`, which enforces
+`Luna_Test_Lite`.
 
 ## Test tiers (strict order)
 
@@ -77,6 +81,7 @@ flutter test integration_test/ -d "$DEVICE"
 - Installing Flutter or the Android SDK
 - Creating new AVDs or downloading emulator system images
 - Starting another emulator when one is already running
+- Using any AVD other than **`Luna_Test_Lite`**
 - Invoking `adb` from inside the app under test (use host-side scripts instead)
 - Spending a session on emulator setup when Tier 1 tests suffice
 
@@ -116,7 +121,10 @@ sudo usermod -aG kvm "$USER"
 test -w /dev/kvm && echo "KVM ready"
 ```
 
-Do not work around slow emulators by downloading ARM images or new AVDs.
+`start-shared-emulator.sh` uses `sg kvm` when group membership is set but the
+current shell has not refreshed groups yet.
+
+Do not work around slow emulators by downloading ARM images or alternate AVDs.
 
 ## luna_pos_app auth rules
 
@@ -128,5 +136,5 @@ use seeded test accounts only; never register users in automation.
 Before marking Flutter work done:
 
 - [ ] Tier 1 tests pass (`flutter test` + `test/integration/` when applicable)
-- [ ] Tier 2 run only if required; shared emulator reused, not recreated
+- [ ] Tier 2 run only if required; shared `Luna_Test_Lite` emulator reused, not recreated
 - [ ] Missing tooling reported explicitly — not silently skipped

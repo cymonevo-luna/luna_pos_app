@@ -47,6 +47,8 @@ eval "$exports"
 
 # shellcheck source=lib/flutter-test-env.sh
 source "$LIB"
+[ "$SHARED_AVD" = "Luna_Test_Lite" ] || { echo "FAIL: export SHARED_AVD must be Luna_Test_Lite"; exit 1; }
+
 serial="$(pick_running_emulator_serial)"
 [ "$serial" = "emulator-5554" ] || { echo "FAIL: expected emulator-5554 got $serial"; exit 1; }
 

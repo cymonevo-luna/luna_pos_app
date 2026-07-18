@@ -3,14 +3,25 @@
 #
 # Usage:
 #   scripts/start-shared-emulator.sh
-#   SHARED_AVD=Pixel_9_Pro scripts/start-shared-emulator.sh
 #
-# Policy: if any emulator is already booted, reuse it — never start a second one.
+# Policy: reuse any running emulator — never start a second one.
+# AVD: Luna_Test_Lite only (1536 MB RAM, 1 vCPU, Nexus 5X, API 34).
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
+
+if [ -n "${SHARED_AVD:-}" ] && [ "$SHARED_AVD" != "Luna_Test_Lite" ]; then
+  printf '>> ERROR: Agent device tests must use Luna_Test_Lite (SHARED_AVD=%s).\n' "$SHARED_AVD" >&2
+  exit 1
+fi
+
 # shellcheck source=lib/flutter-test-env.sh
 source "$SCRIPT_DIR/lib/flutter-test-env.sh"
+
+if [ "${SHARED_AVD:-}" != "Luna_Test_Lite" ]; then
+  _flutter_test_env_log "ERROR: Agent device tests must use Luna_Test_Lite (got '${SHARED_AVD:-}')."
+  exit 1
+fi
 
 resolve_android_sdk || {
   _flutter_test_env_log "ERROR: Android SDK missing at $ANDROID_HOME"
@@ -49,21 +60,25 @@ if ! "$(
   "$(
     emulator_bin
   )" -list-avds >&2 || true
-  _flutter_test_env_log "Create the AVD on the host once; do not create AVDs inside agent runs."
+  _flutter_test_env_log "Create Luna_Test_Lite on the host once; do not create AVDs inside agent runs."
   exit 1
 fi
 
 gpu_flag="-gpu auto"
-if ! kvm_usable; then
+if ! kvm_usable && ! kvm_group_member; then
   gpu_flag="-gpu swiftshader_indirect"
   _flutter_test_env_log "KVM unavailable; starting emulator with software rendering (slow)."
 fi
 
-_flutter_test_env_log "Starting shared emulator AVD=$SHARED_AVD ..."
-"$(
+_flutter_test_env_log "Starting shared emulator AVD=$SHARED_AVD (${SHARED_EMULATOR_CORES} core, ${SHARED_EMULATOR_MEMORY_MB} MB) ..."
+run_with_kvm "$(
   emulator_bin
 )" \
   -avd "$SHARED_AVD" \
+  -cores "$SHARED_EMULATOR_CORES" \
+  -memory "$SHARED_EMULATOR_MEMORY_MB" \
+  -no-audio \
+  -no-window \
   -no-boot-anim \
   -no-snapshot-save \
   $gpu_flag \

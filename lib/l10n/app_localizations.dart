@@ -740,6 +740,12 @@ abstract class AppLocalizations {
   /// **'Receipt could not be printed. You can retry or continue.'**
   String get printFailedWarning;
 
+  /// Confirmation when a receipt was printed successfully
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt printed'**
+  String get receiptPrinted;
+
   /// Validation error for discount input
   ///
   /// In en, this message translates to:

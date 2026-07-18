@@ -345,6 +345,9 @@ class AppLocalizationsId extends AppLocalizations {
       'Struk tidak dapat dicetak. Anda dapat mencoba lagi atau melanjutkan.';
 
   @override
+  String get receiptPrinted => 'Struk berhasil dicetak';
+
+  @override
   String get invalidDiscount => 'Diskon tidak boleh melebihi subtotal';
 
   @override

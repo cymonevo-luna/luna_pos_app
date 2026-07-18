@@ -25,9 +25,63 @@ class TransactionDetailPage extends ConsumerWidget {
     final state = ref.watch(transactionDetailProvider(transactionId));
     final locale = Localizations.localeOf(context);
     final dateFormat = DateFormat.yMMMd(locale.toString()).add_jm();
+    final showPrintAction =
+        state.detail != null && !state.forbidden;
+
+    ref.listen(transactionDetailProvider(transactionId), (previous, next) {
+      if (previous?.isPrinting == true &&
+          !next.isPrinting &&
+          next.printError == null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.receiptPrinted)),
+          );
+        });
+      }
+
+      if (next.printError != null && next.printError != previous?.printError) {
+        final errorMessage = next.printError!;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              action: SnackBarAction(
+                label: l10n.printAgain,
+                onPressed: () => ref
+                    .read(transactionDetailProvider(transactionId).notifier)
+                    .printReceipt(),
+              ),
+            ),
+          );
+        });
+      }
+    });
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.transactionDetails)),
+      appBar: AppBar(
+        title: Text(l10n.transactionDetails),
+        actions: [
+          if (showPrintAction)
+            IconButton(
+              key: const Key('print_receipt_button'),
+              tooltip: l10n.printReceipt,
+              onPressed: state.isPrinting
+                  ? null
+                  : () => ref
+                      .read(transactionDetailProvider(transactionId).notifier)
+                      .printReceipt(),
+              icon: state.isPrinting
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.print_outlined),
+            ),
+        ],
+      ),
       body: _TransactionDetailBody(
         state: state,
         dateFormat: dateFormat,

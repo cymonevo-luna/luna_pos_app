@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/di/locator.dart';
 import '../../core/formatting/currency_formatter.dart';
 import '../../core/network/api_exception.dart';
+import '../../core/network/validation_errors.dart';
 import '../auth/auth_controller.dart';
 import '../user/models/user.dart';
 import '../receipt/models/receipt_data.dart';
@@ -81,6 +82,9 @@ class CheckoutController extends Notifier<CheckoutState> {
 
   @override
   CheckoutState build() => const CheckoutState();
+
+  String _userVisibleError(ApiException error) =>
+      validationMessageFor(error) ?? error.message;
 
   Future<CheckoutResult?> proceed({
     required int discountAmount,
@@ -169,7 +173,10 @@ class CheckoutController extends Notifier<CheckoutState> {
         cashier: cashier,
       );
     } on ApiException catch (error) {
-      state = state.copyWith(submitting: false, error: error.message);
+      state = state.copyWith(
+        submitting: false,
+        error: _userVisibleError(error),
+      );
       return null;
     } catch (error) {
       state = state.copyWith(
@@ -238,18 +245,19 @@ class CheckoutController extends Notifier<CheckoutState> {
         changeAmount: changeAmount ?? 0,
         printSucceeded: false,
         printError: error is ApiException
-            ? error.message
+            ? _userVisibleError(error)
             : 'Receipt could not be printed.',
       );
     }
   }
 
-  Future<bool> retryPrint() async {
+  Future<({bool succeeded, String? error})> retryPrint() async {
     final bytes = state.lastReceiptBytes;
-    if (bytes == null || bytes.isEmpty) return false;
+    if (bytes == null || bytes.isEmpty) {
+      return (succeeded: false, error: 'Receipt could not be printed.');
+    }
 
-    final printResult = await _receiptPrintService.printBytes(bytes);
-    return printResult.succeeded;
+    return _receiptPrintService.printBytes(bytes);
   }
 
   void clearError() {

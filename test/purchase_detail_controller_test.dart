@@ -143,6 +143,6 @@ void main() {
     expect(success, isFalse);
     final state = container.read(purchaseDetailProvider('pr-detail'));
     expect(state.detail?.status, PurchaseRequestStatus.requested);
-    expect(state.error, 'Something went wrong.');
+    expect(state.error, 'Invalid request.');
   });
 }

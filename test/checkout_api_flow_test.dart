@@ -365,7 +365,7 @@ void main() {
       expect(result, isNull);
       expect(container.read(orderProvider).lines, isNotEmpty);
       expect(printer.lastPrintedBytes, isNull);
-      expect(container.read(checkoutProvider).error, 'Server error.');
+      expect(container.read(checkoutProvider).error, 'server error');
     });
   });
 }

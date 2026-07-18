@@ -56,7 +56,7 @@ class ReceiptPrintService {
         return (succeeded: false, error: connection.error);
       }
 
-      await _printer.printBytes(bytes);
+      await _printer.printBytes(bytes, deviceAddress: deviceAddress);
       return (succeeded: true, error: null);
     } on BluetoothPrinterException catch (error) {
       return (succeeded: false, error: error.message);

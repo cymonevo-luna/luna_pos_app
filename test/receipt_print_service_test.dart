@@ -111,6 +111,25 @@ void main() {
     expect(mockPrinter.lastPrintedBytes, isNotNull);
   });
 
+  test('printBytes reconnects when isConnected flag is stale', () async {
+    final prefs = locator<PreferencesService>();
+    await prefs.setString(PrefKeys.printerDeviceId, '00:11:22:33:44:55');
+    await mockPrinter.connect('00:11:22:33:44:55');
+
+    mockPrinter.simulateStaleConnectionDrop();
+    expect(mockPrinter.isConnected, isTrue);
+
+    final result = await service.printBytes(
+      [0x1B, 0x40],
+      deviceAddress: '00:11:22:33:44:55',
+    );
+
+    expect(result.succeeded, isTrue);
+    expect(result.error, isNull);
+    expect(mockPrinter.reconnectBeforePrintCount, greaterThan(0));
+    expect(mockPrinter.lastPrintedBytes, isNotNull);
+  });
+
   test('printBytes returns bluetooth off error', () async {
     mockPrinter.dispose();
     mockPrinter = MockBluetoothPrinterService(bluetoothEnabled: false);

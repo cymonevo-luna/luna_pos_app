@@ -197,15 +197,15 @@ class _PurchaseDetailContent extends StatelessWidget {
                 const VGap(AppSpacing.xs),
                 AppText.body(detail.supplierContactInfo!, muted: true),
               ],
-              if (whatsAppPhone != null) ...[
-                const VGap(AppSpacing.sm),
-                AppButton(
-                  l10n.purchaseContactSupplier,
-                  icon: Icons.chat_outlined,
-                  variant: AppButtonVariant.secondary,
-                  onPressed: () => _openWhatsApp(detail, whatsAppPhone),
-                ),
-              ],
+              const VGap(AppSpacing.sm),
+              AppButton(
+                l10n.purchaseContactSupplier,
+                icon: Icons.chat_outlined,
+                variant: AppButtonVariant.secondary,
+                onPressed: whatsAppPhone != null
+                    ? () => _openWhatsApp(detail, whatsAppPhone)
+                    : null,
+              ),
             ],
           ),
         ),

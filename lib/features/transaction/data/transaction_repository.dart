@@ -26,6 +26,7 @@ class TransactionRepository {
       'subtotal_amount': request.subtotalAmount,
       'discount_amount': request.discountAmount,
       'amount': request.amount,
+      'order_option_id': request.orderOptionId,
     };
     if (request.cashTendered != null) {
       body['cash_tendered'] = request.cashTendered;

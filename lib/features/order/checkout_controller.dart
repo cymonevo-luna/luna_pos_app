@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/di/locator.dart';
 import '../../core/formatting/currency_formatter.dart';
 import '../../core/network/api_exception.dart';
+import '../../core/network/validation_errors.dart';
 import '../../core/storage/preferences_service.dart';
 import '../auth/auth_controller.dart';
 import '../printer/printer_controller.dart';
@@ -18,24 +19,35 @@ import '../transaction/transaction_mapper.dart';
 import 'models/order_line_item.dart';
 import 'models/payment_method.dart';
 import 'order_controller.dart';
+import 'order_options_controller.dart';
+
+const kOrderOptionInvalidMessage =
+    'Selected order option is no longer available. Please select again.';
+
+String insufficientPackagingStockMessage(String optionName) =>
+    'Insufficient packaging stock for $optionName. Contact manager.';
 
 class CheckoutState {
   const CheckoutState({
     this.submitting = false,
     this.error,
     this.lastReceiptBytes,
+    this.selectedOrderOptionId,
   });
 
   final bool submitting;
   final String? error;
   final List<int>? lastReceiptBytes;
+  final String? selectedOrderOptionId;
 
   CheckoutState copyWith({
     bool? submitting,
     String? error,
     List<int>? lastReceiptBytes,
+    String? selectedOrderOptionId,
     bool clearError = false,
     bool clearReceiptBytes = false,
+    bool clearSelectedOrderOption = false,
   }) {
     return CheckoutState(
       submitting: submitting ?? this.submitting,
@@ -43,6 +55,9 @@ class CheckoutState {
       lastReceiptBytes: clearReceiptBytes
           ? null
           : (lastReceiptBytes ?? this.lastReceiptBytes),
+      selectedOrderOptionId: clearSelectedOrderOption
+          ? null
+          : (selectedOrderOptionId ?? this.selectedOrderOptionId),
     );
   }
 }
@@ -53,6 +68,7 @@ class CheckoutResult {
     required this.paymentMethod,
     required this.changeAmount,
     required this.printSucceeded,
+    this.orderOptionName,
     this.printError,
   });
 
@@ -60,6 +76,7 @@ class CheckoutResult {
   final PaymentMethod paymentMethod;
   final int changeAmount;
   final bool printSucceeded;
+  final String? orderOptionName;
   final String? printError;
 }
 
@@ -84,6 +101,17 @@ class CheckoutController extends Notifier<CheckoutState> {
   @override
   CheckoutState build() => const CheckoutState();
 
+  void selectOrderOption(String optionId) {
+    state = state.copyWith(
+      selectedOrderOptionId: optionId,
+      clearError: true,
+    );
+  }
+
+  void clearSelectedOrderOption() {
+    state = state.copyWith(clearSelectedOrderOption: true);
+  }
+
   Future<CheckoutResult?> proceed({
     required int discountAmount,
     required PaymentMethod paymentMethod,
@@ -92,6 +120,13 @@ class CheckoutController extends Notifier<CheckoutState> {
   }) async {
     final order = ref.read(orderProvider);
     if (order.lines.isEmpty) return null;
+
+    final orderOptionId = state.selectedOrderOptionId;
+    if (orderOptionId == null || orderOptionId.isEmpty) return null;
+
+    final selectedOption =
+        ref.read(orderOptionsProvider.notifier).optionById(orderOptionId);
+    final selectedOptionName = selectedOption?.name ?? 'selected option';
 
     final subtotalAmount = order.grandTotal;
     if (!isDiscountValid(
@@ -137,6 +172,7 @@ class CheckoutController extends Notifier<CheckoutState> {
         subtotalAmount: subtotalAmount,
         discountAmount: discountAmount,
         amount: totalAmount,
+        orderOptionId: orderOptionId,
         cashTendered: paymentMethod == PaymentMethod.cash ? cashTendered : null,
         changeAmount: paymentMethod == PaymentMethod.cash ? changeAmount : null,
       );
@@ -145,6 +181,7 @@ class CheckoutController extends Notifier<CheckoutState> {
           await _transactionRepository.createTransaction(request);
 
       ref.read(orderProvider.notifier).clear();
+      state = state.copyWith(clearSelectedOrderOption: true);
 
       if (!printReceipt) {
         state = state.copyWith(
@@ -156,6 +193,7 @@ class CheckoutController extends Notifier<CheckoutState> {
           paymentMethod: paymentMethod,
           changeAmount: changeAmount ?? 0,
           printSucceeded: false,
+          orderOptionName: response.orderOptionName ?? selectedOptionName,
         );
       }
 
@@ -169,9 +207,24 @@ class CheckoutController extends Notifier<CheckoutState> {
         cashTendered: cashTendered,
         changeAmount: changeAmount,
         cashier: cashier,
+        orderOptionName: response.orderOptionName ?? selectedOptionName,
       );
     } on ApiException catch (error) {
-      state = state.copyWith(submitting: false, error: error.message);
+      if (error.statusCode == 404) {
+        await ref.read(orderOptionsProvider.notifier).refresh();
+        state = state.copyWith(
+          submitting: false,
+          error: kOrderOptionInvalidMessage,
+          clearSelectedOrderOption: true,
+        );
+        return null;
+      }
+
+      final message = error.statusCode == 422
+          ? (validationMessageFor(error) ??
+              insufficientPackagingStockMessage(selectedOptionName))
+          : error.message;
+      state = state.copyWith(submitting: false, error: message);
       return null;
     } catch (error) {
       state = state.copyWith(
@@ -192,6 +245,7 @@ class CheckoutController extends Notifier<CheckoutState> {
     int? cashTendered,
     int? changeAmount,
     required User cashier,
+    String? orderOptionName,
   }) async {
     try {
       final storeSettings =
@@ -206,6 +260,7 @@ class CheckoutController extends Notifier<CheckoutState> {
         paymentMethod: paymentMethod,
         cashTendered: cashTendered,
         changeAmount: changeAmount,
+        orderOptionName: orderOptionName,
       );
 
       final receiptData = ReceiptData.fromCheckout(
@@ -230,6 +285,7 @@ class CheckoutController extends Notifier<CheckoutState> {
         changeAmount: changeAmount ?? 0,
         printSucceeded: printResult.succeeded,
         printError: printResult.error,
+        orderOptionName: orderOptionName,
       );
     } catch (error) {
       state = state.copyWith(
@@ -244,6 +300,7 @@ class CheckoutController extends Notifier<CheckoutState> {
         printError: error is ApiException
             ? error.message
             : 'Receipt could not be printed.',
+        orderOptionName: orderOptionName,
       );
     }
   }
@@ -282,6 +339,7 @@ class CheckoutController extends Notifier<CheckoutState> {
     required PaymentMethod paymentMethod,
     int? cashTendered,
     int? changeAmount,
+    String? orderOptionName,
   }) {
     return receipt.TransactionResponse(
       id: response.id,
@@ -303,6 +361,7 @@ class CheckoutController extends Notifier<CheckoutState> {
       cashTendered:
           paymentMethod == PaymentMethod.cash ? cashTendered : null,
       changeAmount: paymentMethod == PaymentMethod.cash ? (changeAmount ?? 0) : 0,
+      orderOptionName: orderOptionName,
     );
   }
 

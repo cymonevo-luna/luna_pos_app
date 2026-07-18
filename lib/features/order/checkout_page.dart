@@ -10,8 +10,10 @@ import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/widgets.dart';
 import 'checkout_controller.dart';
 import 'models/order_line_item.dart';
+import 'models/order_option.dart';
 import 'models/payment_method.dart';
 import 'order_controller.dart';
+import 'order_options_controller.dart';
 
 class CheckoutPage extends ConsumerStatefulWidget {
   const CheckoutPage({super.key});
@@ -25,6 +27,20 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   final _cashController = TextEditingController();
   PaymentMethod _paymentMethod = PaymentMethod.cash;
   bool _printReceiptChecked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final current = ref.read(orderOptionsProvider);
+      if (!current.loading &&
+          current.options.isEmpty &&
+          current.error == null &&
+          current.merchantId == null) {
+        ref.read(orderOptionsProvider.notifier).loadIfNeeded();
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -67,6 +83,11 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
             children: [
               Text(dialogL10n.transactionIdLabel(result.transactionId)),
               const VGap(AppSpacing.sm),
+              if (result.orderOptionName != null &&
+                  result.orderOptionName!.isNotEmpty) ...[
+                Text(dialogL10n.orderOptionLabel(result.orderOptionName!)),
+                const VGap(AppSpacing.sm),
+              ],
               Text(
                 result.paymentMethod == PaymentMethod.cash
                     ? dialogL10n.saleCompleteMessage(
@@ -122,6 +143,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     final l10n = AppLocalizations.of(context);
     final order = ref.watch(orderProvider);
     final checkout = ref.watch(checkoutProvider);
+    final orderOptions = ref.watch(orderOptionsProvider);
     final subtotalAmount = order.grandTotal;
     final discountValid = isDiscountValid(
       discountAmount: _discountAmount,
@@ -143,7 +165,10 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     final canConfirm = order.lines.isNotEmpty &&
         discountValid &&
         sufficient &&
-        !checkout.submitting;
+        !checkout.submitting &&
+        checkout.selectedOrderOptionId != null &&
+        !orderOptions.isEmpty &&
+        !orderOptions.loading;
 
     ref.listen(checkoutProvider, (previous, next) {
       if (next.error != null && next.error != previous?.error) {
@@ -170,6 +195,28 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                     child: _CheckoutLineCard(line: line, l10n: l10n),
                   ),
                 ),
+                const VGap(AppSpacing.md),
+                if (orderOptions.loading)
+                  const Center(child: CircularProgressIndicator())
+                else if (orderOptions.isEmpty)
+                  AppCard(
+                    child: AppText.body(
+                      l10n.noOrderOptionsConfigured,
+                      color: context.colors.error,
+                      align: TextAlign.center,
+                    ),
+                  )
+                else
+                  _OrderOptionSelector(
+                    key: const Key('order_option_selector'),
+                    l10n: l10n,
+                    options: orderOptions.options,
+                    selectedOptionId: checkout.selectedOrderOptionId,
+                    enabled: !checkout.submitting,
+                    onSelected: (optionId) => ref
+                        .read(checkoutProvider.notifier)
+                        .selectOrderOption(optionId),
+                  ),
                 const VGap(AppSpacing.md),
                 _SummaryRow(
                   label: l10n.subtotal,
@@ -294,6 +341,81 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _OrderOptionSelector extends StatelessWidget {
+  const _OrderOptionSelector({
+    super.key,
+    required this.l10n,
+    required this.options,
+    required this.selectedOptionId,
+    required this.enabled,
+    required this.onSelected,
+  });
+
+  final AppLocalizations l10n;
+  final List<OrderOption> options;
+  final String? selectedOptionId;
+  final bool enabled;
+  final ValueChanged<String> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppText.title(l10n.orderType),
+        const VGap(AppSpacing.sm),
+        Wrap(
+          spacing: AppSpacing.xs,
+          runSpacing: AppSpacing.xs,
+          children: options
+              .map(
+                (option) => _OrderOptionChip(
+                  key: Key('order_option_${option.id}'),
+                  label: option.name,
+                  selected: selectedOptionId == option.id,
+                  enabled: enabled,
+                  onTap: () => onSelected(option.id),
+                ),
+              )
+              .toList(),
+        ),
+      ],
+    );
+  }
+}
+
+class _OrderOptionChip extends StatelessWidget {
+  const _OrderOptionChip({
+    super.key,
+    required this.label,
+    required this.selected,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+
+    return FilterChip(
+      label: Text(label),
+      selected: selected,
+      showCheckmark: false,
+      onSelected: enabled ? (_) => onTap() : null,
+      selectedColor: colors.primaryContainer,
+      labelStyle: TextStyle(
+        color: selected ? colors.onPrimaryContainer : colors.onSurface,
+        fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
       ),
     );
   }

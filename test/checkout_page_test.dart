@@ -19,7 +19,9 @@ import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/features/menu/models/pos_menu.dart';
 import 'package:luna_pos/features/order/checkout_page.dart';
+import 'package:luna_pos/features/order/data/order_option_repository.dart';
 import 'package:luna_pos/features/order/order_controller.dart';
+import 'package:luna_pos/features/order/order_options_controller.dart';
 import 'package:luna_pos/features/receipt/receipt_print_service.dart';
 import 'package:luna_pos/features/store_settings/data/store_settings_repository.dart';
 import 'package:luna_pos/features/transaction/data/transaction_repository.dart';
@@ -60,6 +62,9 @@ void main() {
     registerAuthTestServices(secure: secure, client: mocked.client);
     locator
       ..registerSingleton<PreferencesService>(await PreferencesService.create())
+      ..registerLazySingleton<OrderOptionRepository>(
+        () => OrderOptionRepository(locator<ApiClient>()),
+      )
       ..registerLazySingleton<MenuRepository>(
         () => MenuRepository(locator<ApiClient>()),
       )
@@ -76,6 +81,8 @@ void main() {
         authProvider.overrideWith(_FakeAuthController.new),
       ],
     );
+    stubOrderOptions(adapter);
+    await container.read(orderOptionsProvider.notifier).loadIfNeeded();
   });
 
   tearDown(() {
@@ -125,7 +132,7 @@ void main() {
 
   Future<void> scrollToFooter(WidgetTester tester) async {
     await tester.drag(find.byType(ListView), const Offset(0, -600));
-    await tester.pumpAndSettle();
+    await tester.pump();
   }
 
   Future<void> scrollToCashFields(WidgetTester tester) async {
@@ -133,11 +140,33 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Future<void> pumpCheckoutPage(WidgetTester tester) async {
+    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
+    await tester.pump();
+  }
+
+  Future<void> scrollToOrderOptions(WidgetTester tester) async {
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('order_option_selector')),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pump();
+  }
+
+  Future<void> selectTakeAwayOption(WidgetTester tester) async {
+    await scrollToOrderOptions(tester);
+    await tester.tap(find.descendant(
+      of: find.byKey(const Key('order_option_selector')),
+      matching: find.text('Take Away'),
+    ));
+    await tester.pump();
+  }
+
   testWidgets('checkout page lists lines and subtotal', (WidgetTester tester) async {
     seedTwoLineCart();
 
-    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
-    await tester.pumpAndSettle();
+    await pumpCheckoutPage(tester);
 
     expect(find.text('Es Teh'), findsOneWidget);
     expect(find.text('Nasi Goreng'), findsOneWidget);
@@ -154,8 +183,8 @@ void main() {
       (WidgetTester tester) async {
     seedTwoLineCart();
 
-    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
-    await tester.pumpAndSettle();
+    await pumpCheckoutPage(tester);
+    await selectTakeAwayOption(tester);
 
     expect(find.byKey(const Key('payment_method_dropdown')), findsOneWidget);
     expect(find.text('Cash'), findsWidgets);
@@ -178,8 +207,7 @@ void main() {
       (WidgetTester tester) async {
     seedTwoLineCart();
 
-    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
-    await tester.pumpAndSettle();
+    await pumpCheckoutPage(tester);
     await scrollToCashFields(tester);
 
     expect(find.byKey(const Key('cash_tendered_field')), findsOneWidget);
@@ -196,8 +224,7 @@ void main() {
       (WidgetTester tester) async {
     seedTwoLineCart();
 
-    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
-    await tester.pumpAndSettle();
+    await pumpCheckoutPage(tester);
     await scrollToCashFields(tester);
 
     await tester.tap(find.byKey(const Key('payment_method_dropdown')));
@@ -213,8 +240,7 @@ void main() {
       (WidgetTester tester) async {
     seedTwoLineCart();
 
-    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
-    await tester.pumpAndSettle();
+    await pumpCheckoutPage(tester);
     await scrollToCashFields(tester);
 
     expect(find.byKey(const Key('cash_tendered_field')), findsOneWidget);
@@ -237,19 +263,19 @@ void main() {
       (WidgetTester tester) async {
     seedTwoLineCart();
 
-    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
-    await tester.pumpAndSettle();
+    await pumpCheckoutPage(tester);
     await scrollToCashFields(tester);
 
     expect(find.byKey(const Key('cash_tendered_field')), findsOneWidget);
     expect(find.text('Cash received'), findsOneWidget);
   });
 
-  testWidgets('qris enables proceed without cash input', (WidgetTester tester) async {
+  testWidgets('qris enables proceed without cash input when option selected',
+      (WidgetTester tester) async {
     seedTwoLineCart();
 
-    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
-    await tester.pumpAndSettle();
+    await pumpCheckoutPage(tester);
+    await selectTakeAwayOption(tester);
     await scrollToCashFields(tester);
 
     await tester.tap(find.byKey(const Key('payment_method_dropdown')));
@@ -264,12 +290,103 @@ void main() {
     );
   });
 
+  testWidgets('proceed button disabled without order option selection',
+      (WidgetTester tester) async {
+    seedTwoLineCart();
+
+    await pumpCheckoutPage(tester);
+    await scrollToFooter(tester);
+
+    expect(
+      tester.widget<AppButton>(find.widgetWithText(AppButton, 'Proceed')).onPressed,
+      isNull,
+    );
+  });
+
+  testWidgets('order option selector shows options in priority order and enables proceed',
+      (WidgetTester tester) async {
+    seedTwoLineCart();
+
+    await pumpCheckoutPage(tester);
+    await scrollToOrderOptions(tester);
+
+    expect(find.text('Order Type'), findsOneWidget);
+    expect(find.text('Take Away'), findsOneWidget);
+    expect(find.text('Dine In'), findsOneWidget);
+
+    await selectTakeAwayOption(tester);
+
+    await tester.tap(find.byKey(const Key('payment_method_dropdown')));
+    await tester.pump();
+    await tester.tap(find.text('QRIS').last);
+    await tester.pump();
+    await scrollToFooter(tester);
+    expect(
+      tester.widget<AppButton>(find.widgetWithText(AppButton, 'Proceed')).onPressed,
+      isNotNull,
+    );
+  });
+
+  testWidgets('empty order options shows blocking message and disables proceed',
+      (WidgetTester tester) async {
+    seedTwoLineCart();
+
+    final emptyContainer = ProviderContainer(
+      overrides: [
+        authProvider.overrideWith(_FakeAuthController.new),
+        orderOptionsProvider.overrideWith(_EmptyOrderOptionsController.new),
+      ],
+    );
+    addTearDown(emptyContainer.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: emptyContainer,
+        child: MaterialApp(
+          theme: AppTheme.light(AppAccent.blue),
+          locale: const Locale('en'),
+          supportedLocales: kSupportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          home: const CheckoutPage(),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.scrollUntilVisible(
+      find.text('No order options configured. Contact manager.'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pump();
+
+    expect(
+      find.text('No order options configured. Contact manager.'),
+      findsOneWidget,
+    );
+
+    await tester.scrollUntilVisible(
+      find.widgetWithText(AppButton, 'Proceed'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pump();
+    expect(
+      tester.widget<AppButton>(find.widgetWithText(AppButton, 'Proceed')).onPressed,
+      isNull,
+    );
+  });
+
   testWidgets('proceed button disabled when cash tendered is insufficient',
       (WidgetTester tester) async {
     seedTwoLineCart();
 
-    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
-    await tester.pumpAndSettle();
+    await pumpCheckoutPage(tester);
+    await selectTakeAwayOption(tester);
 
     await scrollToFooter(tester);
     await scrollToCashFields(tester);
@@ -290,8 +407,8 @@ void main() {
 
     seedTwoLineCart();
 
-    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
-    await tester.pumpAndSettle();
+    await pumpCheckoutPage(tester);
+    await selectTakeAwayOption(tester);
 
     await tester.drag(find.byType(ListView), const Offset(0, -400));
     await tester.pumpAndSettle();
@@ -364,4 +481,10 @@ void main() {
     expect(find.byType(CheckoutPage), findsNothing);
     expect(find.byType(MenuPage), findsOneWidget);
   });
+}
+
+class _EmptyOrderOptionsController extends OrderOptionsController {
+  @override
+  OrderOptionsState build() =>
+      const OrderOptionsState(merchantId: 'merchant-1');
 }

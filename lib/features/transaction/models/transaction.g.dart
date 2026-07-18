@@ -16,6 +16,7 @@ _CreateTransactionRequest _$CreateTransactionRequestFromJson(
   subtotalAmount: (json['subtotal_amount'] as num).toInt(),
   discountAmount: (json['discount_amount'] as num?)?.toInt() ?? 0,
   amount: (json['amount'] as num).toInt(),
+  orderOptionId: json['order_option_id'] as String,
   cashTendered: (json['cash_tendered'] as num?)?.toInt(),
   changeAmount: (json['change_amount'] as num?)?.toInt(),
 );
@@ -28,6 +29,7 @@ Map<String, dynamic> _$CreateTransactionRequestToJson(
   'subtotal_amount': instance.subtotalAmount,
   'discount_amount': instance.discountAmount,
   'amount': instance.amount,
+  'order_option_id': instance.orderOptionId,
   'cash_tendered': instance.cashTendered,
   'change_amount': instance.changeAmount,
 };
@@ -61,6 +63,8 @@ _TransactionResponse _$TransactionResponseFromJson(Map<String, dynamic> json) =>
       amount: (json['amount'] as num).toInt(),
       subtotalAmount: (json['subtotal_amount'] as num?)?.toInt(),
       discountAmount: (json['discount_amount'] as num?)?.toInt(),
+      orderOptionId: json['order_option_id'] as String?,
+      orderOptionName: json['order_option_name'] as String?,
       cashTendered: (json['cash_tendered'] as num?)?.toInt(),
       changeAmount: (json['change_amount'] as num?)?.toInt(),
     );
@@ -73,6 +77,8 @@ Map<String, dynamic> _$TransactionResponseToJson(
   'amount': instance.amount,
   'subtotal_amount': instance.subtotalAmount,
   'discount_amount': instance.discountAmount,
+  'order_option_id': instance.orderOptionId,
+  'order_option_name': instance.orderOptionName,
   'cash_tendered': instance.cashTendered,
   'change_amount': instance.changeAmount,
 };

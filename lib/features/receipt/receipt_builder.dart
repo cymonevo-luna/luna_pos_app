@@ -93,6 +93,11 @@ class ReceiptBuilder {
       bytes.addAll(_totalRow(generator, 'Metode', paymentLabel));
     }
 
+    final orderOptionName = data.orderOptionName?.trim();
+    if (orderOptionName != null && orderOptionName.isNotEmpty) {
+      bytes.addAll(_totalRow(generator, 'Tipe', orderOptionName));
+    }
+
     if (data.cashTendered != null) {
       bytes.addAll(
         _totalRow(generator, 'Bayar', formatRupiah(data.cashTendered!)),

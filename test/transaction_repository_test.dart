@@ -57,6 +57,7 @@ void main() {
         'subtotal_amount': 51000,
         'discount_amount': 0,
         'amount': 51000,
+        'order_option_id': kTestOrderOptionTakeAwayId,
         'cash_tendered': 60000,
         'change_amount': 9000,
       },
@@ -82,6 +83,7 @@ void main() {
       ],
       subtotalAmount: 51000,
       amount: 51000,
+      orderOptionId: kTestOrderOptionTakeAwayId,
       cashTendered: 60000,
       changeAmount: 9000,
     );
@@ -124,6 +126,7 @@ void main() {
         'subtotal_amount': 35000,
         'discount_amount': 0,
         'amount': 35000,
+        'order_option_id': kTestOrderOptionTakeAwayId,
       },
     );
 
@@ -140,6 +143,7 @@ void main() {
       ],
       subtotalAmount: 35000,
       amount: 35000,
+      orderOptionId: kTestOrderOptionTakeAwayId,
     );
 
     final response =

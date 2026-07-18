@@ -290,3 +290,42 @@ String _displayNameFor(TestAccountRole role) => switch (role) {
       TestAccountRole.cashier => 'Cashier Test',
       TestAccountRole.operational => 'Operational Test',
     };
+
+const kTestOrderOptionTakeAwayId = 'opt-takeaway';
+const kTestOrderOptionDineInId = 'opt-dinein';
+
+/// Stubs `GET /api/v1/pos/order-options` with default Take Away / Dine In options.
+void stubOrderOptions(DioAdapter adapter) {
+  adapter.onGet(
+    '/api/v1/pos/order-options',
+    (server) => server.reply(200, {
+      'success': true,
+      'data': {
+        'options': [
+          {
+            'id': kTestOrderOptionTakeAwayId,
+            'name': 'Take Away',
+            'priority': 10,
+          },
+          {
+            'id': kTestOrderOptionDineInId,
+            'name': 'Dine In',
+            'priority': 5,
+          },
+        ],
+      },
+    }),
+  );
+}
+
+/// Stubs `GET /api/v1/pos/order-options` with an empty options list.
+void stubEmptyOrderOptions(DioAdapter adapter) {
+  adapter.onGet(
+    '/api/v1/pos/order-options',
+    (server) => server.reply(200, {
+      'success': true,
+      'data': {'options': <Map<String, dynamic>>[]},
+    }),
+  );
+}
+

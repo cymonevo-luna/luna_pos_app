@@ -335,6 +335,18 @@ class AppLocalizationsId extends AppLocalizations {
   String get proceed => 'Lanjutkan';
 
   @override
+  String get orderType => 'Tipe Pesanan';
+
+  @override
+  String get noOrderOptionsConfigured =>
+      'Tidak ada opsi pesanan yang dikonfigurasi. Hubungi manajer.';
+
+  @override
+  String orderOptionLabel(String name) {
+    return 'Tipe pesanan: $name';
+  }
+
+  @override
   String get printReceipt => 'Cetak struk';
 
   @override

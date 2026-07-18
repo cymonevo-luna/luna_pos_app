@@ -58,6 +58,36 @@ abstract final class TestAccounts {
     return roles.toList();
   }
 
+  /// Default POS feature grants for API stubs, mirroring backend role mappings.
+  static List<String> apiFeaturesFor(
+    TestAccountRole role, {
+    List<String> additionalRoles = const [],
+  }) {
+    final features = <String>{};
+    for (final roleName in apiRolesFor(
+      role,
+      additionalRoles: additionalRoles,
+    )) {
+      features.addAll(_featuresForRoleName(roleName));
+    }
+    return features.toList();
+  }
+
+  static List<String> _featuresForRoleName(String roleName) => switch (roleName) {
+        'cashier' => const [
+            'pos.menu',
+            'pos.transactions',
+            'pos.production_requests',
+          ],
+        'operational' => const [
+            'pos.stock',
+            'pos.purchases',
+            'pos.recurring_expenses',
+          ],
+        'manager' => const ['pos.recurring_expenses'],
+        _ => const <String>[],
+      };
+
   /// Stable seeded user id from `luna_pos_service` dedicated-accounts migration.
   static String userIdFor(TestAccountRole role) => switch (role) {
         TestAccountRole.admin => adminUserId,

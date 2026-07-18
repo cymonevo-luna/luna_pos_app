@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:luna_pos/core/config/app_config.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
+import 'package:luna_pos/core/network/api_exception.dart';
 import 'package:luna_pos/core/printer/bluetooth_printer_service.dart';
 import 'package:luna_pos/core/storage/preferences_service.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
@@ -45,6 +46,22 @@ class _RecordingTransactionRepository extends TransactionRepository {
       cashTendered: request.cashTendered,
       changeAmount: request.changeAmount,
     );
+  }
+}
+
+class _ThrowingTransactionRepository extends TransactionRepository {
+  _ThrowingTransactionRepository(
+    super.api, {
+    required this.exception,
+  });
+
+  final ApiException exception;
+
+  @override
+  Future<TransactionResponse> createTransaction(
+    CreateTransactionRequest request,
+  ) async {
+    throw exception;
   }
 }
 
@@ -233,6 +250,64 @@ void main() {
         );
 
     expect(result, isNotNull);
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+
+    expect(balanceFetchCount, 0);
+  });
+
+  test('failed checkout does not refresh cashier balance', () async {
+    var balanceFetchCount = 0;
+    adapter.onGet(
+      CashierBalanceRepository.balancePath,
+      (server) => server.replyCallback(200, (_) {
+            balanceFetchCount++;
+            return {
+              'success': true,
+              'data': {
+                'balance': 100000,
+                'updated_at': '2026-07-18T10:00:00Z',
+              },
+            };
+          }),
+    );
+    adapter.onGet(
+      CashierBalanceRepository.entriesPath,
+      (server) => server.reply(200, {
+        'success': true,
+        'data': [],
+        'meta': {'page': 1, 'per_page': 20, 'total': 0},
+      }),
+      queryParameters: {'page': '1', 'per_page': '20'},
+    );
+
+    seedCart();
+    await prepareOrderOptionSelection();
+
+    locator.unregister<TransactionRepository>();
+    locator.registerSingleton<TransactionRepository>(
+      _ThrowingTransactionRepository(
+        locator<ApiClient>(),
+        exception: const ApiException(
+          type: ApiErrorType.unknown,
+          message: 'Transaction failed.',
+          statusCode: 422,
+          data: {
+            'error': {
+              'message': 'Insufficient packaging stock for Take Away.',
+            },
+          },
+        ),
+      ),
+    );
+
+    final result = await container.read(checkoutProvider.notifier).proceed(
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.cash,
+          cashTendered: 10000,
+          printReceipt: false,
+        );
+
+    expect(result, isNull);
     await Future<void>.delayed(const Duration(milliseconds: 50));
 
     expect(balanceFetchCount, 0);

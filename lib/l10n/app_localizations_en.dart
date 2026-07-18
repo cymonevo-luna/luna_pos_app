@@ -345,6 +345,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Receipt could not be printed. You can retry or continue.';
 
   @override
+  String get receiptPrinted => 'Receipt printed';
+
+  @override
   String get invalidDiscount => 'Discount cannot exceed subtotal';
 
   @override
@@ -372,6 +375,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentMethodQris => 'QRIS';
+
+  @override
+  String get orderOption => 'Order option';
+
+  @override
+  String get noOrderOptions =>
+      'No order options configured. Ask an admin to create one before completing sales.';
 
   @override
   String get cashier => 'Cashier';

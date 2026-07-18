@@ -14,6 +14,7 @@ class TransactionRepository {
     CreateTransactionRequest request,
   ) {
     final body = <String, dynamic>{
+      'order_option_id': request.orderOptionId,
       'method': request.method,
       'items': request.items.map((item) {
         final json = item.toJson();

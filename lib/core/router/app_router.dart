@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/auth_controller.dart';
+import '../../features/user/models/user.dart';
 import '../../features/auth/login_page.dart';
 import '../../features/auth/register_page.dart';
 import '../../features/auth/splash_page.dart';
@@ -23,7 +24,6 @@ import '../../features/transaction/transaction_detail_page.dart';
 import '../../features/transaction/transaction_history_page.dart';
 import '../../features/profile/profile_page.dart';
 import '../../features/settings/settings_page.dart';
-import '../../features/user/models/user.dart';
 import '../../shared/widgets/main_scaffold.dart';
 import 'navigation_config.dart';
 
@@ -90,7 +90,7 @@ String? _orderRedirect(Ref ref, GoRouterState state) {
   return null;
 }
 
-String? _roleRedirect(Ref ref, GoRouterState state) {
+String? _featureRedirect(Ref ref, GoRouterState state) {
   final auth = ref.read(authProvider);
   if (auth.status != AuthStatus.authenticated) return null;
 
@@ -98,16 +98,8 @@ String? _roleRedirect(Ref ref, GoRouterState state) {
   if (user == null) return null;
 
   final location = state.matchedLocation;
-
-  if (isCashierRoute(location) && !user.hasCashierAccess) {
-    return defaultAuthenticatedRoute(user);
-  }
-
-  if (isOperationalRoute(location) && !user.hasOperationalAccess) {
-    return defaultAuthenticatedRoute(user);
-  }
-
-  if (isRecurringExpenseRoute(location) && !hasRecurringExpenseAccess(user)) {
+  final requiredFeature = requiredFeatureForLocation(location);
+  if (requiredFeature != null && !user.hasFeature(requiredFeature)) {
     return defaultAuthenticatedRoute(user);
   }
 
@@ -131,8 +123,8 @@ String? _redirect(Ref ref, GoRouterState state) {
   if (authResult != null) return authResult;
   final legacyResult = _legacyRouteRedirect(ref, state);
   if (legacyResult != null) return legacyResult;
-  final roleResult = _roleRedirect(ref, state);
-  if (roleResult != null) return roleResult;
+  final featureResult = _featureRedirect(ref, state);
+  if (featureResult != null) return featureResult;
   return _orderRedirect(ref, state);
 }
 

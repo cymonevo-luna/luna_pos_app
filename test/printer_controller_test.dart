@@ -92,4 +92,22 @@ void main() {
     expect(mockPrinter.lastPrintedBytes, isNotEmpty);
     expect(state.isPrinting, isFalse);
   });
+
+  test('testPrint reconnects when connection drops before printing', () async {
+    await container.read(printerProvider.notifier).initialize();
+    expect(container.read(printerProvider).isConnected, isTrue);
+
+    mockPrinter.simulateConnectionDrop(notifyListeners: false);
+    expect(mockPrinter.isConnected, isFalse);
+    expect(container.read(printerProvider).isConnected, isTrue);
+
+    await container.read(printerProvider.notifier).testPrint();
+
+    final state = container.read(printerProvider);
+    expect(state.lastError, isNull, reason: state.lastError);
+    expect(mockPrinter.reconnectBeforePrintCount, greaterThan(0));
+    expect(mockPrinter.lastPrintedBytes, isNotNull);
+    expect(mockPrinter.lastPrintedBytes, isNotEmpty);
+    expect(mockPrinter.isConnected, isTrue);
+  });
 }

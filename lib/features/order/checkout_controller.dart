@@ -4,7 +4,9 @@ import '../../core/di/locator.dart';
 import '../../core/formatting/currency_formatter.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/network/validation_errors.dart';
+import '../../core/storage/preferences_service.dart';
 import '../auth/auth_controller.dart';
+import '../printer/printer_controller.dart';
 import '../user/models/user.dart';
 import '../receipt/models/receipt_data.dart';
 import '../receipt/models/receipt_line_item.dart';
@@ -87,6 +89,7 @@ class CheckoutController extends Notifier<CheckoutState> {
       validationMessageFor(error) ?? error.message;
 
   Future<CheckoutResult?> proceed({
+    required String orderOptionId,
     required int discountAmount,
     required PaymentMethod paymentMethod,
     int? cashTendered,
@@ -134,6 +137,7 @@ class CheckoutController extends Notifier<CheckoutState> {
       }
 
       final request = CreateTransactionRequest(
+        orderOptionId: orderOptionId,
         method: paymentMethod.apiValue,
         items: buildTransactionItems(lines),
         subtotalAmount: subtotalAmount,
@@ -219,8 +223,10 @@ class CheckoutController extends Notifier<CheckoutState> {
         cashier: cashier,
       );
 
-      final printResult =
-          await _receiptPrintService.printReceiptData(receiptData);
+      final printResult = await _receiptPrintService.printReceiptData(
+        receiptData,
+        deviceAddress: _preferredPrinterAddress(),
+      );
 
       state = state.copyWith(
         submitting: false,
@@ -254,10 +260,22 @@ class CheckoutController extends Notifier<CheckoutState> {
   Future<({bool succeeded, String? error})> retryPrint() async {
     final bytes = state.lastReceiptBytes;
     if (bytes == null || bytes.isEmpty) {
-      return (succeeded: false, error: 'Receipt could not be printed.');
+      return (succeeded: false, error: PrinterMessages.printFailed);
     }
 
-    return _receiptPrintService.printBytes(bytes);
+    final printResult = await _receiptPrintService.printBytes(
+      bytes,
+      deviceAddress: _preferredPrinterAddress(),
+    );
+    return (succeeded: printResult.succeeded, error: printResult.error);
+  }
+
+  String? _preferredPrinterAddress() {
+    final printerState = ref.read(printerProvider);
+    if (printerState.isConnected && printerState.selectedDevice != null) {
+      return printerState.selectedDevice!.address;
+    }
+    return locator<PreferencesService>().getString(PrefKeys.printerDeviceId);
   }
 
   void clearError() {

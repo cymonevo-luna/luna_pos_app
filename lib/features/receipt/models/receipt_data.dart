@@ -1,9 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../store_settings/models/store_settings.dart';
+import '../../transaction/models/transaction.dart';
 import '../../user/models/user.dart';
 import 'receipt_line_item.dart';
-import '../../store_settings/models/store_settings.dart';
-import 'transaction_response.dart';
+import 'transaction_response.dart' as receipt;
 
 part 'receipt_data.freezed.dart';
 
@@ -30,7 +31,7 @@ abstract class ReceiptData with _$ReceiptData {
   const ReceiptData._();
 
   factory ReceiptData.fromCheckout({
-    required TransactionResponse txn,
+    required receipt.TransactionResponse txn,
     required StoreSettings store,
     required User cashier,
   }) {
@@ -52,4 +53,45 @@ abstract class ReceiptData with _$ReceiptData {
       thankYouNote: store.thankYouNote,
     );
   }
+
+  factory ReceiptData.fromTransactionDetail({
+    required TransactionDetail detail,
+    required StoreSettings store,
+  }) {
+    final isCash = detail.method.toUpperCase() == 'CASH';
+
+    return ReceiptData(
+      brandName: store.brandName,
+      branchName: store.branchName,
+      branchAddress: store.branchAddress,
+      branchPhone: store.branchPhone,
+      cashierName: detail.cashierUsername ?? '',
+      transactionId: detail.id,
+      transactionDate:
+          detail.occurredAt ?? DateTime.fromMillisecondsSinceEpoch(0),
+      paymentMethod: detail.method,
+      items: detail.items
+          .map(
+            (item) => ReceiptLineItem(
+              title: item.title,
+              quantity: item.quantity,
+              note: _trimmedNote(item.note),
+              lineTotal: item.lineTotal,
+            ),
+          )
+          .toList(),
+      subtotalAmount: detail.subtotalAmount,
+      discountAmount: detail.discountAmount,
+      totalAmount: detail.amount,
+      cashTendered: isCash ? detail.cashTendered : null,
+      changeAmount: isCash ? detail.changeAmount : 0,
+      thankYouNote: store.thankYouNote,
+    );
+  }
+}
+
+String? _trimmedNote(String? note) {
+  final trimmed = note?.trim();
+  if (trimmed == null || trimmed.isEmpty) return null;
+  return trimmed;
 }

@@ -740,6 +740,12 @@ abstract class AppLocalizations {
   /// **'Receipt could not be printed. You can retry or continue.'**
   String get printFailedWarning;
 
+  /// Confirmation when a receipt was printed successfully
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt printed'**
+  String get receiptPrinted;
+
   /// Validation error for discount input
   ///
   /// In en, this message translates to:
@@ -793,6 +799,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'QRIS'**
   String get paymentMethodQris;
+
+  /// Order option selector label on checkout
+  ///
+  /// In en, this message translates to:
+  /// **'Order option'**
+  String get orderOption;
+
+  /// Shown when the merchant has zero POS order options
+  ///
+  /// In en, this message translates to:
+  /// **'No order options configured. Ask an admin to create one before completing sales.'**
+  String get noOrderOptions;
 
   /// Cashier name label on transaction rows and detail
   ///

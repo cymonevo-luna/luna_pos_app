@@ -345,6 +345,9 @@ class AppLocalizationsId extends AppLocalizations {
       'Struk tidak dapat dicetak. Anda dapat mencoba lagi atau melanjutkan.';
 
   @override
+  String get receiptPrinted => 'Struk berhasil dicetak';
+
+  @override
   String get invalidDiscount => 'Diskon tidak boleh melebihi subtotal';
 
   @override
@@ -372,6 +375,13 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get paymentMethodQris => 'QRIS';
+
+  @override
+  String get orderOption => 'Opsi pesanan';
+
+  @override
+  String get noOrderOptions =>
+      'Belum ada opsi pesanan. Minta admin membuatnya sebelum menyelesaikan penjualan.';
 
   @override
   String get cashier => 'Kasir';

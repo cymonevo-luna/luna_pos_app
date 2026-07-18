@@ -272,6 +272,10 @@
   "@printFailedWarning": {
     "description": "Warning when sale succeeded but printing failed"
   },
+  "receiptPrinted": "Receipt printed",
+  "@receiptPrinted": {
+    "description": "Confirmation when a receipt was printed successfully"
+  },
   "invalidDiscount": "Discount cannot exceed subtotal",
   "@invalidDiscount": {
     "description": "Validation error for discount input"
@@ -313,6 +317,14 @@
   "paymentMethodQris": "QRIS",
   "@paymentMethodQris": {
     "description": "Display label for QRIS payment method"
+  },
+  "orderOption": "Order option",
+  "@orderOption": {
+    "description": "Order option selector label on checkout"
+  },
+  "noOrderOptions": "No order options configured. Ask an admin to create one before completing sales.",
+  "@noOrderOptions": {
+    "description": "Shown when the merchant has zero POS order options"
   },
   "cashier": "Cashier",
   "@cashier": {

@@ -135,6 +135,10 @@ Map<String, dynamic> _loginUserPayload(
         role,
         additionalRoles: additionalRoles,
       ),
+      'features': TestAccounts.apiFeaturesFor(
+        role,
+        additionalRoles: additionalRoles,
+      ),
     };
 
 Map<String, dynamic> _merchantPayload() => {

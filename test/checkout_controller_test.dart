@@ -21,6 +21,7 @@ import 'package:luna_pos/features/user/models/user.dart';
 
 import 'helpers/auth_harness.dart';
 import 'helpers/mock_bluetooth_printer_service.dart';
+import 'helpers/order_option_test_data.dart';
 
 class _FakeAuthController extends AuthController {
   @override
@@ -139,6 +140,7 @@ void main() {
     seedTwoLineCart();
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 5000,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 100000,
@@ -148,6 +150,7 @@ void main() {
     expect(result, isNotNull);
     final request = transactionRepository.lastRequest!;
     expect(request.method, 'CASH');
+    expect(request.orderOptionId, kTestOrderOptionId);
     expect(request.subtotalAmount, 78000);
     expect(request.discountAmount, 5000);
     expect(request.amount, 73000);
@@ -163,6 +166,7 @@ void main() {
     seedTwoLineCart();
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.qris,
           printReceipt: false,
@@ -179,6 +183,7 @@ void main() {
     seedTwoLineCart();
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -208,6 +213,7 @@ void main() {
     );
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -227,6 +233,7 @@ void main() {
     await printer.connect('00:11:22:33:44:55');
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -242,8 +249,16 @@ void main() {
 
   test('proceed with print completes sale when printer unavailable', () async {
     seedTwoLineCart();
+    final prefs = locator<PreferencesService>();
+    await prefs.setString(PrefKeys.printerDeviceId, '00:11:22:33:44:55');
+    await prefs.setString(PrefKeys.printerDeviceName, 'Test Printer');
+    printer.dispose();
+    printer = MockBluetoothPrinterService(connectSucceeds: false);
+    locator.unregister<BluetoothPrinterService>();
+    locator.registerSingleton<BluetoothPrinterService>(printer);
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -253,12 +268,90 @@ void main() {
     expect(result, isNotNull);
     expect(result!.printSucceeded, isFalse);
     expect(result.printError, isNotNull);
+    expect(
+      result.printError!.toLowerCase(),
+      anyOf(contains('printer'), contains('permission')),
+    );
     expect(printer.lastPrintedBytes, isNull);
     expect(container.read(orderProvider).lines, isEmpty);
     expect(
       container.read(checkoutProvider).lastReceiptBytes,
       isNotNull,
     );
+  });
+
+  test('retryPrint succeeds after connection drop', () async {
+    seedTwoLineCart();
+    final prefs = locator<PreferencesService>();
+    await prefs.setString(PrefKeys.printerDeviceId, '00:11:22:33:44:55');
+    await prefs.setString(PrefKeys.printerDeviceName, 'Test Printer');
+    await printer.connect('00:11:22:33:44:55');
+
+    final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.cash,
+          cashTendered: 80000,
+          printReceipt: true,
+        );
+
+    expect(result, isNotNull);
+    expect(result!.printSucceeded, isTrue);
+    expect(container.read(checkoutProvider).lastReceiptBytes, isNotNull);
+
+    printer.simulateConnectionDrop(notifyListeners: false);
+    expect(printer.isConnected, isFalse);
+
+    final retryResult =
+        await container.read(checkoutProvider.notifier).retryPrint();
+
+    expect(retryResult.succeeded, isTrue);
+    expect(retryResult.error, isNull);
+    expect(printer.reconnectBeforePrintCount, greaterThan(0));
+    expect(printer.lastPrintedBytes, isNotNull);
+    expect(printer.lastPrintedBytes, isNotEmpty);
+  });
+
+  test('retryPrint returns specific error when reconnect fails', () async {
+    seedTwoLineCart();
+    final prefs = locator<PreferencesService>();
+    await prefs.setString(PrefKeys.printerDeviceId, '00:11:22:33:44:55');
+    await prefs.setString(PrefKeys.printerDeviceName, 'Test Printer');
+    printer.dispose();
+    printer = MockBluetoothPrinterService(connectSucceeds: false);
+    locator.unregister<BluetoothPrinterService>();
+    locator.registerSingleton<BluetoothPrinterService>(printer);
+
+    final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.cash,
+          cashTendered: 80000,
+          printReceipt: true,
+        );
+
+    expect(result, isNotNull);
+    expect(result!.printSucceeded, isFalse);
+    expect(container.read(checkoutProvider).lastReceiptBytes, isNotNull);
+
+    final retryResult =
+        await container.read(checkoutProvider.notifier).retryPrint();
+
+    expect(retryResult.succeeded, isFalse);
+    expect(retryResult.error, isNotNull);
+    expect(retryResult.error!.toLowerCase(), contains('printer'));
+  });
+
+  test('retryPrint with no cached bytes returns error', () async {
+    seedTwoLineCart();
+
+    expect(container.read(checkoutProvider).lastReceiptBytes, isNull);
+
+    final retryResult =
+        await container.read(checkoutProvider.notifier).retryPrint();
+
+    expect(retryResult.succeeded, isFalse);
+    expect(retryResult.error, isNotNull);
   });
 
   test('proceed with print completes sale when store settings fail after POST',
@@ -274,6 +367,7 @@ void main() {
     );
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -316,6 +410,7 @@ void main() {
         },
       }),
       data: {
+        ...kTestOrderOptionIdBodyField,
         'method': 'CASH',
         'items': [
           {
@@ -350,6 +445,7 @@ void main() {
     );
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,

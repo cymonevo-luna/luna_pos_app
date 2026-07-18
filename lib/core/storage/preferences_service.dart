@@ -50,4 +50,5 @@ abstract final class PrefKeys {
   static const String locale = 'locale';
   static const String printerDeviceId = 'printer_device_id';
   static const String printerDeviceName = 'printer_device_name';
+  static const String orderOptionId = 'order_option_id';
 }

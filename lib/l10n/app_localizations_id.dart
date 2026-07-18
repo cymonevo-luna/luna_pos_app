@@ -389,6 +389,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get paymentMethodQris => 'QRIS';
 
   @override
+  String get orderOption => 'Opsi pesanan';
+
+  @override
+  String get noOrderOptions =>
+      'Belum ada opsi pesanan. Minta admin membuatnya sebelum menyelesaikan penjualan.';
+
+  @override
   String get cashier => 'Kasir';
 
   @override

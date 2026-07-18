@@ -548,6 +548,78 @@ class AppLocalizationsId extends AppLocalizations {
   String get purchaseCreatedAt => 'Dibuat pada';
 
   @override
+  String get smartPurchaseTitle => 'Permintaan cerdas';
+
+  @override
+  String get smartPurchaseStepIngredients => 'Bahan';
+
+  @override
+  String get smartPurchaseStepReview => 'Tinjau';
+
+  @override
+  String get smartPurchaseStepConfirm => 'Konfirmasi';
+
+  @override
+  String get smartPurchaseIngredients => 'Bahan';
+
+  @override
+  String get smartPurchaseSelectIngredient => 'Pilih bahan';
+
+  @override
+  String get smartPurchaseSearchIngredients => 'Cari bahan';
+
+  @override
+  String get smartPurchaseNoIngredients => 'Bahan tidak ditemukan';
+
+  @override
+  String get smartPurchaseBack => 'Kembali';
+
+  @override
+  String get smartPurchaseNext => 'Lanjut';
+
+  @override
+  String get smartPurchaseReviewAction => 'Tinjau';
+
+  @override
+  String get smartPurchaseGroupedBySupplier => 'Dikelompokkan per pemasok';
+
+  @override
+  String get smartPurchaseUnmatchedItems => 'Item yang perlu pemasok';
+
+  @override
+  String get smartPurchaseUnmatchedWarning =>
+      'Beberapa item tidak memiliki harga pemasok. Pilih pemasok sebelum melanjutkan.';
+
+  @override
+  String get smartPurchaseUnmatchedBlocked =>
+      'Pilih pemasok untuk setiap item sebelum melanjutkan.';
+
+  @override
+  String get smartPurchaseSelectSupplierManually => 'Pilih pemasok';
+
+  @override
+  String get smartPurchaseNoSupplierPrices =>
+      'Tidak ada harga pemasok untuk item ini.';
+
+  @override
+  String get smartPurchaseNoGroups =>
+      'Belum ada grup pemasok. Pilih pemasok untuk semua item.';
+
+  @override
+  String get smartPurchaseConfirmSummary => 'Tinjau dan kirim';
+
+  @override
+  String get smartPurchaseSuggestFailed =>
+      'Gagal memuat saran pemasok. Coba lagi.';
+
+  @override
+  String get smartPurchaseSubmitFailed =>
+      'Gagal mengirim permintaan cerdas. Coba lagi.';
+
+  @override
+  String get smartPurchaseSubmitSuccess => 'Permintaan pembelian dibuat';
+
+  @override
   String get searchStock => 'Cari persediaan';
 
   @override

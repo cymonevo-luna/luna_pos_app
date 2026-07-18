@@ -533,6 +533,94 @@
   "@purchaseCreatedAt": {
     "description": "Label for purchase request creation timestamp"
   },
+  "smartPurchaseTitle": "Smart Request",
+  "@smartPurchaseTitle": {
+    "description": "Title for smart supplier purchase request flow"
+  },
+  "smartPurchaseStepIngredients": "Ingredients",
+  "@smartPurchaseStepIngredients": {
+    "description": "Wizard step label for ingredient selection"
+  },
+  "smartPurchaseStepReview": "Review",
+  "@smartPurchaseStepReview": {
+    "description": "Wizard step label for supplier review"
+  },
+  "smartPurchaseStepConfirm": "Confirm",
+  "@smartPurchaseStepConfirm": {
+    "description": "Wizard step label for final confirmation"
+  },
+  "smartPurchaseIngredients": "Ingredients",
+  "@smartPurchaseIngredients": {
+    "description": "Section title for ingredient list in smart request"
+  },
+  "smartPurchaseSelectIngredient": "Select ingredient",
+  "@smartPurchaseSelectIngredient": {
+    "description": "Title for food supply picker sheet"
+  },
+  "smartPurchaseSearchIngredients": "Search ingredients",
+  "@smartPurchaseSearchIngredients": {
+    "description": "Search hint for food supply picker"
+  },
+  "smartPurchaseNoIngredients": "No ingredients found",
+  "@smartPurchaseNoIngredients": {
+    "description": "Empty state for food supply picker"
+  },
+  "smartPurchaseBack": "Back",
+  "@smartPurchaseBack": {
+    "description": "Back button in smart request wizard"
+  },
+  "smartPurchaseNext": "Next",
+  "@smartPurchaseNext": {
+    "description": "Next button in smart request wizard"
+  },
+  "smartPurchaseReviewAction": "Review",
+  "@smartPurchaseReviewAction": {
+    "description": "Proceed to review step button"
+  },
+  "smartPurchaseGroupedBySupplier": "Grouped by supplier",
+  "@smartPurchaseGroupedBySupplier": {
+    "description": "Section title for supplier groups on review step"
+  },
+  "smartPurchaseUnmatchedItems": "Items needing supplier",
+  "@smartPurchaseUnmatchedItems": {
+    "description": "Section title for unmatched items"
+  },
+  "smartPurchaseUnmatchedWarning": "Some items have no supplier price. Select a supplier before continuing.",
+  "@smartPurchaseUnmatchedWarning": {
+    "description": "Warning banner for unmatched items"
+  },
+  "smartPurchaseUnmatchedBlocked": "Select a supplier for every item before continuing.",
+  "@smartPurchaseUnmatchedBlocked": {
+    "description": "Error when trying to continue with unmatched items"
+  },
+  "smartPurchaseSelectSupplierManually": "Select supplier",
+  "@smartPurchaseSelectSupplierManually": {
+    "description": "Button to open manual supplier picker"
+  },
+  "smartPurchaseNoSupplierPrices": "No supplier prices available for this item.",
+  "@smartPurchaseNoSupplierPrices": {
+    "description": "Error when supplier-prices endpoint returns empty"
+  },
+  "smartPurchaseNoGroups": "No supplier groups yet. Select suppliers for all items.",
+  "@smartPurchaseNoGroups": {
+    "description": "Empty state when no supplier groups exist"
+  },
+  "smartPurchaseConfirmSummary": "Review and submit",
+  "@smartPurchaseConfirmSummary": {
+    "description": "Title on confirm step"
+  },
+  "smartPurchaseSuggestFailed": "Could not load supplier suggestions. Try again.",
+  "@smartPurchaseSuggestFailed": {
+    "description": "Generic error when suggest API fails"
+  },
+  "smartPurchaseSubmitFailed": "Could not submit smart request. Try again.",
+  "@smartPurchaseSubmitFailed": {
+    "description": "Generic error when batch API fails"
+  },
+  "smartPurchaseSubmitSuccess": "Purchase requests created",
+  "@smartPurchaseSubmitSuccess": {
+    "description": "Snack bar after successful batch submit"
+  },
   "searchStock": "Search supplies",
   "@searchStock": {
     "description": "Search field hint on stock list"

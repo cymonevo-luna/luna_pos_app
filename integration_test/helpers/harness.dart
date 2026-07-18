@@ -15,6 +15,7 @@ import 'package:luna_pos/core/storage/preferences_service.dart';
 import 'package:luna_pos/core/storage/secure_storage_service.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
 import 'package:luna_pos/features/auth/login_page.dart';
+import 'package:luna_pos/features/cashier_balance/data/cashier_balance_repository.dart';
 import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/features/production_request/data/production_request_repository.dart';
@@ -56,6 +57,7 @@ Map<String, dynamic> _loginUserPayload(
   required String userId,
   required String email,
   List<String> additionalRoles = const [],
+  List<String>? features,
 }) =>
     {
       'id': userId,
@@ -66,10 +68,11 @@ Map<String, dynamic> _loginUserPayload(
         role,
         additionalRoles: additionalRoles,
       ),
-      'features': TestAccounts.apiFeaturesFor(
-        role,
-        additionalRoles: additionalRoles,
-      ),
+      'features': features ??
+          TestAccounts.apiFeaturesFor(
+            role,
+            additionalRoles: additionalRoles,
+          ),
     };
 
 Map<String, dynamic> _merchantPayload() => {
@@ -84,6 +87,7 @@ void stubDedicatedAccountLogin(
   String accessToken = 'acc',
   String refreshToken = 'ref',
   List<String> additionalRoles = const [],
+  List<String>? features,
 }) {
   final email = TestAccounts.emailFor(role);
   final resolvedUserId = userId ?? TestAccounts.userIdFor(role);
@@ -103,6 +107,7 @@ void stubDedicatedAccountLogin(
           userId: resolvedUserId,
           email: email,
           additionalRoles: additionalRoles,
+          features: features,
         ),
         'merchant': _merchantPayload(),
       },
@@ -164,6 +169,9 @@ Future<IntegrationTestHarness> setUpIntegrationHarness() async {
     )
     ..registerLazySingleton<ProductionRequestRepository>(
       () => ProductionRequestRepository(locator<ApiClient>()),
+    )
+    ..registerLazySingleton<CashierBalanceRepository>(
+      () => CashierBalanceRepository(locator<ApiClient>()),
     );
 
   return IntegrationTestHarness(
@@ -205,6 +213,7 @@ class IntegrationTestHarness {
   void stubLoginForRole(
     TestAccountRole role, {
     List<String> additionalRoles = const [],
+    List<String>? features,
   }) {
     final userId = TestAccounts.userIdFor(role);
     stubDedicatedAccountLogin(
@@ -212,6 +221,7 @@ class IntegrationTestHarness {
       role,
       userId: userId,
       additionalRoles: additionalRoles,
+      features: features,
     );
     adapter.onGet(
       '/api/v1/users/$userId',
@@ -222,6 +232,7 @@ class IntegrationTestHarness {
           userId: userId,
           email: TestAccounts.emailFor(role),
           additionalRoles: additionalRoles,
+          features: features,
         ),
       }),
     );
@@ -326,6 +337,40 @@ class IntegrationTestHarness {
           'thank_you_note': 'Terima kasih!',
         },
       }),
+    );
+  }
+
+  /// Stubs cashier balance GET endpoints. [balance] may change between calls
+  /// when [balanceOnFetch] is provided (e.g. after checkout refresh).
+  void stubCashierBalance({
+    int balance = 175000,
+    int Function(int fetchCount)? balanceOnFetch,
+    List<Map<String, dynamic>> entries = const [],
+  }) {
+    var balanceFetchCount = 0;
+    adapter.onGet(
+      CashierBalanceRepository.balancePath,
+      (server) => server.replyCallback(200, (_) {
+            balanceFetchCount++;
+            final resolvedBalance =
+                balanceOnFetch?.call(balanceFetchCount) ?? balance;
+            return {
+              'success': true,
+              'data': {
+                'balance': resolvedBalance,
+                'updated_at': '2026-07-18T10:00:00Z',
+              },
+            };
+          }),
+    );
+    adapter.onGet(
+      CashierBalanceRepository.entriesPath,
+      (server) => server.reply(200, {
+        'success': true,
+        'data': entries,
+        'meta': {'page': 1, 'per_page': 20, 'total': entries.length},
+      }),
+      queryParameters: {'page': '1', 'per_page': '20'},
     );
   }
 

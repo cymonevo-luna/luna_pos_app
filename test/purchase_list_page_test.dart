@@ -223,4 +223,10 @@ void main() {
 
     expect(find.text('new-purchase-screen'), findsOneWidget);
   });
+
+  testWidgets('smart request button is visible', (tester) async {
+    await pumpPurchaseList(tester);
+
+    expect(find.byKey(const Key('smart_purchase_entry_button')), findsOneWidget);
+  });
 }

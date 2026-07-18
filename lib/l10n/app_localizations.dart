@@ -1106,6 +1106,138 @@ abstract class AppLocalizations {
   /// **'Created at'**
   String get purchaseCreatedAt;
 
+  /// Title for smart supplier purchase request flow
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Request'**
+  String get smartPurchaseTitle;
+
+  /// Wizard step label for ingredient selection
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients'**
+  String get smartPurchaseStepIngredients;
+
+  /// Wizard step label for supplier review
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get smartPurchaseStepReview;
+
+  /// Wizard step label for final confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get smartPurchaseStepConfirm;
+
+  /// Section title for ingredient list in smart request
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients'**
+  String get smartPurchaseIngredients;
+
+  /// Title for food supply picker sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Select ingredient'**
+  String get smartPurchaseSelectIngredient;
+
+  /// Search hint for food supply picker
+  ///
+  /// In en, this message translates to:
+  /// **'Search ingredients'**
+  String get smartPurchaseSearchIngredients;
+
+  /// Empty state for food supply picker
+  ///
+  /// In en, this message translates to:
+  /// **'No ingredients found'**
+  String get smartPurchaseNoIngredients;
+
+  /// Back button in smart request wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get smartPurchaseBack;
+
+  /// Next button in smart request wizard
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get smartPurchaseNext;
+
+  /// Proceed to review step button
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get smartPurchaseReviewAction;
+
+  /// Section title for supplier groups on review step
+  ///
+  /// In en, this message translates to:
+  /// **'Grouped by supplier'**
+  String get smartPurchaseGroupedBySupplier;
+
+  /// Section title for unmatched items
+  ///
+  /// In en, this message translates to:
+  /// **'Items needing supplier'**
+  String get smartPurchaseUnmatchedItems;
+
+  /// Warning banner for unmatched items
+  ///
+  /// In en, this message translates to:
+  /// **'Some items have no supplier price. Select a supplier before continuing.'**
+  String get smartPurchaseUnmatchedWarning;
+
+  /// Error when trying to continue with unmatched items
+  ///
+  /// In en, this message translates to:
+  /// **'Select a supplier for every item before continuing.'**
+  String get smartPurchaseUnmatchedBlocked;
+
+  /// Button to open manual supplier picker
+  ///
+  /// In en, this message translates to:
+  /// **'Select supplier'**
+  String get smartPurchaseSelectSupplierManually;
+
+  /// Error when supplier-prices endpoint returns empty
+  ///
+  /// In en, this message translates to:
+  /// **'No supplier prices available for this item.'**
+  String get smartPurchaseNoSupplierPrices;
+
+  /// Empty state when no supplier groups exist
+  ///
+  /// In en, this message translates to:
+  /// **'No supplier groups yet. Select suppliers for all items.'**
+  String get smartPurchaseNoGroups;
+
+  /// Title on confirm step
+  ///
+  /// In en, this message translates to:
+  /// **'Review and submit'**
+  String get smartPurchaseConfirmSummary;
+
+  /// Generic error when suggest API fails
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load supplier suggestions. Try again.'**
+  String get smartPurchaseSuggestFailed;
+
+  /// Generic error when batch API fails
+  ///
+  /// In en, this message translates to:
+  /// **'Could not submit smart request. Try again.'**
+  String get smartPurchaseSubmitFailed;
+
+  /// Snack bar after successful batch submit
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase requests created'**
+  String get smartPurchaseSubmitSuccess;
+
   /// Search field hint on stock list
   ///
   /// In en, this message translates to:

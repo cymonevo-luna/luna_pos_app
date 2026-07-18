@@ -11,23 +11,60 @@ class MenuState {
     this.refreshing = false,
     this.error,
     this.data,
+    this.search = '',
   });
 
   final bool loading;
   final bool refreshing;
   final String? error;
   final POSMenusResponse? data;
+  final String search;
 
   bool get isEmpty =>
       data != null &&
       (data!.categories.isEmpty ||
           data!.categories.every((category) => category.menus.isEmpty));
 
+  POSMenusResponse? get filteredData {
+    final loaded = data;
+    if (loaded == null) return null;
+
+    final normalizedQuery = search.trim().toLowerCase();
+    if (normalizedQuery.isEmpty) return loaded;
+
+    final filteredCategories = <POSCategoryGroup>[];
+    for (final category in loaded.categories) {
+      final filteredMenus = category.menus.where((menu) {
+        final title = menu.title.trim().toLowerCase();
+        final description = (menu.description ?? '').trim().toLowerCase();
+        return title.contains(normalizedQuery) ||
+            description.contains(normalizedQuery);
+      }).toList();
+
+      if (filteredMenus.isNotEmpty) {
+        filteredCategories.add(category.copyWith(menus: filteredMenus));
+      }
+    }
+
+    return POSMenusResponse(categories: filteredCategories);
+  }
+
+  bool get hasNoSearchResults {
+    if (search.trim().isEmpty || data == null) return false;
+
+    final filtered = filteredData;
+    if (filtered == null) return false;
+
+    return filtered.categories.isEmpty ||
+        filtered.categories.every((category) => category.menus.isEmpty);
+  }
+
   MenuState copyWith({
     bool? loading,
     bool? refreshing,
     String? error,
     POSMenusResponse? data,
+    String? search,
     bool clearError = false,
   }) {
     return MenuState(
@@ -35,6 +72,7 @@ class MenuState {
       refreshing: refreshing ?? this.refreshing,
       error: clearError ? null : (error ?? this.error),
       data: data ?? this.data,
+      search: search ?? this.search,
     );
   }
 }
@@ -53,6 +91,10 @@ class MenuController extends Notifier<MenuState> {
   Future<void> refresh() => _fetch(refreshing: true);
 
   Future<void> retry() => _fetch(refreshing: false, forceLoading: true);
+
+  void setSearch(String query) {
+    state = state.copyWith(search: query);
+  }
 
   Future<void> _fetch({
     required bool refreshing,

@@ -242,8 +242,14 @@ void main() {
 
     expect(result, isNotNull);
     expect(result!.printSucceeded, isTrue);
+    expect(result.printError, isNull);
     expect(printer.lastPrintedBytes, isNotNull);
     expect(printer.lastPrintedBytes, isNotEmpty);
+    expect(
+      printer.lastPrintedBytes!.length,
+      greaterThan(512),
+      reason: 'multi-item checkout receipt should exceed Bluetooth chunk size',
+    );
     expect(container.read(orderProvider).lines, isEmpty);
   });
 

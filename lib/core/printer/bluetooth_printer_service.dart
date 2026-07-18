@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:print_bluetooth_thermal/print_bluetooth_thermal.dart';
 
@@ -50,8 +51,11 @@ class PrintBluetoothThermalService implements BluetoothPrinterService {
     );
   }
 
+  static const int _writeChunkSize = 512;
+
   late final StreamController<bool> _connectionController;
   bool _isConnected = false;
+  String? _lastConnectedAddress;
 
   @override
   Stream<bool> get connectionStatus => _connectionController.stream;
@@ -113,12 +117,32 @@ class PrintBluetoothThermalService implements BluetoothPrinterService {
 
   @override
   Future<void> connect(String deviceAddress) async {
-    final connected = await PrintBluetoothThermal.connect(
-      macPrinterAddress: deviceAddress,
-    );
-    await _setConnected(connected);
-    if (!connected) {
-      throw BluetoothPrinterException('Could not connect to the printer.');
+    try {
+      final connected = await PrintBluetoothThermal.connect(
+        macPrinterAddress: deviceAddress,
+      );
+      await _setConnected(connected);
+      if (connected) {
+        _lastConnectedAddress = deviceAddress;
+      }
+      if (!connected) {
+        throw BluetoothPrinterException('Could not connect to the printer.');
+      }
+    } on BluetoothPrinterException {
+      rethrow;
+    } on PlatformException catch (error) {
+      final message = error.message?.trim();
+      throw BluetoothPrinterException(
+        message != null && message.isNotEmpty
+            ? message
+            : 'Could not connect to the printer.',
+      );
+    } catch (error) {
+      throw BluetoothPrinterException(
+        error is Exception && '$error'.isNotEmpty
+            ? '$error'
+            : 'Could not connect to the printer.',
+      );
     }
   }
 
@@ -134,16 +158,69 @@ class PrintBluetoothThermalService implements BluetoothPrinterService {
       throw BluetoothPrinterException('Nothing to print.');
     }
 
-    final connected = await PrintBluetoothThermal.connectionStatus;
+    await _ensureConnectedForPrint();
+    await _writeBytesChunked(data);
+  }
+
+  Future<void> _ensureConnectedForPrint() async {
+    var connected = await PrintBluetoothThermal.connectionStatus;
     await _setConnected(connected);
+
+    if (!connected && _lastConnectedAddress != null) {
+      await connect(_lastConnectedAddress!);
+      connected = await PrintBluetoothThermal.connectionStatus;
+      await _setConnected(connected);
+    }
+
     if (!connected) {
       throw BluetoothPrinterException('Printer is not connected.');
     }
+  }
 
-    final success = await PrintBluetoothThermal.writeBytes(data);
-    if (!success) {
-      throw BluetoothPrinterException('Print failed.');
+  Future<void> _writeBytesChunked(List<int> data) async {
+    if (data.length <= _writeChunkSize) {
+      await _writeSingleChunk(data);
+      return;
     }
+
+    for (var offset = 0; offset < data.length; offset += _writeChunkSize) {
+      final end = offset + _writeChunkSize;
+      final chunk = data.sublist(
+        offset,
+        end > data.length ? data.length : end,
+      );
+      await _writeSingleChunk(chunk);
+    }
+  }
+
+  Future<void> _writeSingleChunk(List<int> chunk) async {
+    bool success;
+    try {
+      success = await PrintBluetoothThermal.writeBytes(chunk);
+    } on PlatformException catch (error) {
+      final message = error.message?.trim();
+      throw BluetoothPrinterException(
+        message != null && message.isNotEmpty
+            ? message
+            : 'Print data was rejected by the printer.',
+      );
+    } catch (error) {
+      if (error is BluetoothPrinterException) rethrow;
+      throw BluetoothPrinterException(
+        error is Exception && '$error'.isNotEmpty
+            ? '$error'
+            : 'Print data was rejected by the printer.',
+      );
+    }
+
+    if (success) return;
+
+    final stillConnected = await PrintBluetoothThermal.connectionStatus;
+    await _setConnected(stillConnected);
+    if (!stillConnected) {
+      throw BluetoothPrinterException('Printer is not connected.');
+    }
+    throw BluetoothPrinterException('Print data was rejected by the printer.');
   }
 
   @override

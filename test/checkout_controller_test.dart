@@ -242,6 +242,13 @@ void main() {
 
   test('proceed with print completes sale when printer unavailable', () async {
     seedTwoLineCart();
+    final prefs = locator<PreferencesService>();
+    await prefs.setString(PrefKeys.printerDeviceId, '00:11:22:33:44:55');
+    await prefs.setString(PrefKeys.printerDeviceName, 'Test Printer');
+    printer.dispose();
+    printer = MockBluetoothPrinterService(connectSucceeds: false);
+    locator.unregister<BluetoothPrinterService>();
+    locator.registerSingleton<BluetoothPrinterService>(printer);
 
     final result = await container.read(checkoutProvider.notifier).proceed(
           discountAmount: 0,
@@ -253,6 +260,10 @@ void main() {
     expect(result, isNotNull);
     expect(result!.printSucceeded, isFalse);
     expect(result.printError, isNotNull);
+    expect(
+      result.printError!.toLowerCase(),
+      anyOf(contains('printer'), contains('permission')),
+    );
     expect(printer.lastPrintedBytes, isNull);
     expect(container.read(orderProvider).lines, isEmpty);
     expect(

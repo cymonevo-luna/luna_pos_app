@@ -91,6 +91,6 @@ void main() {
     final result = await service.printReceiptData(sampleReceiptData());
 
     expect(result.succeeded, isFalse);
-    expect(result.error, 'Print failed.');
+    expect(result.error, 'Print data was rejected by the printer.');
   });
 }

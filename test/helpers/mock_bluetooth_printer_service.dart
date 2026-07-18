@@ -22,12 +22,23 @@ class MockBluetoothPrinterService implements BluetoothPrinterService {
       StreamController<bool>.broadcast();
   bool _isConnected = false;
   String? connectedAddress;
+  String? _lastConnectedAddress;
   List<int>? lastPrintedBytes;
   int permissionRequestCount = 0;
   int connectCallCount = 0;
+  int printCallCount = 0;
+  int reconnectBeforePrintCount = 0;
 
   void setDevices(List<BluetoothPrinterDevice> devices) {
     _devices = devices;
+  }
+
+  void simulateConnectionDrop({bool notifyListeners = true}) {
+    _isConnected = false;
+    connectedAddress = null;
+    if (notifyListeners) {
+      _connectionController.add(false);
+    }
   }
 
   @override
@@ -63,12 +74,14 @@ class MockBluetoothPrinterService implements BluetoothPrinterService {
       throw BluetoothPrinterException('Could not connect to the printer.');
     }
     connectedAddress = deviceAddress;
+    _lastConnectedAddress = deviceAddress;
     _isConnected = true;
     _connectionController.add(true);
   }
 
   @override
   Future<void> disconnect() async {
+    _lastConnectedAddress = connectedAddress ?? _lastConnectedAddress;
     connectedAddress = null;
     _isConnected = false;
     _connectionController.add(false);
@@ -76,12 +89,29 @@ class MockBluetoothPrinterService implements BluetoothPrinterService {
 
   @override
   Future<void> printBytes(List<int> data) async {
+    printCallCount++;
+
+    if (data.isEmpty) {
+      throw BluetoothPrinterException('Nothing to print.');
+    }
+
+    if (!_isConnected && _lastConnectedAddress != null && connectSucceeds) {
+      reconnectBeforePrintCount++;
+      await connect(_lastConnectedAddress!);
+    }
+
     if (!_isConnected) {
       throw BluetoothPrinterException('Printer is not connected.');
     }
-    if (!printSucceeds || data.isEmpty) {
-      throw BluetoothPrinterException('Print failed.');
+
+    if (!printSucceeds) {
+      final stillConnected = _isConnected;
+      if (!stillConnected) {
+        throw BluetoothPrinterException('Printer is not connected.');
+      }
+      throw BluetoothPrinterException('Print data was rejected by the printer.');
     }
+
     lastPrintedBytes = List<int>.from(data);
   }
 

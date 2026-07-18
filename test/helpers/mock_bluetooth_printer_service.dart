@@ -9,6 +9,7 @@ class MockBluetoothPrinterService implements BluetoothPrinterService {
     this.permissionGranted = true,
     this.connectSucceeds = true,
     this.printSucceeds = true,
+    this.remainingPrintFailures = 0,
     List<BluetoothPrinterDevice>? devices,
   }) : _devices = devices ?? const [];
 
@@ -16,6 +17,7 @@ class MockBluetoothPrinterService implements BluetoothPrinterService {
   final bool permissionGranted;
   final bool connectSucceeds;
   final bool printSucceeds;
+  int remainingPrintFailures;
   List<BluetoothPrinterDevice> _devices;
 
   final StreamController<bool> _connectionController =
@@ -105,6 +107,15 @@ class MockBluetoothPrinterService implements BluetoothPrinterService {
 
     if (!_isConnected) {
       throw BluetoothPrinterException('Printer is not connected.');
+    }
+
+    if (remainingPrintFailures > 0) {
+      remainingPrintFailures--;
+      final stillConnected = _isConnected;
+      if (!stillConnected) {
+        throw BluetoothPrinterException('Printer is not connected.');
+      }
+      throw BluetoothPrinterException('Print data was rejected by the printer.');
     }
 
     if (!printSucceeds) {

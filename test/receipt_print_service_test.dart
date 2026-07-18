@@ -6,6 +6,7 @@ import 'package:luna_pos/core/printer/bluetooth_printer_service.dart';
 import 'package:luna_pos/core/storage/preferences_service.dart';
 import 'package:luna_pos/features/receipt/models/receipt_data.dart';
 import 'package:luna_pos/features/receipt/models/receipt_line_item.dart';
+import 'package:luna_pos/features/printer/printer_controller.dart';
 import 'package:luna_pos/features/receipt/receipt_print_service.dart';
 
 import 'helpers/mock_bluetooth_printer_service.dart';
@@ -92,5 +93,60 @@ void main() {
 
     expect(result.succeeded, isFalse);
     expect(result.error, 'Print data was rejected by the printer.');
+  });
+
+  test('printBytes reconnects after transient disconnect', () async {
+    final prefs = locator<PreferencesService>();
+    await prefs.setString(PrefKeys.printerDeviceId, '00:11:22:33:44:55');
+    await mockPrinter.connect('00:11:22:33:44:55');
+
+    mockPrinter.simulateConnectionDrop(notifyListeners: false);
+    expect(mockPrinter.isConnected, isFalse);
+
+    final result = await service.printBytes([0x1B, 0x40]);
+
+    expect(result.succeeded, isTrue);
+    expect(result.error, isNull);
+    expect(mockPrinter.reconnectBeforePrintCount, greaterThan(0));
+    expect(mockPrinter.lastPrintedBytes, isNotNull);
+  });
+
+  test('printBytes returns bluetooth off error', () async {
+    mockPrinter.dispose();
+    mockPrinter = MockBluetoothPrinterService(bluetoothEnabled: false);
+    locator.unregister<BluetoothPrinterService>();
+    locator.registerSingleton<BluetoothPrinterService>(mockPrinter);
+    service = ReceiptPrintService();
+
+    final prefs = locator<PreferencesService>();
+    await prefs.setString(PrefKeys.printerDeviceId, '00:11:22:33:44:55');
+
+    final result = await service.printBytes([0x1B, 0x40]);
+
+    expect(result.succeeded, isFalse);
+    expect(result.error, PrinterMessages.bluetoothOff);
+  });
+
+  test('printBytes returns permission denied error', () async {
+    mockPrinter.dispose();
+    mockPrinter = MockBluetoothPrinterService(permissionGranted: false);
+    locator.unregister<BluetoothPrinterService>();
+    locator.registerSingleton<BluetoothPrinterService>(mockPrinter);
+    service = ReceiptPrintService();
+
+    final prefs = locator<PreferencesService>();
+    await prefs.setString(PrefKeys.printerDeviceId, '00:11:22:33:44:55');
+
+    final result = await service.printBytes([0x1B, 0x40]);
+
+    expect(result.succeeded, isFalse);
+    expect(result.error, PrinterMessages.permissionDenied);
+  });
+
+  test('printBytes returns no printer selected error', () async {
+    final result = await service.printBytes([0x1B, 0x40]);
+
+    expect(result.succeeded, isFalse);
+    expect(result.error, PrinterMessages.noPrinterSelected);
   });
 }

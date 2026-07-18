@@ -83,6 +83,7 @@ class CheckoutController extends Notifier<CheckoutState> {
   CheckoutState build() => const CheckoutState();
 
   Future<CheckoutResult?> proceed({
+    required String orderOptionId,
     required int discountAmount,
     required PaymentMethod paymentMethod,
     int? cashTendered,
@@ -130,6 +131,7 @@ class CheckoutController extends Notifier<CheckoutState> {
       }
 
       final request = CreateTransactionRequest(
+        orderOptionId: orderOptionId,
         method: paymentMethod.apiValue,
         items: buildTransactionItems(lines),
         subtotalAmount: subtotalAmount,

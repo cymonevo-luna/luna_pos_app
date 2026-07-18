@@ -6,6 +6,7 @@ part 'transaction.g.dart';
 @freezed
 abstract class CreateTransactionRequest with _$CreateTransactionRequest {
   const factory CreateTransactionRequest({
+    @JsonKey(name: 'order_option_id') required String orderOptionId,
     required String method,
     required List<TransactionItemRequest> items,
     @JsonKey(name: 'subtotal_amount') required int subtotalAmount,

@@ -374,6 +374,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paymentMethodQris => 'QRIS';
 
   @override
+  String get orderOption => 'Order option';
+
+  @override
+  String get noOrderOptions =>
+      'No order options configured. Ask an admin to create one before completing sales.';
+
+  @override
   String get cashier => 'Cashier';
 
   @override

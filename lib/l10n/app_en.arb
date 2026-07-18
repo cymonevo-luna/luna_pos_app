@@ -314,6 +314,14 @@
   "@paymentMethodQris": {
     "description": "Display label for QRIS payment method"
   },
+  "orderOption": "Order option",
+  "@orderOption": {
+    "description": "Order option selector label on checkout"
+  },
+  "noOrderOptions": "No order options configured. Ask an admin to create one before completing sales.",
+  "@noOrderOptions": {
+    "description": "Shown when the merchant has zero POS order options"
+  },
   "cashier": "Cashier",
   "@cashier": {
     "description": "Cashier name label on transaction rows and detail"

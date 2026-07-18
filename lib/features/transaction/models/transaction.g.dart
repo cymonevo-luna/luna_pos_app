@@ -9,6 +9,7 @@ part of 'transaction.dart';
 _CreateTransactionRequest _$CreateTransactionRequestFromJson(
   Map<String, dynamic> json,
 ) => _CreateTransactionRequest(
+  orderOptionId: json['order_option_id'] as String,
   method: json['method'] as String,
   items: (json['items'] as List<dynamic>)
       .map((e) => TransactionItemRequest.fromJson(e as Map<String, dynamic>))
@@ -23,6 +24,7 @@ _CreateTransactionRequest _$CreateTransactionRequestFromJson(
 Map<String, dynamic> _$CreateTransactionRequestToJson(
   _CreateTransactionRequest instance,
 ) => <String, dynamic>{
+  'order_option_id': instance.orderOptionId,
   'method': instance.method,
   'items': instance.items,
   'subtotal_amount': instance.subtotalAmount,

@@ -188,6 +188,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noMenuItemsAvailable => 'No menu items available';
 
   @override
+  String get searchMenu => 'Search menu';
+
+  @override
+  String get noMenuSearchResults => 'No menu items match your search';
+
+  @override
   String get retry => 'Retry';
 
   @override

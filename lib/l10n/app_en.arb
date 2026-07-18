@@ -71,6 +71,14 @@
   "menu": "Menu",
   "refreshMenu": "Refresh menu",
   "noMenuItemsAvailable": "No menu items available",
+  "searchMenu": "Search menu",
+  "@searchMenu": {
+    "description": "Search field hint on menu page"
+  },
+  "noMenuSearchResults": "No menu items match your search",
+  "@noMenuSearchResults": {
+    "description": "Empty state when menu search has no matches"
+  },
   "retry": "Retry",
   "checkout": "Checkout",
   "@checkout": {

@@ -59,6 +59,8 @@
   "menu": "Menu",
   "refreshMenu": "Muat ulang menu",
   "noMenuItemsAvailable": "Tidak ada item menu tersedia",
+  "searchMenu": "Cari menu",
+  "noMenuSearchResults": "Tidak ada menu yang cocok dengan pencarian",
   "retry": "Coba lagi",
   "checkout": "Checkout",
   "payment": "Pembayaran",

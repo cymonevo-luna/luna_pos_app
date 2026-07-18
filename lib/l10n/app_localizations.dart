@@ -452,6 +452,18 @@ abstract class AppLocalizations {
   /// **'No menu items available'**
   String get noMenuItemsAvailable;
 
+  /// Search field hint on menu page
+  ///
+  /// In en, this message translates to:
+  /// **'Search menu'**
+  String get searchMenu;
+
+  /// Empty state when menu search has no matches
+  ///
+  /// In en, this message translates to:
+  /// **'No menu items match your search'**
+  String get noMenuSearchResults;
+
   /// No description provided for @retry.
   ///
   /// In en, this message translates to:

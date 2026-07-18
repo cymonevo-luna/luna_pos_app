@@ -19,6 +19,7 @@ import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/features/menu/models/pos_menu.dart';
 import 'package:luna_pos/features/order/checkout_page.dart';
+import 'package:luna_pos/features/order_option/data/order_option_repository.dart';
 import 'package:luna_pos/features/order/order_controller.dart';
 import 'package:luna_pos/features/receipt/receipt_print_service.dart';
 import 'package:luna_pos/features/store_settings/data/store_settings_repository.dart';
@@ -30,6 +31,7 @@ import 'package:luna_pos/shared/widgets/app_text.dart';
 
 import 'helpers/auth_harness.dart';
 import 'helpers/mock_bluetooth_printer_service.dart';
+import 'helpers/order_option_test_data.dart';
 
 class _FakeAuthController extends AuthController {
   @override
@@ -69,8 +71,15 @@ void main() {
       ..registerLazySingleton<StoreSettingsRepository>(
         () => StoreSettingsRepository(locator<ApiClient>()),
       )
+      ..registerLazySingleton<OrderOptionRepository>(
+        () => OrderOptionRepository(locator<ApiClient>()),
+      )
       ..registerSingleton<BluetoothPrinterService>(MockBluetoothPrinterService())
       ..registerLazySingleton<ReceiptPrintService>(ReceiptPrintService.new);
+    adapter.onGet(
+      '/api/v1/pos/order-options',
+      (server) => server.reply(200, kTestOrderOptionsResponse),
+    );
     container = ProviderContainer(
       overrides: [
         authProvider.overrideWith(_FakeAuthController.new),
@@ -148,6 +157,36 @@ void main() {
 
     await scrollToCashFields(tester);
     expect(find.text('Rp 78.000'), findsWidgets);
+  });
+
+  testWidgets('order option dropdown appears above payment method',
+      (WidgetTester tester) async {
+    seedTwoLineCart();
+
+    await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('order_option_dropdown')), findsOneWidget);
+    expect(find.text('Order option'), findsOneWidget);
+    expect(find.text('Take Away'), findsOneWidget);
+
+    final orderOptionFinder = find.byKey(const Key('order_option_dropdown'));
+    final paymentMethodFinder = find.byKey(const Key('payment_method_dropdown'));
+    expect(
+      tester.getTopLeft(orderOptionFinder).dy,
+      lessThan(tester.getTopLeft(paymentMethodFinder).dy),
+    );
+
+    await tester.tap(find.byKey(const Key('payment_method_dropdown')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('QRIS').last);
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<AppButton>(find.widgetWithText(AppButton, 'Proceed'))
+          .onPressed,
+      isNotNull,
+    );
   });
 
   testWidgets('payment method dropdown appears above proceed button',

@@ -21,6 +21,7 @@ import 'package:luna_pos/features/user/models/user.dart';
 
 import 'helpers/auth_harness.dart';
 import 'helpers/mock_bluetooth_printer_service.dart';
+import 'helpers/order_option_test_data.dart';
 
 class _FakeAuthController extends AuthController {
   @override
@@ -139,6 +140,7 @@ void main() {
     seedTwoLineCart();
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 5000,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 100000,
@@ -148,6 +150,7 @@ void main() {
     expect(result, isNotNull);
     final request = transactionRepository.lastRequest!;
     expect(request.method, 'CASH');
+    expect(request.orderOptionId, kTestOrderOptionId);
     expect(request.subtotalAmount, 78000);
     expect(request.discountAmount, 5000);
     expect(request.amount, 73000);
@@ -163,6 +166,7 @@ void main() {
     seedTwoLineCart();
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.qris,
           printReceipt: false,
@@ -179,6 +183,7 @@ void main() {
     seedTwoLineCart();
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -208,6 +213,7 @@ void main() {
     );
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -227,6 +233,7 @@ void main() {
     await printer.connect('00:11:22:33:44:55');
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -251,6 +258,7 @@ void main() {
     locator.registerSingleton<BluetoothPrinterService>(printer);
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -357,6 +365,7 @@ void main() {
     );
 
     final result = await container.read(checkoutProvider.notifier).proceed(
+          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,

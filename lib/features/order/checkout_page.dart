@@ -8,6 +8,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_tokens.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/widgets.dart';
+import '../order_option/order_option_controller.dart';
 import 'checkout_controller.dart';
 import 'models/order_line_item.dart';
 import 'models/payment_method.dart';
@@ -25,6 +26,14 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   final _cashController = TextEditingController();
   PaymentMethod _paymentMethod = PaymentMethod.cash;
   bool _printReceiptChecked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(
+      () => ref.read(orderOptionProvider.notifier).load(),
+    );
+  }
 
   @override
   void dispose() {
@@ -45,7 +54,12 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   }
 
   Future<void> _proceed(AppLocalizations l10n) async {
+    final orderOptions = ref.read(orderOptionProvider);
+    final selectedOrderOptionId = orderOptions.selectedId;
+    if (selectedOrderOptionId == null) return;
+
     final result = await ref.read(checkoutProvider.notifier).proceed(
+          orderOptionId: selectedOrderOptionId,
           discountAmount: _discountAmount,
           paymentMethod: _paymentMethod,
           cashTendered: _isCashPayment ? _cashTendered : null,
@@ -122,6 +136,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     final l10n = AppLocalizations.of(context);
     final order = ref.watch(orderProvider);
     final checkout = ref.watch(checkoutProvider);
+    final orderOptions = ref.watch(orderOptionProvider);
     final subtotalAmount = order.grandTotal;
     final discountValid = isDiscountValid(
       discountAmount: _discountAmount,
@@ -143,6 +158,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     final canConfirm = order.lines.isNotEmpty &&
         discountValid &&
         sufficient &&
+        orderOptions.canProceed &&
         !checkout.submitting;
 
     ref.listen(checkoutProvider, (previous, next) {
@@ -257,6 +273,47 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                       contentPadding: EdgeInsets.zero,
                       controlAffinity: ListTileControlAffinity.leading,
                     ),
+                    InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: l10n.orderOption,
+                        border: const OutlineInputBorder(),
+                      ),
+                      child: orderOptions.loading
+                          ? const LinearProgressIndicator()
+                          : DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                key: const Key('order_option_dropdown'),
+                                isExpanded: true,
+                                value: orderOptions.selectedId,
+                                hint: Text(l10n.orderOption),
+                                items: orderOptions.options
+                                    .map(
+                                      (option) => DropdownMenuItem(
+                                        value: option.id,
+                                        child: Text(option.name),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: orderOptions.hasOptions
+                                    ? (id) {
+                                        if (id == null) return;
+                                        ref
+                                            .read(orderOptionProvider.notifier)
+                                            .select(id);
+                                      }
+                                    : null,
+                              ),
+                            ),
+                    ),
+                    if (!orderOptions.loading &&
+                        !orderOptions.hasOptions) ...[
+                      const VGap(AppSpacing.sm),
+                      AppText.body(
+                        l10n.noOrderOptions,
+                        color: context.colors.error,
+                      ),
+                    ],
+                    const VGap(AppSpacing.md),
                     InputDecorator(
                       decoration: InputDecoration(
                         labelText: l10n.paymentMethod,

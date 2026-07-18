@@ -800,6 +800,18 @@ abstract class AppLocalizations {
   /// **'QRIS'**
   String get paymentMethodQris;
 
+  /// Order option selector label on checkout
+  ///
+  /// In en, this message translates to:
+  /// **'Order option'**
+  String get orderOption;
+
+  /// Shown when the merchant has zero POS order options
+  ///
+  /// In en, this message translates to:
+  /// **'No order options configured. Ask an admin to create one before completing sales.'**
+  String get noOrderOptions;
+
   /// Cashier name label on transaction rows and detail
   ///
   /// In en, this message translates to:

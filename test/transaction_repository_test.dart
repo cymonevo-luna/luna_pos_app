@@ -7,6 +7,7 @@ import 'package:luna_pos/features/transaction/data/transaction_repository.dart';
 import 'package:luna_pos/features/transaction/models/transaction.dart';
 
 import 'helpers/auth_harness.dart';
+import 'helpers/order_option_test_data.dart';
 
 void main() {
   late DioAdapter adapter;
@@ -37,6 +38,7 @@ void main() {
         },
       }),
       data: {
+        ...kTestOrderOptionIdBodyField,
         'method': 'CASH',
         'items': [
           {
@@ -63,6 +65,7 @@ void main() {
     );
 
     final request = CreateTransactionRequest(
+      orderOptionId: kTestOrderOptionId,
       method: 'CASH',
       items: const [
         TransactionItemRequest(
@@ -111,6 +114,7 @@ void main() {
         },
       }),
       data: {
+        ...kTestOrderOptionIdBodyField,
         'method': 'QRIS',
         'items': [
           {
@@ -128,6 +132,7 @@ void main() {
     );
 
     final request = CreateTransactionRequest(
+      orderOptionId: kTestOrderOptionId,
       method: 'QRIS',
       items: const [
         TransactionItemRequest(

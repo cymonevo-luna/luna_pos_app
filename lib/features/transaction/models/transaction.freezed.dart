@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CreateTransactionRequest {
 
- String get method; List<TransactionItemRequest> get items;@JsonKey(name: 'subtotal_amount') int get subtotalAmount;@JsonKey(name: 'discount_amount') int get discountAmount; int get amount;@JsonKey(name: 'cash_tendered') int? get cashTendered;@JsonKey(name: 'change_amount') int? get changeAmount;
+@JsonKey(name: 'order_option_id') String get orderOptionId; String get method; List<TransactionItemRequest> get items;@JsonKey(name: 'subtotal_amount') int get subtotalAmount;@JsonKey(name: 'discount_amount') int get discountAmount; int get amount;@JsonKey(name: 'cash_tendered') int? get cashTendered;@JsonKey(name: 'change_amount') int? get changeAmount;
 /// Create a copy of CreateTransactionRequest
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $CreateTransactionRequestCopyWith<CreateTransactionRequest> get copyWith => _$Cr
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CreateTransactionRequest&&(identical(other.method, method) || other.method == method)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.subtotalAmount, subtotalAmount) || other.subtotalAmount == subtotalAmount)&&(identical(other.discountAmount, discountAmount) || other.discountAmount == discountAmount)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.cashTendered, cashTendered) || other.cashTendered == cashTendered)&&(identical(other.changeAmount, changeAmount) || other.changeAmount == changeAmount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CreateTransactionRequest&&(identical(other.orderOptionId, orderOptionId) || other.orderOptionId == orderOptionId)&&(identical(other.method, method) || other.method == method)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.subtotalAmount, subtotalAmount) || other.subtotalAmount == subtotalAmount)&&(identical(other.discountAmount, discountAmount) || other.discountAmount == discountAmount)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.cashTendered, cashTendered) || other.cashTendered == cashTendered)&&(identical(other.changeAmount, changeAmount) || other.changeAmount == changeAmount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,method,const DeepCollectionEquality().hash(items),subtotalAmount,discountAmount,amount,cashTendered,changeAmount);
+int get hashCode => Object.hash(runtimeType,orderOptionId,method,const DeepCollectionEquality().hash(items),subtotalAmount,discountAmount,amount,cashTendered,changeAmount);
 
 @override
 String toString() {
-  return 'CreateTransactionRequest(method: $method, items: $items, subtotalAmount: $subtotalAmount, discountAmount: $discountAmount, amount: $amount, cashTendered: $cashTendered, changeAmount: $changeAmount)';
+  return 'CreateTransactionRequest(orderOptionId: $orderOptionId, method: $method, items: $items, subtotalAmount: $subtotalAmount, discountAmount: $discountAmount, amount: $amount, cashTendered: $cashTendered, changeAmount: $changeAmount)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $CreateTransactionRequestCopyWith<$Res>  {
   factory $CreateTransactionRequestCopyWith(CreateTransactionRequest value, $Res Function(CreateTransactionRequest) _then) = _$CreateTransactionRequestCopyWithImpl;
 @useResult
 $Res call({
- String method, List<TransactionItemRequest> items,@JsonKey(name: 'subtotal_amount') int subtotalAmount,@JsonKey(name: 'discount_amount') int discountAmount, int amount,@JsonKey(name: 'cash_tendered') int? cashTendered,@JsonKey(name: 'change_amount') int? changeAmount
+@JsonKey(name: 'order_option_id') String orderOptionId, String method, List<TransactionItemRequest> items,@JsonKey(name: 'subtotal_amount') int subtotalAmount,@JsonKey(name: 'discount_amount') int discountAmount, int amount,@JsonKey(name: 'cash_tendered') int? cashTendered,@JsonKey(name: 'change_amount') int? changeAmount
 });
 
 
@@ -65,9 +65,10 @@ class _$CreateTransactionRequestCopyWithImpl<$Res>
 
 /// Create a copy of CreateTransactionRequest
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? method = null,Object? items = null,Object? subtotalAmount = null,Object? discountAmount = null,Object? amount = null,Object? cashTendered = freezed,Object? changeAmount = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? orderOptionId = null,Object? method = null,Object? items = null,Object? subtotalAmount = null,Object? discountAmount = null,Object? amount = null,Object? cashTendered = freezed,Object? changeAmount = freezed,}) {
   return _then(_self.copyWith(
-method: null == method ? _self.method : method // ignore: cast_nullable_to_non_nullable
+orderOptionId: null == orderOptionId ? _self.orderOptionId : orderOptionId // ignore: cast_nullable_to_non_nullable
+as String,method: null == method ? _self.method : method // ignore: cast_nullable_to_non_nullable
 as String,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
 as List<TransactionItemRequest>,subtotalAmount: null == subtotalAmount ? _self.subtotalAmount : subtotalAmount // ignore: cast_nullable_to_non_nullable
 as int,discountAmount: null == discountAmount ? _self.discountAmount : discountAmount // ignore: cast_nullable_to_non_nullable
@@ -159,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String method,  List<TransactionItemRequest> items, @JsonKey(name: 'subtotal_amount')  int subtotalAmount, @JsonKey(name: 'discount_amount')  int discountAmount,  int amount, @JsonKey(name: 'cash_tendered')  int? cashTendered, @JsonKey(name: 'change_amount')  int? changeAmount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'order_option_id')  String orderOptionId,  String method,  List<TransactionItemRequest> items, @JsonKey(name: 'subtotal_amount')  int subtotalAmount, @JsonKey(name: 'discount_amount')  int discountAmount,  int amount, @JsonKey(name: 'cash_tendered')  int? cashTendered, @JsonKey(name: 'change_amount')  int? changeAmount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CreateTransactionRequest() when $default != null:
-return $default(_that.method,_that.items,_that.subtotalAmount,_that.discountAmount,_that.amount,_that.cashTendered,_that.changeAmount);case _:
+return $default(_that.orderOptionId,_that.method,_that.items,_that.subtotalAmount,_that.discountAmount,_that.amount,_that.cashTendered,_that.changeAmount);case _:
   return orElse();
 
 }
@@ -180,10 +181,10 @@ return $default(_that.method,_that.items,_that.subtotalAmount,_that.discountAmou
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String method,  List<TransactionItemRequest> items, @JsonKey(name: 'subtotal_amount')  int subtotalAmount, @JsonKey(name: 'discount_amount')  int discountAmount,  int amount, @JsonKey(name: 'cash_tendered')  int? cashTendered, @JsonKey(name: 'change_amount')  int? changeAmount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'order_option_id')  String orderOptionId,  String method,  List<TransactionItemRequest> items, @JsonKey(name: 'subtotal_amount')  int subtotalAmount, @JsonKey(name: 'discount_amount')  int discountAmount,  int amount, @JsonKey(name: 'cash_tendered')  int? cashTendered, @JsonKey(name: 'change_amount')  int? changeAmount)  $default,) {final _that = this;
 switch (_that) {
 case _CreateTransactionRequest():
-return $default(_that.method,_that.items,_that.subtotalAmount,_that.discountAmount,_that.amount,_that.cashTendered,_that.changeAmount);case _:
+return $default(_that.orderOptionId,_that.method,_that.items,_that.subtotalAmount,_that.discountAmount,_that.amount,_that.cashTendered,_that.changeAmount);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +201,10 @@ return $default(_that.method,_that.items,_that.subtotalAmount,_that.discountAmou
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String method,  List<TransactionItemRequest> items, @JsonKey(name: 'subtotal_amount')  int subtotalAmount, @JsonKey(name: 'discount_amount')  int discountAmount,  int amount, @JsonKey(name: 'cash_tendered')  int? cashTendered, @JsonKey(name: 'change_amount')  int? changeAmount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'order_option_id')  String orderOptionId,  String method,  List<TransactionItemRequest> items, @JsonKey(name: 'subtotal_amount')  int subtotalAmount, @JsonKey(name: 'discount_amount')  int discountAmount,  int amount, @JsonKey(name: 'cash_tendered')  int? cashTendered, @JsonKey(name: 'change_amount')  int? changeAmount)?  $default,) {final _that = this;
 switch (_that) {
 case _CreateTransactionRequest() when $default != null:
-return $default(_that.method,_that.items,_that.subtotalAmount,_that.discountAmount,_that.amount,_that.cashTendered,_that.changeAmount);case _:
+return $default(_that.orderOptionId,_that.method,_that.items,_that.subtotalAmount,_that.discountAmount,_that.amount,_that.cashTendered,_that.changeAmount);case _:
   return null;
 
 }
@@ -215,9 +216,10 @@ return $default(_that.method,_that.items,_that.subtotalAmount,_that.discountAmou
 @JsonSerializable()
 
 class _CreateTransactionRequest implements CreateTransactionRequest {
-  const _CreateTransactionRequest({required this.method, required final  List<TransactionItemRequest> items, @JsonKey(name: 'subtotal_amount') required this.subtotalAmount, @JsonKey(name: 'discount_amount') this.discountAmount = 0, required this.amount, @JsonKey(name: 'cash_tendered') this.cashTendered, @JsonKey(name: 'change_amount') this.changeAmount}): _items = items;
+  const _CreateTransactionRequest({@JsonKey(name: 'order_option_id') required this.orderOptionId, required this.method, required final  List<TransactionItemRequest> items, @JsonKey(name: 'subtotal_amount') required this.subtotalAmount, @JsonKey(name: 'discount_amount') this.discountAmount = 0, required this.amount, @JsonKey(name: 'cash_tendered') this.cashTendered, @JsonKey(name: 'change_amount') this.changeAmount}): _items = items;
   factory _CreateTransactionRequest.fromJson(Map<String, dynamic> json) => _$CreateTransactionRequestFromJson(json);
 
+@override@JsonKey(name: 'order_option_id') final  String orderOptionId;
 @override final  String method;
  final  List<TransactionItemRequest> _items;
 @override List<TransactionItemRequest> get items {
@@ -245,16 +247,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateTransactionRequest&&(identical(other.method, method) || other.method == method)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.subtotalAmount, subtotalAmount) || other.subtotalAmount == subtotalAmount)&&(identical(other.discountAmount, discountAmount) || other.discountAmount == discountAmount)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.cashTendered, cashTendered) || other.cashTendered == cashTendered)&&(identical(other.changeAmount, changeAmount) || other.changeAmount == changeAmount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateTransactionRequest&&(identical(other.orderOptionId, orderOptionId) || other.orderOptionId == orderOptionId)&&(identical(other.method, method) || other.method == method)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.subtotalAmount, subtotalAmount) || other.subtotalAmount == subtotalAmount)&&(identical(other.discountAmount, discountAmount) || other.discountAmount == discountAmount)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.cashTendered, cashTendered) || other.cashTendered == cashTendered)&&(identical(other.changeAmount, changeAmount) || other.changeAmount == changeAmount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,method,const DeepCollectionEquality().hash(_items),subtotalAmount,discountAmount,amount,cashTendered,changeAmount);
+int get hashCode => Object.hash(runtimeType,orderOptionId,method,const DeepCollectionEquality().hash(_items),subtotalAmount,discountAmount,amount,cashTendered,changeAmount);
 
 @override
 String toString() {
-  return 'CreateTransactionRequest(method: $method, items: $items, subtotalAmount: $subtotalAmount, discountAmount: $discountAmount, amount: $amount, cashTendered: $cashTendered, changeAmount: $changeAmount)';
+  return 'CreateTransactionRequest(orderOptionId: $orderOptionId, method: $method, items: $items, subtotalAmount: $subtotalAmount, discountAmount: $discountAmount, amount: $amount, cashTendered: $cashTendered, changeAmount: $changeAmount)';
 }
 
 
@@ -265,7 +267,7 @@ abstract mixin class _$CreateTransactionRequestCopyWith<$Res> implements $Create
   factory _$CreateTransactionRequestCopyWith(_CreateTransactionRequest value, $Res Function(_CreateTransactionRequest) _then) = __$CreateTransactionRequestCopyWithImpl;
 @override @useResult
 $Res call({
- String method, List<TransactionItemRequest> items,@JsonKey(name: 'subtotal_amount') int subtotalAmount,@JsonKey(name: 'discount_amount') int discountAmount, int amount,@JsonKey(name: 'cash_tendered') int? cashTendered,@JsonKey(name: 'change_amount') int? changeAmount
+@JsonKey(name: 'order_option_id') String orderOptionId, String method, List<TransactionItemRequest> items,@JsonKey(name: 'subtotal_amount') int subtotalAmount,@JsonKey(name: 'discount_amount') int discountAmount, int amount,@JsonKey(name: 'cash_tendered') int? cashTendered,@JsonKey(name: 'change_amount') int? changeAmount
 });
 
 
@@ -282,9 +284,10 @@ class __$CreateTransactionRequestCopyWithImpl<$Res>
 
 /// Create a copy of CreateTransactionRequest
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? method = null,Object? items = null,Object? subtotalAmount = null,Object? discountAmount = null,Object? amount = null,Object? cashTendered = freezed,Object? changeAmount = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? orderOptionId = null,Object? method = null,Object? items = null,Object? subtotalAmount = null,Object? discountAmount = null,Object? amount = null,Object? cashTendered = freezed,Object? changeAmount = freezed,}) {
   return _then(_CreateTransactionRequest(
-method: null == method ? _self.method : method // ignore: cast_nullable_to_non_nullable
+orderOptionId: null == orderOptionId ? _self.orderOptionId : orderOptionId // ignore: cast_nullable_to_non_nullable
+as String,method: null == method ? _self.method : method // ignore: cast_nullable_to_non_nullable
 as String,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
 as List<TransactionItemRequest>,subtotalAmount: null == subtotalAmount ? _self.subtotalAmount : subtotalAmount // ignore: cast_nullable_to_non_nullable
 as int,discountAmount: null == discountAmount ? _self.discountAmount : discountAmount // ignore: cast_nullable_to_non_nullable

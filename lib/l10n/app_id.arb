@@ -117,6 +117,8 @@
   "paymentMethodOffline": "Tunai",
   "paymentMethodCash": "Tunai",
   "paymentMethodQris": "QRIS",
+  "orderOption": "Opsi pesanan",
+  "noOrderOptions": "Belum ada opsi pesanan. Minta admin membuatnya sebelum menyelesaikan penjualan.",
   "cashier": "Kasir",
   "filterByDate": "Filter tanggal",
   "clearDateFilter": "Hapus filter tanggal",

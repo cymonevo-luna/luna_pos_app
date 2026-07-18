@@ -87,6 +87,11 @@ class MainScaffold extends ConsumerWidget {
           label: l10n.recurringExpensesTitle,
         ),
       6 => NavigationDestination(
+          icon: const Icon(Icons.account_balance_wallet_outlined),
+          selectedIcon: const Icon(Icons.account_balance_wallet),
+          label: l10n.cashierBalanceTitle,
+        ),
+      7 => NavigationDestination(
           icon: const Icon(Icons.person_outline),
           selectedIcon: const Icon(Icons.person),
           label: l10n.profile,

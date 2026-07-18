@@ -78,13 +78,15 @@ abstract final class TestAccounts {
             'pos.menu',
             'pos.transactions',
             'pos.production_requests',
+            'pos.cashier_balance',
           ],
         'operational' => const [
             'pos.stock',
             'pos.purchases',
             'pos.recurring_expenses',
+            'pos.cashier_balance',
           ],
-        'manager' => const ['pos.recurring_expenses'],
+        'manager' => const ['pos.recurring_expenses', 'pos.cashier_balance'],
         _ => const <String>[],
       };
 

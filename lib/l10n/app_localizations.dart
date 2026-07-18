@@ -1465,6 +1465,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete'**
   String get delete;
+
+  /// Title for the cashier balance screen and tab
+  ///
+  /// In en, this message translates to:
+  /// **'Cashier Balance'**
+  String get cashierBalanceTitle;
+
+  /// Label for the current cashier balance card
+  ///
+  /// In en, this message translates to:
+  /// **'Current balance'**
+  String get cashierBalanceCurrent;
+
+  /// Section title for cashier balance ledger history
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get cashierBalanceHistory;
+
+  /// Action to add funds to cashier balance
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get cashierBalanceAdd;
+
+  /// Action to deduct funds from cashier balance
+  ///
+  /// In en, this message translates to:
+  /// **'Deduct'**
+  String get cashierBalanceDeduct;
+
+  /// Amount field label on cashier balance adjustment form
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get cashierBalanceAmountLabel;
+
+  /// Purpose field label on cashier balance adjustment form
+  ///
+  /// In en, this message translates to:
+  /// **'Purpose'**
+  String get cashierBalancePurposeLabel;
+
+  /// Validation when cashier balance adjustment amount is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount greater than 0'**
+  String get cashierBalanceAmountInvalid;
+
+  /// SnackBar when cashier balance adjustment succeeds
+  ///
+  /// In en, this message translates to:
+  /// **'Cashier balance updated'**
+  String get cashierBalanceAdjustSuccess;
+
+  /// SnackBar when cashier balance adjustment fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update cashier balance'**
+  String get cashierBalanceAdjustFailed;
+
+  /// Empty state when cashier balance history has no entries
+  ///
+  /// In en, this message translates to:
+  /// **'No balance entries yet'**
+  String get cashierBalanceNoEntries;
+
+  /// Label prefix for the user who requested a balance entry
+  ///
+  /// In en, this message translates to:
+  /// **'Requested by'**
+  String get cashierBalanceRequestedBy;
+
+  /// Label prefix for linked transaction id on a balance entry
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction'**
+  String get cashierBalanceTransaction;
+
+  /// Forbidden message when user lacks cashier balance feature
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have access to cashier balance.'**
+  String get cashierBalanceAccessDenied;
 }
 
 class _AppLocalizationsDelegate

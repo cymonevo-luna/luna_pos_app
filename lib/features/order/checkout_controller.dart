@@ -13,6 +13,7 @@ import '../receipt/models/receipt_line_item.dart';
 import '../receipt/models/transaction_response.dart' as receipt;
 import '../receipt/receipt_print_service.dart';
 import '../store_settings/store_settings_controller.dart';
+import '../cashier_balance/cashier_balance_controller.dart';
 import '../transaction/data/transaction_repository.dart';
 import '../transaction/models/transaction.dart';
 import '../transaction/transaction_mapper.dart';
@@ -182,6 +183,10 @@ class CheckoutController extends Notifier<CheckoutState> {
 
       final response =
           await _transactionRepository.createTransaction(request);
+
+      if (paymentMethod == PaymentMethod.cash) {
+        ref.read(cashierBalanceController.notifier).refresh();
+      }
 
       ref.read(orderProvider.notifier).clear();
       state = state.copyWith(clearSelectedOrderOption: true);

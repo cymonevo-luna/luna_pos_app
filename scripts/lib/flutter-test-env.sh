@@ -45,12 +45,42 @@ resolve_android_sdk() {
 }
 
 kvm_usable() {
+  if [ -n "${LUNA_TEST_KVM_USABLE:-}" ]; then
+    [ "$LUNA_TEST_KVM_USABLE" = 1 ]
+    return
+  fi
   [ -r /dev/kvm ] && [ -w /dev/kvm ]
 }
 
 kvm_group_member() {
+  if [ -n "${LUNA_TEST_KVM_GROUP_MEMBER:-}" ]; then
+    [ "$LUNA_TEST_KVM_GROUP_MEMBER" = 1 ]
+    return
+  fi
   id -nG 2>/dev/null | grep -qw kvm \
     || getent group kvm 2>/dev/null | grep -qE "(^|:)${USER}(,|$)"
+}
+
+# Luna_Test_Lite is x86_64 and requires hardware KVM; software GPU does not satisfy
+# CPU acceleration. Returns non-zero when /dev/kvm is not usable and the user is
+# not in the kvm group (no sg-kvm fallback).
+shared_avd_requires_kvm() {
+  ! require_kvm_for_shared_avd
+}
+
+require_kvm_for_shared_avd() {
+  kvm_usable || kvm_group_member
+}
+
+kvm_required_error_message() {
+  cat <<'EOF'
+EMULATOR_KVM_REQUIRED: Luna_Test_Lite (x86_64) requires hardware KVM acceleration; software rendering is not supported.
+Fix on the host (see .cursor/skills/flutter-testing/SKILL.md — KVM section):
+  sudo usermod -aG kvm "$USER"
+  # log out and back in, then verify:
+  test -w /dev/kvm && echo "KVM ready"
+start-shared-emulator.sh will use 'sg kvm' when you are in the kvm group but this shell has not refreshed groups yet.
+EOF
 }
 
 kvm_status_message() {
@@ -64,9 +94,11 @@ kvm_status_message() {
     echo "start-shared-emulator.sh will use 'sg kvm' as a fallback until then."
     return 1
   fi
-  echo "KVM is not writable for this user (/dev/kvm). Emulators will be slow."
-  echo "Add your user to the kvm group, then log out and back in:"
+  echo "KVM is not available (/dev/kvm). Device/native tests are blocked."
+  echo "Luna_Test_Lite requires hardware acceleration; see .cursor/skills/flutter-testing/SKILL.md (KVM section):"
   echo "  sudo usermod -aG kvm \"\$USER\""
+  echo "  # log out and back in, then verify:"
+  echo "  test -w /dev/kvm && echo \"KVM ready\""
   return 1
 }
 

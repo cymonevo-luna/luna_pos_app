@@ -112,8 +112,9 @@ Check status: `systemctl --user status luna-shared-emulator.service`
 
 ## KVM (slow emulator fix)
 
-If `ensure-flutter-test-env.sh` warns that KVM is unavailable, emulators run in
-software mode and may ANR. Fix on the host once:
+If `ensure-flutter-test-env.sh` reports that KVM is unavailable, device/native tests
+are blocked — `Luna_Test_Lite` (x86_64) cannot start without hardware acceleration.
+Fix on the host once:
 
 ```bash
 sudo usermod -aG kvm "$USER"

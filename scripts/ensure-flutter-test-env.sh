@@ -49,6 +49,15 @@ report_emulators() {
   return 1
 }
 
+require_kvm_for_device_tests() {
+  if require_kvm_for_shared_avd; then
+    return 0
+  fi
+  kvm_status_message >&2 || true
+  FAIL=1
+  return 1
+}
+
 print_exports() {
   cat <<EOF
 export ANDROID_HOME='$ANDROID_HOME'
@@ -73,6 +82,7 @@ case "$MODE" in
   --check-device)
     require_flutter
     require_android_sdk
+    require_kvm_for_device_tests
     report_emulators || FAIL=1
     exit "$FAIL"
     ;;
@@ -85,7 +95,9 @@ case "$MODE" in
     report_emulators || true
     if [ "$FAIL" -eq 0 ]; then
       _flutter_test_env_log "VM tests: ready (flutter test test/integration/)"
-      if report_emulators >/dev/null 2>&1; then
+      if ! require_kvm_for_shared_avd; then
+        _flutter_test_env_log "Device/native tests: BLOCKED — KVM required for Luna_Test_Lite (x86_64)"
+      elif report_emulators >/dev/null 2>&1; then
         _flutter_test_env_log "Device tests: emulator already running"
       else
         _flutter_test_env_log "Device tests: run scripts/start-shared-emulator.sh first"

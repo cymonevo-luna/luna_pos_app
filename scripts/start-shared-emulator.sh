@@ -64,10 +64,9 @@ if ! "$(
   exit 1
 fi
 
-gpu_flag="-gpu auto"
-if ! kvm_usable && ! kvm_group_member; then
-  gpu_flag="-gpu swiftshader_indirect"
-  _flutter_test_env_log "KVM unavailable; starting emulator with software rendering (slow)."
+if ! require_kvm_for_shared_avd; then
+  kvm_required_error_message >&2
+  exit 2
 fi
 
 _flutter_test_env_log "Starting shared emulator AVD=$SHARED_AVD (${SHARED_EMULATOR_CORES} core, ${SHARED_EMULATOR_MEMORY_MB} MB) ..."
@@ -81,7 +80,7 @@ run_with_kvm "$(
   -no-window \
   -no-boot-anim \
   -no-snapshot-save \
-  $gpu_flag \
+  -gpu auto \
   >/dev/null 2>&1 &
 
 emu_pid=$!

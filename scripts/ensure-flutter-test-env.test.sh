@@ -38,6 +38,8 @@ export PATH="$WORK/bin:$PATH"
 export ANDROID_HOME="$WORK/fake-sdk"
 export ANDROID_SDK_ROOT="$WORK/fake-sdk"
 export FLUTTER_BIN=flutter
+export LUNA_TEST_KVM_USABLE=1
+export LUNA_TEST_KVM_GROUP_MEMBER=0
 
 bash "$ENSURE" --check-vm >/dev/null
 bash "$ENSURE" --check-device >/dev/null
@@ -51,5 +53,16 @@ source "$LIB"
 
 serial="$(pick_running_emulator_serial)"
 [ "$serial" = "emulator-5554" ] || { echo "FAIL: expected emulator-5554 got $serial"; exit 1; }
+
+export LUNA_TEST_KVM_USABLE=0
+export LUNA_TEST_KVM_GROUP_MEMBER=0
+set +e
+check_device_output="$(bash "$ENSURE" --check-device 2>&1)"
+check_device_status=$?
+set -e
+[ "$check_device_status" -ne 0 ] \
+  || { echo "FAIL: --check-device should fail without KVM"; exit 1; }
+echo "$check_device_output" | grep -Fq 'KVM' \
+  || { echo "FAIL: --check-device should mention KVM when unavailable"; exit 1; }
 
 echo "PASS ensure-flutter-test-env.test.sh"

@@ -107,6 +107,7 @@
   "printReceipt": "Cetak struk",
   "printAgain": "Cetak ulang",
   "printFailedWarning": "Struk tidak dapat dicetak. Anda dapat mencoba lagi atau melanjutkan.",
+  "receiptPrinted": "Struk berhasil dicetak",
   "invalidDiscount": "Diskon tidak boleh melebihi subtotal",
   "transactionIdLabel": "ID Transaksi: {id}",
   "transactionHistory": "Riwayat",

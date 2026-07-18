@@ -272,6 +272,10 @@
   "@printFailedWarning": {
     "description": "Warning when sale succeeded but printing failed"
   },
+  "receiptPrinted": "Receipt printed",
+  "@receiptPrinted": {
+    "description": "Confirmation when a receipt was printed successfully"
+  },
   "invalidDiscount": "Discount cannot exceed subtotal",
   "@invalidDiscount": {
     "description": "Validation error for discount input"

@@ -345,6 +345,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Receipt could not be printed. You can retry or continue.';
 
   @override
+  String get receiptPrinted => 'Receipt printed';
+
+  @override
   String get invalidDiscount => 'Discount cannot exceed subtotal';
 
   @override

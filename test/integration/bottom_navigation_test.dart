@@ -48,6 +48,7 @@ void main() {
       expect(find.text(l10n.menu), findsWidgets);
       expect(find.text(l10n.transactionHistory), findsWidgets);
       expect(find.text(l10n.deliveries), findsWidgets);
+      expect(find.text(l10n.cashierBalanceTitle), findsWidgets);
       expect(find.text(l10n.profile), findsWidgets);
     });
 

@@ -10,6 +10,7 @@ import 'package:luna_pos/core/network/api_exception.dart';
 import 'package:luna_pos/core/printer/bluetooth_printer_service.dart';
 import 'package:luna_pos/core/storage/preferences_service.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
+import 'package:luna_pos/features/cashier_balance/cashier_balance_controller.dart';
 import 'package:luna_pos/features/menu/models/pos_menu.dart';
 import 'package:luna_pos/features/order/checkout_controller.dart';
 import 'package:luna_pos/features/order/models/payment_method.dart';
@@ -65,6 +66,24 @@ class _RecordingTransactionRepository extends TransactionRepository {
   }
 }
 
+class _RefreshCallRecorder {
+  int count = 0;
+}
+
+class _RecordingCashierBalanceController extends CashierBalanceController {
+  _RecordingCashierBalanceController(this._recorder);
+
+  final _RefreshCallRecorder _recorder;
+
+  @override
+  CashierBalanceState build() => const CashierBalanceState();
+
+  @override
+  Future<void> refresh() async {
+    _recorder.count++;
+  }
+}
+
 class _ThrowingTransactionRepository extends TransactionRepository {
   _ThrowingTransactionRepository(
     super.api, {
@@ -88,6 +107,7 @@ void main() {
   late DioAdapter adapter;
   late MockBluetoothPrinterService printer;
   late _RecordingTransactionRepository transactionRepository;
+  late _RefreshCallRecorder refreshRecorder;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
@@ -127,9 +147,13 @@ void main() {
     );
     stubOrderOptions(adapter);
 
+    refreshRecorder = _RefreshCallRecorder();
     container = ProviderContainer(
       overrides: [
         authProvider.overrideWith(_FakeAuthController.new),
+        cashierBalanceController.overrideWith(
+          () => _RecordingCashierBalanceController(refreshRecorder),
+        ),
       ],
     );
   });
@@ -590,5 +614,69 @@ void main() {
     expect(error, contains('is required'));
     expect(container.read(orderProvider).lines, isNotEmpty);
     expect(printer.lastPrintedBytes, isNull);
+  });
+
+  test('cash checkout triggers cashier balance refresh', () async {
+    seedTwoLineCart();
+    await prepareOrderOptionSelection();
+
+    final result = await container.read(checkoutProvider.notifier).proceed(
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.cash,
+          cashTendered: 80000,
+          printReceipt: false,
+        );
+
+    expect(result, isNotNull);
+    expect(refreshRecorder.count, 1);
+  });
+
+  test('qris checkout does not refresh cashier balance', () async {
+    seedTwoLineCart();
+    await prepareOrderOptionSelection();
+
+    final result = await container.read(checkoutProvider.notifier).proceed(
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.qris,
+          printReceipt: false,
+        );
+
+    expect(result, isNotNull);
+    expect(refreshRecorder.count, 0);
+  });
+
+  test('failed cash checkout does not refresh cashier balance', () async {
+    seedTwoLineCart();
+    await prepareOrderOptionSelection();
+    locator.unregister<TransactionRepository>();
+    locator.registerSingleton<TransactionRepository>(
+      _ThrowingTransactionRepository(
+        locator<ApiClient>(),
+        exception: const ApiException(
+          type: ApiErrorType.unknown,
+          message: 'Something went wrong.',
+          statusCode: 422,
+          data: {
+            'error': {
+              'message': 'Insufficient packaging stock for Take Away.',
+              'fields': {
+                'order_option_id': 'Insufficient packaging stock for Take Away.',
+              },
+            },
+          },
+        ),
+      ),
+    );
+
+    final result = await container.read(checkoutProvider.notifier).proceed(
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.cash,
+          cashTendered: 80000,
+          printReceipt: false,
+        );
+
+    expect(result, isNull);
+    expect(refreshRecorder.count, 0);
+    expect(container.read(orderProvider).lines, isNotEmpty);
   });
 }

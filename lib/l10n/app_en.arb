@@ -871,5 +871,61 @@
   "delete": "Delete",
   "@delete": {
     "description": "Delete button label"
+  },
+  "cashierBalanceTitle": "Cashier Balance",
+  "@cashierBalanceTitle": {
+    "description": "Title for the cashier balance screen and tab"
+  },
+  "cashierBalanceCurrent": "Current balance",
+  "@cashierBalanceCurrent": {
+    "description": "Label for the current cashier balance card"
+  },
+  "cashierBalanceHistory": "History",
+  "@cashierBalanceHistory": {
+    "description": "Section title for cashier balance ledger history"
+  },
+  "cashierBalanceAdd": "Add",
+  "@cashierBalanceAdd": {
+    "description": "Action to add funds to cashier balance"
+  },
+  "cashierBalanceDeduct": "Deduct",
+  "@cashierBalanceDeduct": {
+    "description": "Action to deduct funds from cashier balance"
+  },
+  "cashierBalanceAmountLabel": "Amount",
+  "@cashierBalanceAmountLabel": {
+    "description": "Amount field label on cashier balance adjustment form"
+  },
+  "cashierBalancePurposeLabel": "Purpose",
+  "@cashierBalancePurposeLabel": {
+    "description": "Purpose field label on cashier balance adjustment form"
+  },
+  "cashierBalanceAmountInvalid": "Enter an amount greater than 0",
+  "@cashierBalanceAmountInvalid": {
+    "description": "Validation when cashier balance adjustment amount is invalid"
+  },
+  "cashierBalanceAdjustSuccess": "Cashier balance updated",
+  "@cashierBalanceAdjustSuccess": {
+    "description": "SnackBar when cashier balance adjustment succeeds"
+  },
+  "cashierBalanceAdjustFailed": "Failed to update cashier balance",
+  "@cashierBalanceAdjustFailed": {
+    "description": "SnackBar when cashier balance adjustment fails"
+  },
+  "cashierBalanceNoEntries": "No balance entries yet",
+  "@cashierBalanceNoEntries": {
+    "description": "Empty state when cashier balance history has no entries"
+  },
+  "cashierBalanceRequestedBy": "Requested by",
+  "@cashierBalanceRequestedBy": {
+    "description": "Label prefix for the user who requested a balance entry"
+  },
+  "cashierBalanceTransaction": "Transaction",
+  "@cashierBalanceTransaction": {
+    "description": "Label prefix for linked transaction id on a balance entry"
+  },
+  "cashierBalanceAccessDenied": "You do not have access to cashier balance.",
+  "@cashierBalanceAccessDenied": {
+    "description": "Forbidden message when user lacks cashier balance feature"
   }
 }

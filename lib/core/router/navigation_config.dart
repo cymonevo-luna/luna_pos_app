@@ -10,7 +10,8 @@ enum ShellBranch {
   stock(3),
   purchases(4),
   recurringExpenses(5),
-  profile(6);
+  cashierBalance(6),
+  profile(7);
 
   const ShellBranch(this.branchIndex);
   final int branchIndex;
@@ -28,6 +29,10 @@ final _defaultRoutePriority = <({String feature, String route})>[
   (
     feature: PosFeatures.recurringExpenses,
     route: AppRoute.recurringExpenses.path,
+  ),
+  (
+    feature: PosFeatures.cashierBalance,
+    route: AppRoute.cashierBalance.path,
   ),
 ];
 
@@ -56,7 +61,8 @@ bool isCashierRoute(String location) {
       _matchesPrefix(
         location,
         AppRoute.productionRequestDetail.path.split(':').first,
-      );
+      ) ||
+      _matchesPrefix(location, AppRoute.cashierBalance.path);
 }
 
 bool isOperationalRoute(String location) {
@@ -93,6 +99,9 @@ String? requiredFeatureForLocation(String location) {
   if (_matchesPrefix(location, AppRoute.recurringExpenses.path)) {
     return PosFeatures.recurringExpenses;
   }
+  if (_matchesPrefix(location, AppRoute.cashierBalance.path)) {
+    return PosFeatures.cashierBalance;
+  }
   if (location == AppRoute.cart.path || location == AppRoute.checkout.path) {
     return PosFeatures.menu;
   }
@@ -121,6 +130,9 @@ List<int> visibleShellBranches(User? user) {
   }
   if (user.hasFeature(PosFeatures.recurringExpenses)) {
     branches.add(ShellBranch.recurringExpenses.branchIndex);
+  }
+  if (user.hasFeature(PosFeatures.cashierBalance)) {
+    branches.add(ShellBranch.cashierBalance.branchIndex);
   }
   branches.add(ShellBranch.profile.branchIndex);
   return branches;

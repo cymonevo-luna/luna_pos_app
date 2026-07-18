@@ -817,4 +817,47 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get delete => 'Hapus';
+
+  @override
+  String get cashierBalanceTitle => 'Saldo Kasir';
+
+  @override
+  String get cashierBalanceCurrent => 'Saldo saat ini';
+
+  @override
+  String get cashierBalanceHistory => 'Riwayat';
+
+  @override
+  String get cashierBalanceAdd => 'Tambah';
+
+  @override
+  String get cashierBalanceDeduct => 'Kurangi';
+
+  @override
+  String get cashierBalanceAmountLabel => 'Jumlah';
+
+  @override
+  String get cashierBalancePurposeLabel => 'Keperluan';
+
+  @override
+  String get cashierBalanceAmountInvalid => 'Masukkan jumlah lebih dari 0';
+
+  @override
+  String get cashierBalanceAdjustSuccess => 'Saldo kasir diperbarui';
+
+  @override
+  String get cashierBalanceAdjustFailed => 'Gagal memperbarui saldo kasir';
+
+  @override
+  String get cashierBalanceNoEntries => 'Belum ada entri saldo';
+
+  @override
+  String get cashierBalanceRequestedBy => 'Diminta oleh';
+
+  @override
+  String get cashierBalanceTransaction => 'Transaksi';
+
+  @override
+  String get cashierBalanceAccessDenied =>
+      'Anda tidak memiliki akses ke saldo kasir.';
 }

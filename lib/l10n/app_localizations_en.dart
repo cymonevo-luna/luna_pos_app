@@ -816,4 +816,47 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get delete => 'Delete';
+
+  @override
+  String get cashierBalanceTitle => 'Cashier Balance';
+
+  @override
+  String get cashierBalanceCurrent => 'Current balance';
+
+  @override
+  String get cashierBalanceHistory => 'History';
+
+  @override
+  String get cashierBalanceAdd => 'Add';
+
+  @override
+  String get cashierBalanceDeduct => 'Deduct';
+
+  @override
+  String get cashierBalanceAmountLabel => 'Amount';
+
+  @override
+  String get cashierBalancePurposeLabel => 'Purpose';
+
+  @override
+  String get cashierBalanceAmountInvalid => 'Enter an amount greater than 0';
+
+  @override
+  String get cashierBalanceAdjustSuccess => 'Cashier balance updated';
+
+  @override
+  String get cashierBalanceAdjustFailed => 'Failed to update cashier balance';
+
+  @override
+  String get cashierBalanceNoEntries => 'No balance entries yet';
+
+  @override
+  String get cashierBalanceRequestedBy => 'Requested by';
+
+  @override
+  String get cashierBalanceTransaction => 'Transaction';
+
+  @override
+  String get cashierBalanceAccessDenied =>
+      'You do not have access to cashier balance.';
 }

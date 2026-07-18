@@ -249,5 +249,19 @@
   "recurringExpenseStaffSalaryBadge": "Gaji staf",
   "recurringExpenseManagedByStaffSalary": "Pengeluaran berulang ini dikelola oleh gaji staf.",
   "cancel": "Batal",
-  "delete": "Hapus"
+  "delete": "Hapus",
+  "cashierBalanceTitle": "Saldo Kasir",
+  "cashierBalanceCurrent": "Saldo saat ini",
+  "cashierBalanceHistory": "Riwayat",
+  "cashierBalanceAdd": "Tambah",
+  "cashierBalanceDeduct": "Kurangi",
+  "cashierBalanceAmountLabel": "Jumlah",
+  "cashierBalancePurposeLabel": "Keperluan",
+  "cashierBalanceAmountInvalid": "Masukkan jumlah lebih dari 0",
+  "cashierBalanceAdjustSuccess": "Saldo kasir diperbarui",
+  "cashierBalanceAdjustFailed": "Gagal memperbarui saldo kasir",
+  "cashierBalanceNoEntries": "Belum ada entri saldo",
+  "cashierBalanceRequestedBy": "Diminta oleh",
+  "cashierBalanceTransaction": "Transaksi",
+  "cashierBalanceAccessDenied": "Anda tidak memiliki akses ke saldo kasir."
 }

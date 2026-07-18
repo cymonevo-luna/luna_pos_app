@@ -16,6 +16,7 @@ import '../../features/production_request/production_request_list_page.dart';
 import '../../features/purchase/purchase_create_page.dart';
 import '../../features/purchase/purchase_detail_page.dart';
 import '../../features/purchase/purchase_list_page.dart';
+import '../../features/cashier_balance/cashier_balance_page.dart';
 import '../../features/purchase/smart_purchase_request_page.dart';
 import '../../features/recurring_expense/recurring_expense_form_sheet.dart';
 import '../../features/recurring_expense/recurring_expense_list_page.dart';
@@ -48,6 +49,7 @@ enum AppRoute {
   recurringExpenses('/recurring-expenses'),
   recurringExpensesNew('/recurring-expenses/new'),
   recurringExpensesEdit('/recurring-expenses/:id/edit'),
+  cashierBalance('/cashier-balance'),
   profile('/profile'),
   settings('/settings'),
   details('/details'),
@@ -292,6 +294,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                     ),
                   ),
                 ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoute.cashierBalance.path,
+                name: AppRoute.cashierBalance.name,
+                builder: (context, state) => const CashierBalancePage(),
               ),
             ],
           ),

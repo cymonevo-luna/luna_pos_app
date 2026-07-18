@@ -70,7 +70,7 @@ class _PosAccessDenied implements Exception {
 /// (`/api/v1/auth/*` + `/api/v1/users/{id}`). Restores any saved session on
 /// startup and exposes login / register / logout actions.
 ///
-/// Only users with the `cashier` or `operational` role may establish a session.
+/// Only users with at least one `pos.*` feature may establish a session.
 class AuthController extends Notifier<AuthState> {
   SecureStorageService get _secure => locator<SecureStorageService>();
   ApiClient get _api => locator<ApiClient>();

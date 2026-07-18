@@ -14,6 +14,9 @@ _User _$UserFromJson(Map<String, dynamic> json) => _User(
   roles:
       (json['roles'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const <String>[],
+  features:
+      (json['features'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+      const <String>[],
   avatarUrl: json['avatarUrl'] as String?,
 );
 
@@ -23,5 +26,6 @@ Map<String, dynamic> _$UserToJson(_User instance) => <String, dynamic>{
   'email': instance.email,
   'merchant_id': instance.merchantId,
   'roles': instance.roles,
+  'features': instance.features,
   'avatarUrl': instance.avatarUrl,
 };

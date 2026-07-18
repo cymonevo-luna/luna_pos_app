@@ -184,6 +184,42 @@ void main() {
       expect(printer.lastPrintedBytes, isNotEmpty);
     });
 
+    test(
+        'retryPrint recovers after transient print failure while sale completes',
+        () async {
+      printer.dispose();
+      printer = MockBluetoothPrinterService(remainingPrintFailures: 1);
+      locator.unregister<BluetoothPrinterService>();
+      locator.registerSingleton<BluetoothPrinterService>(printer);
+
+      final prefs = locator<PreferencesService>();
+      await prefs.setString(PrefKeys.printerDeviceId, '00:11:22:33:44:55');
+      await printer.connect('00:11:22:33:44:55');
+
+      seedTwoLineCart();
+
+      final result = await container.read(checkoutProvider.notifier).proceed(
+            discountAmount: 5000,
+            paymentMethod: PaymentMethod.cash,
+            cashTendered: 100000,
+            printReceipt: true,
+          );
+
+      expect(result, isNotNull);
+      expect(result!.transactionId, 'tx-e2e-1');
+      expect(result.printSucceeded, isFalse);
+      expect(result.printError, isNotNull);
+      expect(container.read(orderProvider).lines, isEmpty);
+      expect(container.read(checkoutProvider).lastReceiptBytes, isNotNull);
+
+      final retryResult =
+          await container.read(checkoutProvider.notifier).retryPrint();
+
+      expect(retryResult.succeeded, isTrue);
+      expect(retryResult.error, isNull);
+      expect(printer.lastPrintedBytes, isNotEmpty);
+    });
+
     test('proceed without print skips printer and clears cart', () async {
       seedTwoLineCart();
 

@@ -2,6 +2,7 @@ import '../../../core/network/api_client.dart';
 import '../../../core/network/api_envelope.dart';
 import '../../../core/network/paginated_response.dart';
 import '../models/food_supply.dart';
+import '../models/food_supply_supplier_price.dart';
 
 class FoodSupplyRepository {
   FoodSupplyRepository(this._api);
@@ -32,6 +33,24 @@ class FoodSupplyRepository {
         raw,
         FoodSupply.fromJson,
       ),
+    );
+  }
+
+  Future<List<FoodSupplySupplierPrice>> fetchSupplierPrices(String id) {
+    return _api.get<List<FoodSupplySupplierPrice>>(
+      '$listPath/$id/supplier-prices',
+      decoder: (raw) {
+        final map = (raw as Map).cast<String, dynamic>();
+        final data = map['data'];
+        if (data is! List<dynamic>) return const <FoodSupplySupplierPrice>[];
+        return data
+            .map(
+              (item) => FoodSupplySupplierPrice.fromJson(
+                (item as Map<String, dynamic>),
+              ),
+            )
+            .toList();
+      },
     );
   }
 

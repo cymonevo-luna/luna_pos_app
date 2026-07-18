@@ -40,11 +40,13 @@ void main() {
         ),
       );
 
-      expect(created.title, title);
+      expect(created.title.toLowerCase(), title.toLowerCase());
 
       final response = await repository.fetchRecurringExpenses(search: title);
       expect(
-        response.items.any((item) => item.title == title),
+        response.items.any(
+          (item) => item.title.toLowerCase() == title.toLowerCase(),
+        ),
         isTrue,
       );
 

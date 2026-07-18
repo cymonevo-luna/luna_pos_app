@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 import 'package:luna_pos/core/config/app_config.dart';
 import 'package:luna_pos/core/di/locator.dart';
@@ -15,10 +17,24 @@ import 'package:luna_pos/features/purchase/models/purchase_request.dart';
 import 'package:luna_pos/features/purchase/purchase_detail_page.dart';
 import 'package:luna_pos/l10n/app_localizations.dart';
 import 'package:luna_pos/l10n/app_localizations_en.dart';
+import 'package:luna_pos/shared/widgets/widgets.dart';
 import 'package:luna_pos/testing/test_accounts.dart';
 
 import 'helpers/auth_harness.dart';
 import 'helpers/purchase_test_fakes.dart';
+
+class _MockUrlLauncher extends Fake
+    with MockPlatformInterfaceMixin
+    implements UrlLauncherPlatform {
+  bool launchCalled = false;
+
+  @override
+  Future<bool> launchUrl(String url, LaunchOptions options) async {
+    launchCalled = true;
+    return true;
+  }
+
+}
 
 void main() {
   late DioAdapter adapter;
@@ -32,12 +48,13 @@ void main() {
     List<Map<String, dynamic>>? items,
     String? paidProofUrl,
     String? deliveredProofUrl,
+    Object? supplierContactInfo = '081234567890',
   }) =>
       {
         'id': id,
         'supplier_id': 'sup-1',
         'supplier_name': 'Supplier A',
-        'supplier_contact_info': '081234567890',
+        'supplier_contact_info': ?supplierContactInfo,
         'status': switch (status) {
           PurchaseRequestStatus.pending => 'PENDING',
           PurchaseRequestStatus.requested => 'REQUESTED',
@@ -71,7 +88,16 @@ void main() {
         'delivered_proof_url': ?deliveredProofUrl,
       };
 
+  late _MockUrlLauncher mockUrlLauncher;
+  late AppLocalizationsEn l10n;
+
+  Finder contactSupplierButton() =>
+      find.widgetWithText(AppButton, l10n.purchaseContactSupplier);
+
   setUp(() async {
+    mockUrlLauncher = _MockUrlLauncher();
+    UrlLauncherPlatform.instance = mockUrlLauncher;
+    l10n = AppLocalizationsEn();
     SharedPreferences.setMockInitialValues({});
     await AppConfig.load();
     await locator.reset();
@@ -123,6 +149,63 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
     }
   }
+
+  testWidgets('shows disabled contact button without supplier phone',
+      (tester) async {
+    await pumpDetail(
+      tester,
+      detail: detailPayload(supplierContactInfo: null),
+    );
+
+    expect(contactSupplierButton(), findsOneWidget);
+    expect(
+      tester.widget<AppButton>(contactSupplierButton()).onPressed,
+      isNull,
+    );
+
+    await tester.tap(contactSupplierButton());
+    await tester.pumpAndSettle();
+
+    expect(mockUrlLauncher.launchCalled, isFalse);
+  });
+
+  testWidgets('enables contact button with valid supplier phone',
+      (tester) async {
+    await pumpDetail(
+      tester,
+      detail: detailPayload(supplierContactInfo: '081234567890'),
+    );
+
+    expect(contactSupplierButton(), findsOneWidget);
+    expect(
+      tester.widget<AppButton>(contactSupplierButton()).onPressed,
+      isNotNull,
+    );
+
+    await tester.tap(contactSupplierButton());
+    await tester.pumpAndSettle();
+
+    expect(mockUrlLauncher.launchCalled, isTrue);
+  });
+
+  testWidgets('disables contact button for non-phone supplier contact',
+      (tester) async {
+    await pumpDetail(
+      tester,
+      detail: detailPayload(supplierContactInfo: 'supplier@example.com'),
+    );
+
+    expect(contactSupplierButton(), findsOneWidget);
+    expect(
+      tester.widget<AppButton>(contactSupplierButton()).onPressed,
+      isNull,
+    );
+
+    await tester.tap(contactSupplierButton());
+    await tester.pumpAndSettle();
+
+    expect(mockUrlLauncher.launchCalled, isFalse);
+  });
 
   testWidgets('detail renders line items', (tester) async {
     await pumpDetail(tester);

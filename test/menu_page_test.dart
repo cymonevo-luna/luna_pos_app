@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Icons, Offset, RenderBox, Size;
+import 'package:flutter/material.dart' show Icons, Key, Offset, RenderBox, Size, TextField;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
@@ -202,6 +202,30 @@ void main() {
     await pumpApp(tester);
   }
 
+  Finder menuItemCardWithTitle(String title) {
+    return find.descendant(
+      of: find.byType(MenuItemCard),
+      matching: find.text(title),
+    );
+  }
+
+  Future<void> tapMenuItemCard(WidgetTester tester, String title) async {
+    final target = menuItemCardWithTitle(title);
+    await tester.ensureVisible(target);
+    await tester.tap(target);
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> clearMenuSearch(WidgetTester tester) async {
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(const Key('menu_search_field')),
+        matching: find.byIcon(Icons.clear),
+      ),
+    );
+    await tester.pumpAndSettle();
+  }
+
   Map<String, dynamic> sampleMenusResponse() => {
     'success': true,
     'data': {
@@ -254,20 +278,15 @@ void main() {
   testWidgets('menu page renders cart bottom bar with total', (
     WidgetTester tester,
   ) async {
-    stubCashierSession();
-
-    adapter.onGet(
-      '/api/v1/pos/menus',
-      (server) => server.reply(200, sampleMenusResponse()),
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: sampleMenusResponse(),
     );
-
-    await pumpApp(tester);
 
     expect(find.text('Order total'), findsOneWidget);
     expect(find.text('Rp 0'), findsOneWidget);
 
-    await tester.tap(find.text('Nasi Goreng'));
-    await tester.pumpAndSettle();
+    await tapMenuItemCard(tester, 'Nasi Goreng');
 
     await tester.tap(find.byIcon(Icons.add_circle_outline));
     await tester.pumpAndSettle();
@@ -301,17 +320,12 @@ void main() {
   testWidgets('add item from menu updates cart count', (
     WidgetTester tester,
   ) async {
-    stubCashierSession();
-
-    adapter.onGet(
-      '/api/v1/pos/menus',
-      (server) => server.reply(200, sampleMenusResponse()),
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: sampleMenusResponse(),
     );
 
-    await pumpApp(tester);
-
-    await tester.tap(find.text('Nasi Goreng'));
-    await tester.pumpAndSettle();
+    await tapMenuItemCard(tester, 'Nasi Goreng');
 
     await tester.tap(find.text('Add'));
     await tester.pumpAndSettle();
@@ -342,8 +356,7 @@ void main() {
     );
     expect(outOfStockCard.item.isInStock, isFalse);
 
-    await tester.tap(find.text('Empty Stock'));
-    await tester.pumpAndSettle();
+    await tapMenuItemCard(tester, 'Empty Stock');
 
     expect(find.text('Qty'), findsNothing);
   });
@@ -446,5 +459,169 @@ void main() {
       'Appetizers',
       'Mains',
     ]);
+  });
+
+  testWidgets('search field visible on menu page', (WidgetTester tester) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: sampleMenusResponse(),
+    );
+
+    expect(find.byKey(const Key('menu_search_field')), findsOneWidget);
+  });
+
+  testWidgets('typing filters visible menu cards', (WidgetTester tester) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: denseMenusResponse(),
+    );
+
+    await tester.enterText(
+      find.byKey(const Key('menu_search_field')),
+      'Nasi',
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nasi Goreng'), findsOneWidget);
+    expect(find.text('Es Teh'), findsNothing);
+  });
+
+  testWidgets('clear button restores full menu', (WidgetTester tester) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: denseMenusResponse(),
+    );
+
+    await tester.enterText(
+      find.byKey(const Key('menu_search_field')),
+      'Nasi',
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Es Teh'), findsNothing);
+
+    await clearMenuSearch(tester);
+
+    expect(find.text('Mie Goreng'), findsOneWidget);
+    expect(find.text('Nasi Goreng'), findsOneWidget);
+  });
+
+  testWidgets('no results empty state', (WidgetTester tester) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: denseMenusResponse(),
+    );
+
+    await tester.enterText(
+      find.byKey(const Key('menu_search_field')),
+      'zzznomatch',
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('No menu items match your search'),
+      findsOneWidget,
+    );
+    expect(find.byType(MenuItemCard), findsNothing);
+  });
+
+  testWidgets('category headers hidden when empty', (
+    WidgetTester tester,
+  ) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: denseMenusResponse(),
+    );
+
+    await tester.enterText(
+      find.byKey(const Key('menu_search_field')),
+      'Es Teh',
+    );
+    await tester.pumpAndSettle();
+
+    final headers = tester
+        .widgetList<AppSectionHeader>(find.byType(AppSectionHeader))
+        .toList();
+    expect(headers, hasLength(1));
+    expect(headers.single.title, 'Drinks');
+  });
+
+  testWidgets('add to cart works on filtered item', (
+    WidgetTester tester,
+  ) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: denseMenusResponse(),
+    );
+
+    await tester.enterText(
+      find.byKey(const Key('menu_search_field')),
+      'Nasi Goreng',
+    );
+    await tester.pumpAndSettle();
+
+    await tapMenuItemCard(tester, 'Nasi Goreng');
+
+    await tester.tap(find.byIcon(Icons.add_circle_outline));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Add'));
+    await tester.pumpAndSettle();
+
+    final menuPage = tester.element(find.byType(MenuPage));
+    final container = ProviderScope.containerOf(menuPage);
+    expect(container.read(orderProvider).itemCount, 2);
+  });
+
+  testWidgets('out-of-stock behavior unchanged after filtering', (
+    WidgetTester tester,
+  ) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: sampleMenusResponse(),
+    );
+
+    await tester.enterText(
+      find.byKey(const Key('menu_search_field')),
+      'Empty Stock',
+    );
+    await tester.pumpAndSettle();
+
+    await tapMenuItemCard(tester, 'Empty Stock');
+
+    expect(find.text('Qty'), findsNothing);
+  });
+
+  testWidgets('refresh preserves active search', (WidgetTester tester) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: denseMenusResponse(),
+    );
+
+    await tester.enterText(
+      find.byKey(const Key('menu_search_field')),
+      'Nasi',
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nasi Goreng'), findsOneWidget);
+    expect(find.text('Es Teh'), findsNothing);
+
+    adapter.onGet(
+      '/api/v1/pos/menus',
+      (server) => server.reply(200, denseMenusResponse()),
+    );
+
+    await tester.tap(find.byIcon(Icons.refresh));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<TextField>(find.byKey(const Key('menu_search_field')))
+          .controller
+          ?.text,
+      'Nasi',
+    );
+    expect(find.text('Nasi Goreng'), findsOneWidget);
+    expect(find.text('Es Teh'), findsNothing);
   });
 }

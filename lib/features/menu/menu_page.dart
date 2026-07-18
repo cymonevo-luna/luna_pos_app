@@ -23,10 +23,18 @@ class MenuPage extends ConsumerStatefulWidget {
 }
 
 class _MenuPageState extends ConsumerState<MenuPage> {
+  final _searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _guardAuth());
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   void _guardAuth() {
@@ -99,6 +107,28 @@ class _MenuPageState extends ConsumerState<MenuPage> {
       ),
       body: Column(
         children: [
+          Padding(
+            padding: AppSpacing.screenPadding.copyWith(bottom: 0),
+            child: TextField(
+              key: const Key('menu_search_field'),
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: l10n.searchMenu,
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: menu.search.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          ref.read(menuProvider.notifier).setSearch('');
+                        },
+                      )
+                    : null,
+              ),
+              onChanged: ref.read(menuProvider.notifier).setSearch,
+            ),
+          ),
+          const VGap(AppSpacing.sm),
           Expanded(
             child: _MenuBody(
               state: menu,
@@ -106,6 +136,7 @@ class _MenuPageState extends ConsumerState<MenuPage> {
               onRefresh: () => ref.read(menuProvider.notifier).refresh(),
               onAdd: _addToCart,
               emptyLabel: l10n.noMenuItemsAvailable,
+              noSearchResultsLabel: l10n.noMenuSearchResults,
               retryLabel: l10n.retry,
             ),
           ),
@@ -131,6 +162,7 @@ class _MenuBody extends StatelessWidget {
     required this.onRefresh,
     required this.onAdd,
     required this.emptyLabel,
+    required this.noSearchResultsLabel,
     required this.retryLabel,
   });
 
@@ -139,6 +171,7 @@ class _MenuBody extends StatelessWidget {
   final Future<void> Function() onRefresh;
   final void Function(POSMenuItem item) onAdd;
   final String emptyLabel;
+  final String noSearchResultsLabel;
   final String retryLabel;
 
   @override
@@ -159,7 +192,14 @@ class _MenuBody extends StatelessWidget {
       return _MenuEmptyView(message: emptyLabel, onRefresh: onRefresh);
     }
 
-    final data = state.data!;
+    if (state.hasNoSearchResults) {
+      return _MenuEmptyView(
+        message: noSearchResultsLabel,
+        onRefresh: onRefresh,
+      );
+    }
+
+    final data = state.filteredData!;
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: LayoutBuilder(

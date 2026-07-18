@@ -188,6 +188,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get noMenuItemsAvailable => 'Tidak ada item menu tersedia';
 
   @override
+  String get searchMenu => 'Cari menu';
+
+  @override
+  String get noMenuSearchResults =>
+      'Tidak ada menu yang cocok dengan pencarian';
+
+  @override
   String get retry => 'Coba lagi';
 
   @override

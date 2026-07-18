@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
@@ -49,6 +51,7 @@ void main() {
     expect(state.status, AuthStatus.authenticated);
     expect(state.user?.email, email);
     expect(state.user?.roles, contains('cashier'));
+    expect(state.user?.features, contains('pos.menu'));
     expect(state.merchant?.id, TestAccounts.testMerchantId);
     expect(secure.store[SecureKeys.authToken], 'acc');
     expect(secure.store[SecureKeys.refreshToken], 'ref');
@@ -87,6 +90,7 @@ void main() {
     final state = container.read(authProvider);
     expect(state.status, isNot(AuthStatus.authenticated));
     expect(state.error, kPosAccessDeniedMessage);
+    expect(state.user, isNull);
     expect(secure.store[SecureKeys.authToken], isNull);
     expect(secure.store[SecureKeys.userJson], isNull);
   });
@@ -187,6 +191,7 @@ void main() {
             'name': 'New',
             'merchant_id': TestAccounts.testMerchantId,
             'roles': ['cashier'],
+            'features': TestAccounts.apiFeaturesFor(TestAccountRole.cashier),
           },
           'merchant': {
             'id': TestAccounts.testMerchantId,
@@ -225,11 +230,55 @@ void main() {
     expect(state.status, AuthStatus.authenticated);
     expect(state.user?.name, 'Cashier Test');
     expect(state.user?.roles, contains('cashier'));
+    expect(state.user?.features, contains('pos.menu'));
     expect(state.merchant?.id, TestAccounts.testMerchantId);
     expect(secure.store[SecureKeys.authToken], 'acc-new');
     expect(secure.store[SecureKeys.refreshToken], 'ref-new');
     expect(secure.store[SecureKeys.accessExpiresAt], isNotNull);
     expect(secure.store[SecureKeys.refreshExpiresAt], isNotNull);
+  });
+
+  test('restore replaces stored features from profile endpoint', () async {
+    seedAuthenticatedTestAccount(
+      secure,
+      adapter,
+      TestAccountRole.operational,
+      userId: 'op-user',
+    );
+    secure.store[SecureKeys.userJson] = jsonEncode({
+      'id': 'op-user',
+      'email': TestAccounts.operationalEmail,
+      'name': 'Operational Test',
+      'merchant_id': TestAccounts.testMerchantId,
+      'roles': ['operational'],
+      'features': TestAccounts.apiFeaturesFor(TestAccountRole.operational),
+    });
+
+    adapter.onGet(
+      '/api/v1/users/op-user',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'id': 'op-user',
+          'email': TestAccounts.operationalEmail,
+          'name': 'Operational Test',
+          'merchant_id': TestAccounts.testMerchantId,
+          'roles': ['operational'],
+          'features': const [
+            'pos.purchases',
+            'pos.recurring_expenses',
+          ],
+        },
+      }),
+    );
+
+    container.read(authProvider.notifier);
+    await waitForResolution();
+
+    final state = container.read(authProvider);
+    expect(state.status, AuthStatus.authenticated);
+    expect(state.user?.features, contains('pos.purchases'));
+    expect(state.user?.features, isNot(contains('pos.stock')));
   });
 
   test('expired refresh token on launch clears storage and stays signed out',

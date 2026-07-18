@@ -545,6 +545,78 @@ class AppLocalizationsEn extends AppLocalizations {
   String get purchaseCreatedAt => 'Created at';
 
   @override
+  String get smartPurchaseTitle => 'Smart Request';
+
+  @override
+  String get smartPurchaseStepIngredients => 'Ingredients';
+
+  @override
+  String get smartPurchaseStepReview => 'Review';
+
+  @override
+  String get smartPurchaseStepConfirm => 'Confirm';
+
+  @override
+  String get smartPurchaseIngredients => 'Ingredients';
+
+  @override
+  String get smartPurchaseSelectIngredient => 'Select ingredient';
+
+  @override
+  String get smartPurchaseSearchIngredients => 'Search ingredients';
+
+  @override
+  String get smartPurchaseNoIngredients => 'No ingredients found';
+
+  @override
+  String get smartPurchaseBack => 'Back';
+
+  @override
+  String get smartPurchaseNext => 'Next';
+
+  @override
+  String get smartPurchaseReviewAction => 'Review';
+
+  @override
+  String get smartPurchaseGroupedBySupplier => 'Grouped by supplier';
+
+  @override
+  String get smartPurchaseUnmatchedItems => 'Items needing supplier';
+
+  @override
+  String get smartPurchaseUnmatchedWarning =>
+      'Some items have no supplier price. Select a supplier before continuing.';
+
+  @override
+  String get smartPurchaseUnmatchedBlocked =>
+      'Select a supplier for every item before continuing.';
+
+  @override
+  String get smartPurchaseSelectSupplierManually => 'Select supplier';
+
+  @override
+  String get smartPurchaseNoSupplierPrices =>
+      'No supplier prices available for this item.';
+
+  @override
+  String get smartPurchaseNoGroups =>
+      'No supplier groups yet. Select suppliers for all items.';
+
+  @override
+  String get smartPurchaseConfirmSummary => 'Review and submit';
+
+  @override
+  String get smartPurchaseSuggestFailed =>
+      'Could not load supplier suggestions. Try again.';
+
+  @override
+  String get smartPurchaseSubmitFailed =>
+      'Could not submit smart request. Try again.';
+
+  @override
+  String get smartPurchaseSubmitSuccess => 'Purchase requests created';
+
+  @override
   String get searchStock => 'Search supplies';
 
   @override

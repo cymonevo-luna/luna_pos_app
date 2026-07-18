@@ -16,6 +16,7 @@ import '../../features/production_request/production_request_list_page.dart';
 import '../../features/purchase/purchase_create_page.dart';
 import '../../features/purchase/purchase_detail_page.dart';
 import '../../features/purchase/purchase_list_page.dart';
+import '../../features/purchase/smart_purchase_request_page.dart';
 import '../../features/recurring_expense/recurring_expense_form_sheet.dart';
 import '../../features/recurring_expense/recurring_expense_list_page.dart';
 import '../../features/stock/stock_form_sheet.dart';
@@ -42,6 +43,7 @@ enum AppRoute {
   stockEdit('/stock/:id/edit'),
   purchases('/purchases'),
   purchasesNew('/purchases/new'),
+  purchasesSmartRequest('/purchases/smart-request'),
   purchaseDetail('/purchases/:id'),
   recurringExpenses('/recurring-expenses'),
   recurringExpensesNew('/recurring-expenses/new'),
@@ -247,6 +249,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                     name: AppRoute.purchasesNew.name,
                     parentNavigatorKey: _rootNavigatorKey,
                     builder: (context, state) => const PurchaseCreatePage(),
+                  ),
+                  GoRoute(
+                    path: 'smart-request',
+                    name: AppRoute.purchasesSmartRequest.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) =>
+                        const SmartPurchaseRequestPage(),
                   ),
                   GoRoute(
                     path: ':id',

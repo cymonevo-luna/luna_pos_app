@@ -62,6 +62,15 @@ class _PurchaseListPageState extends ConsumerState<PurchaseListPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.purchases),
+        actions: [
+          TextButton.icon(
+            key: const Key('smart_purchase_entry_button'),
+            onPressed: () =>
+                context.pushNamed(AppRoute.purchasesSmartRequest.name),
+            icon: const Icon(Icons.auto_awesome_outlined),
+            label: Text(l10n.smartPurchaseTitle),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.pushNamed(AppRoute.purchasesNew.name),

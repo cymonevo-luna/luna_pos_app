@@ -2,6 +2,7 @@ import '../../../core/network/api_client.dart';
 import '../../../core/network/api_envelope.dart';
 import '../../../core/network/paginated_response.dart';
 import '../models/purchase_request.dart';
+import '../models/smart_purchase_request.dart';
 
 class PurchaseRequestRepository {
   PurchaseRequestRepository(this._api);
@@ -54,6 +55,60 @@ class PurchaseRequestRepository {
       body: body,
       decoder: (raw) =>
           PurchaseRequestDetail.fromJson(unwrapApiEnvelope(raw)),
+    );
+  }
+
+  static const suggestPath = '$listPath/suggest';
+  static const batchPath = '$listPath/batch';
+
+  Future<SmartPurchaseSuggestResponse> suggest({
+    required List<SmartPurchaseSuggestInput> items,
+  }) {
+    return _api.post<SmartPurchaseSuggestResponse>(
+      suggestPath,
+      body: {
+        'items': items
+            .map(
+              (item) => {
+                'food_supply_id': item.foodSupplyId,
+                'quantity': item.quantity.toString(),
+              },
+            )
+            .toList(),
+      },
+      decoder: (raw) =>
+          SmartPurchaseSuggestResponse.fromJson(unwrapApiEnvelope(raw)),
+    );
+  }
+
+  Future<SmartPurchaseBatchResponse> batchCreate({
+    required List<SmartPurchaseBatchGroupInput> groups,
+    String? notes,
+  }) {
+    final trimmedNotes = notes?.trim();
+    return _api.post<SmartPurchaseBatchResponse>(
+      batchPath,
+      body: {
+        'groups': groups
+            .map(
+              (group) => {
+                'supplier_id': group.supplierId,
+                'items': group.items
+                    .map(
+                      (item) => {
+                        'food_supply_id': item.foodSupplyId,
+                        'quantity': item.quantity.toString(),
+                      },
+                    )
+                    .toList(),
+              },
+            )
+            .toList(),
+        if (trimmedNotes != null && trimmedNotes.isNotEmpty)
+          'notes': trimmedNotes,
+      },
+      decoder: (raw) =>
+          SmartPurchaseBatchResponse.fromJson(unwrapApiEnvelope(raw)),
     );
   }
 

@@ -81,7 +81,7 @@ case "$MODE" in
     require_flutter || true
     require_android_sdk || true
     kvm_status_message || true
-    _flutter_test_env_log "Shared AVD: $SHARED_AVD"
+    _flutter_test_env_log "Shared AVD: $SHARED_AVD (${SHARED_EMULATOR_CORES} vCPU, ${SHARED_EMULATOR_MEMORY_MB} MB RAM)"
     report_emulators || true
     if [ "$FAIL" -eq 0 ]; then
       _flutter_test_env_log "VM tests: ready (flutter test test/integration/)"

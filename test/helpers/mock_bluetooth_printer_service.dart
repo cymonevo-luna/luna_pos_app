@@ -70,8 +70,12 @@ class MockBluetoothPrinterService implements BluetoothPrinterService {
   @override
   Future<void> connect(String deviceAddress) async {
     connectCallCount++;
+    final isReconnect = !_isConnected && _lastConnectedAddress != null;
     if (!connectSucceeds) {
       throw BluetoothPrinterException('Could not connect to the printer.');
+    }
+    if (isReconnect) {
+      reconnectBeforePrintCount++;
     }
     connectedAddress = deviceAddress;
     _lastConnectedAddress = deviceAddress;
@@ -96,7 +100,6 @@ class MockBluetoothPrinterService implements BluetoothPrinterService {
     }
 
     if (!_isConnected && _lastConnectedAddress != null && connectSucceeds) {
-      reconnectBeforePrintCount++;
       await connect(_lastConnectedAddress!);
     }
 

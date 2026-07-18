@@ -272,6 +272,78 @@ void main() {
     );
   });
 
+  test('retryPrint succeeds after connection drop', () async {
+    seedTwoLineCart();
+    final prefs = locator<PreferencesService>();
+    await prefs.setString(PrefKeys.printerDeviceId, '00:11:22:33:44:55');
+    await prefs.setString(PrefKeys.printerDeviceName, 'Test Printer');
+    await printer.connect('00:11:22:33:44:55');
+
+    final result = await container.read(checkoutProvider.notifier).proceed(
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.cash,
+          cashTendered: 80000,
+          printReceipt: true,
+        );
+
+    expect(result, isNotNull);
+    expect(result!.printSucceeded, isTrue);
+    expect(container.read(checkoutProvider).lastReceiptBytes, isNotNull);
+
+    printer.simulateConnectionDrop(notifyListeners: false);
+    expect(printer.isConnected, isFalse);
+
+    final retryResult =
+        await container.read(checkoutProvider.notifier).retryPrint();
+
+    expect(retryResult.succeeded, isTrue);
+    expect(retryResult.error, isNull);
+    expect(printer.reconnectBeforePrintCount, greaterThan(0));
+    expect(printer.lastPrintedBytes, isNotNull);
+    expect(printer.lastPrintedBytes, isNotEmpty);
+  });
+
+  test('retryPrint returns specific error when reconnect fails', () async {
+    seedTwoLineCart();
+    final prefs = locator<PreferencesService>();
+    await prefs.setString(PrefKeys.printerDeviceId, '00:11:22:33:44:55');
+    await prefs.setString(PrefKeys.printerDeviceName, 'Test Printer');
+    printer.dispose();
+    printer = MockBluetoothPrinterService(connectSucceeds: false);
+    locator.unregister<BluetoothPrinterService>();
+    locator.registerSingleton<BluetoothPrinterService>(printer);
+
+    final result = await container.read(checkoutProvider.notifier).proceed(
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.cash,
+          cashTendered: 80000,
+          printReceipt: true,
+        );
+
+    expect(result, isNotNull);
+    expect(result!.printSucceeded, isFalse);
+    expect(container.read(checkoutProvider).lastReceiptBytes, isNotNull);
+
+    final retryResult =
+        await container.read(checkoutProvider.notifier).retryPrint();
+
+    expect(retryResult.succeeded, isFalse);
+    expect(retryResult.error, isNotNull);
+    expect(retryResult.error!.toLowerCase(), contains('printer'));
+  });
+
+  test('retryPrint with no cached bytes returns error', () async {
+    seedTwoLineCart();
+
+    expect(container.read(checkoutProvider).lastReceiptBytes, isNull);
+
+    final retryResult =
+        await container.read(checkoutProvider.notifier).retryPrint();
+
+    expect(retryResult.succeeded, isFalse);
+    expect(retryResult.error, isNotNull);
+  });
+
   test('proceed with print completes sale when store settings fail after POST',
       () async {
     seedTwoLineCart();

@@ -87,14 +87,18 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
             if (result.printError != null)
               TextButton(
                 onPressed: () async {
-                  final printed =
+                  final retryResult =
                       await ref.read(checkoutProvider.notifier).retryPrint();
                   if (!dialogContext.mounted) return;
-                  if (printed) {
+                  if (retryResult.succeeded) {
                     Navigator.of(dialogContext).pop();
                   } else {
                     ScaffoldMessenger.of(dialogContext).showSnackBar(
-                      SnackBar(content: Text(dialogL10n.printFailedWarning)),
+                      SnackBar(
+                        content: Text(
+                          retryResult.error ?? dialogL10n.printFailedWarning,
+                        ),
+                      ),
                     );
                   }
                 },

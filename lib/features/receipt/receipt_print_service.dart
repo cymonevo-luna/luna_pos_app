@@ -12,6 +12,8 @@ typedef ReceiptPrintResult = ({
   List<int>? receiptBytes,
 });
 
+typedef PrinterConnectionResult = ({bool connected, String? error});
+
 /// Shared Bluetooth receipt printing: connect, build ESC/POS bytes, send to printer.
 class ReceiptPrintService {
   ReceiptPrintService({
@@ -24,10 +26,16 @@ class ReceiptPrintService {
   final PreferencesService _prefs;
 
   /// Builds receipt bytes from [data] and prints them.
-  Future<ReceiptPrintResult> printReceiptData(ReceiptData data) async {
+  Future<ReceiptPrintResult> printReceiptData(
+    ReceiptData data, {
+    String? deviceAddress,
+  }) async {
     final builder = await ReceiptBuilder.create();
     final receiptBytes = builder.build(data);
-    final result = await printBytes(receiptBytes);
+    final result = await printBytes(
+      receiptBytes,
+      deviceAddress: deviceAddress,
+    );
     return (
       succeeded: result.succeeded,
       error: result.error,
@@ -36,39 +44,67 @@ class ReceiptPrintService {
   }
 
   /// Sends pre-built ESC/POS [bytes] to the printer.
-  Future<({bool succeeded, String? error})> printBytes(List<int> bytes) async {
+  Future<({bool succeeded, String? error})> printBytes(
+    List<int> bytes, {
+    String? deviceAddress,
+  }) async {
     try {
-      final connected = await _ensurePrinterConnected();
-      if (!connected) {
-        return (
-          succeeded: false,
-          error: 'Printer is not connected.',
-        );
+      final connection = await _ensurePrinterConnected(
+        deviceAddress: deviceAddress,
+      );
+      if (!connection.connected) {
+        return (succeeded: false, error: connection.error);
       }
 
       await _printer.printBytes(bytes);
       return (succeeded: true, error: null);
     } on BluetoothPrinterException catch (error) {
       return (succeeded: false, error: error.message);
-    } catch (_) {
+    } catch (error) {
+      final message = error is Exception ? '$error' : null;
+      if (message != null && message.isNotEmpty) {
+        return (succeeded: false, error: message);
+      }
       return (succeeded: false, error: PrinterMessages.printFailed);
     }
   }
 
-  Future<bool> _ensurePrinterConnected() async {
-    if (_printer.isConnected) return true;
+  Future<PrinterConnectionResult> _ensurePrinterConnected({
+    String? deviceAddress,
+  }) async {
+    if (_printer.isConnected) {
+      return (connected: true, error: null);
+    }
 
-    final deviceId = _prefs.getString(PrefKeys.printerDeviceId);
-    if (deviceId == null) return false;
+    final targetAddress =
+        deviceAddress ?? _prefs.getString(PrefKeys.printerDeviceId);
+    if (targetAddress == null || targetAddress.isEmpty) {
+      return (connected: false, error: PrinterMessages.noPrinterSelected);
+    }
+
+    if (!await _printer.isBluetoothEnabled()) {
+      return (connected: false, error: PrinterMessages.bluetoothOff);
+    }
+
+    final granted = await _printer.requestPermissions();
+    if (!granted) {
+      return (connected: false, error: PrinterMessages.permissionDenied);
+    }
 
     try {
-      final granted = await _printer.requestPermissions();
-      if (!granted) return false;
-
-      await _printer.connect(deviceId);
-      return _printer.isConnected;
-    } catch (_) {
-      return false;
+      await _printer.connect(targetAddress);
+      if (_printer.isConnected) {
+        return (connected: true, error: null);
+      }
+      return (connected: false, error: PrinterMessages.connectionFailed);
+    } on BluetoothPrinterException catch (error) {
+      return (connected: false, error: error.message);
+    } catch (error) {
+      final message = error is Exception ? '$error' : null;
+      if (message != null && message.isNotEmpty) {
+        return (connected: false, error: message);
+      }
+      return (connected: false, error: PrinterMessages.connectionFailed);
     }
   }
 }

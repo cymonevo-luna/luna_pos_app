@@ -260,6 +260,24 @@
   "@proceed": {
     "description": "Complete checkout"
   },
+  "orderType": "Order Type",
+  "@orderType": {
+    "description": "Label for dine-in / take-away order option selector on checkout"
+  },
+  "noOrderOptionsConfigured": "No order options configured. Contact manager.",
+  "@noOrderOptionsConfigured": {
+    "description": "Blocking message when merchant has no order options"
+  },
+  "orderOptionLabel": "Order type: {name}",
+  "@orderOptionLabel": {
+    "description": "Shows selected order option on sale complete dialog",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Take Away"
+      }
+    }
+  },
   "printReceipt": "Print receipt",
   "@printReceipt": {
     "description": "Checkbox label to print receipt after checkout"

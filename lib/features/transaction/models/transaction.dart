@@ -6,12 +6,12 @@ part 'transaction.g.dart';
 @freezed
 abstract class CreateTransactionRequest with _$CreateTransactionRequest {
   const factory CreateTransactionRequest({
-    @JsonKey(name: 'order_option_id') required String orderOptionId,
     required String method,
     required List<TransactionItemRequest> items,
     @JsonKey(name: 'subtotal_amount') required int subtotalAmount,
     @JsonKey(name: 'discount_amount') @Default(0) int discountAmount,
     required int amount,
+    @JsonKey(name: 'order_option_id') required String orderOptionId,
     @JsonKey(name: 'cash_tendered') int? cashTendered,
     @JsonKey(name: 'change_amount') int? changeAmount,
   }) = _CreateTransactionRequest;
@@ -43,6 +43,8 @@ abstract class TransactionResponse with _$TransactionResponse {
     required int amount,
     @JsonKey(name: 'subtotal_amount') int? subtotalAmount,
     @JsonKey(name: 'discount_amount') int? discountAmount,
+    @JsonKey(name: 'order_option_id') String? orderOptionId,
+    @JsonKey(name: 'order_option_name') String? orderOptionName,
     @JsonKey(name: 'cash_tendered') int? cashTendered,
     @JsonKey(name: 'change_amount') int? changeAmount,
   }) = _TransactionResponse;

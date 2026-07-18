@@ -722,6 +722,24 @@ abstract class AppLocalizations {
   /// **'Proceed'**
   String get proceed;
 
+  /// Label for dine-in / take-away order option selector on checkout
+  ///
+  /// In en, this message translates to:
+  /// **'Order Type'**
+  String get orderType;
+
+  /// Blocking message when merchant has no order options
+  ///
+  /// In en, this message translates to:
+  /// **'No order options configured. Contact manager.'**
+  String get noOrderOptionsConfigured;
+
+  /// Shows selected order option on sale complete dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Order type: {name}'**
+  String orderOptionLabel(String name);
+
   /// Checkbox label to print receipt after checkout
   ///
   /// In en, this message translates to:

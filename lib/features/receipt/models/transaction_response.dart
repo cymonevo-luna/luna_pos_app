@@ -16,5 +16,6 @@ abstract class TransactionResponse with _$TransactionResponse {
     required int totalAmount,
     int? cashTendered,
     @Default(0) int changeAmount,
+    String? orderOptionName,
   }) = _TransactionResponse;
 }

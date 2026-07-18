@@ -335,6 +335,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get proceed => 'Proceed';
 
   @override
+  String get orderType => 'Order Type';
+
+  @override
+  String get noOrderOptionsConfigured =>
+      'No order options configured. Contact manager.';
+
+  @override
+  String orderOptionLabel(String name) {
+    return 'Order type: $name';
+  }
+
+  @override
   String get printReceipt => 'Print receipt';
 
   @override

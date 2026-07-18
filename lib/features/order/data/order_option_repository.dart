@@ -7,12 +7,11 @@ class OrderOptionRepository {
 
   final ApiClient _api;
 
-  Future<List<OrderOption>> fetchOrderOptions() async {
-    final response = await _api.get<OrderOptionsResponse>(
+  Future<OrderOptionsResponse> fetchOrderOptions() {
+    return _api.get<OrderOptionsResponse>(
       '/api/v1/pos/order-options',
       decoder: (raw) =>
           OrderOptionsResponse.fromJson(unwrapApiEnvelope(raw)),
     );
-    return response.options;
   }
 }

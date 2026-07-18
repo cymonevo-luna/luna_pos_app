@@ -7,7 +7,6 @@ import 'package:luna_pos/features/transaction/data/transaction_repository.dart';
 import 'package:luna_pos/features/transaction/models/transaction.dart';
 
 import 'helpers/auth_harness.dart';
-import 'helpers/order_option_test_data.dart';
 
 void main() {
   late DioAdapter adapter;
@@ -38,7 +37,6 @@ void main() {
         },
       }),
       data: {
-        ...kTestOrderOptionIdBodyField,
         'method': 'CASH',
         'items': [
           {
@@ -59,13 +57,13 @@ void main() {
         'subtotal_amount': 51000,
         'discount_amount': 0,
         'amount': 51000,
+        'order_option_id': kTestOrderOptionTakeAwayId,
         'cash_tendered': 60000,
         'change_amount': 9000,
       },
     );
 
     final request = CreateTransactionRequest(
-      orderOptionId: kTestOrderOptionId,
       method: 'CASH',
       items: const [
         TransactionItemRequest(
@@ -85,6 +83,7 @@ void main() {
       ],
       subtotalAmount: 51000,
       amount: 51000,
+      orderOptionId: kTestOrderOptionTakeAwayId,
       cashTendered: 60000,
       changeAmount: 9000,
     );
@@ -114,7 +113,6 @@ void main() {
         },
       }),
       data: {
-        ...kTestOrderOptionIdBodyField,
         'method': 'QRIS',
         'items': [
           {
@@ -128,11 +126,11 @@ void main() {
         'subtotal_amount': 35000,
         'discount_amount': 0,
         'amount': 35000,
+        'order_option_id': kTestOrderOptionTakeAwayId,
       },
     );
 
     final request = CreateTransactionRequest(
-      orderOptionId: kTestOrderOptionId,
       method: 'QRIS',
       items: const [
         TransactionItemRequest(
@@ -145,6 +143,7 @@ void main() {
       ],
       subtotalAmount: 35000,
       amount: 35000,
+      orderOptionId: kTestOrderOptionTakeAwayId,
     );
 
     final response =

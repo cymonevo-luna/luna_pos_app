@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:luna_pos/core/config/app_config.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
+import 'package:luna_pos/core/network/api_exception.dart';
 import 'package:luna_pos/core/printer/bluetooth_printer_service.dart';
 import 'package:luna_pos/core/storage/preferences_service.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
@@ -13,6 +14,8 @@ import 'package:luna_pos/features/menu/models/pos_menu.dart';
 import 'package:luna_pos/features/order/checkout_controller.dart';
 import 'package:luna_pos/features/order/models/payment_method.dart';
 import 'package:luna_pos/features/order/order_controller.dart';
+import 'package:luna_pos/features/order/order_options_controller.dart';
+import 'package:luna_pos/features/order/data/order_option_repository.dart';
 import 'package:luna_pos/features/receipt/receipt_print_service.dart';
 import 'package:luna_pos/features/store_settings/data/store_settings_repository.dart';
 import 'package:luna_pos/features/transaction/data/transaction_repository.dart';
@@ -21,7 +24,6 @@ import 'package:luna_pos/features/user/models/user.dart';
 
 import 'helpers/auth_harness.dart';
 import 'helpers/mock_bluetooth_printer_service.dart';
-import 'helpers/order_option_test_data.dart';
 
 class _FakeAuthController extends AuthController {
   @override
@@ -53,9 +55,29 @@ class _RecordingTransactionRepository extends TransactionRepository {
       amount: request.amount,
       subtotalAmount: request.subtotalAmount,
       discountAmount: request.discountAmount,
+      orderOptionId: request.orderOptionId,
+      orderOptionName: request.orderOptionId == kTestOrderOptionTakeAwayId
+          ? 'Take Away'
+          : 'Dine In',
       cashTendered: request.cashTendered,
       changeAmount: request.changeAmount,
     );
+  }
+}
+
+class _ThrowingTransactionRepository extends TransactionRepository {
+  _ThrowingTransactionRepository(
+    super.api, {
+    required this.exception,
+  });
+
+  final ApiException exception;
+
+  @override
+  Future<TransactionResponse> createTransaction(
+    CreateTransactionRequest request,
+  ) async {
+    throw exception;
   }
 }
 
@@ -80,6 +102,9 @@ void main() {
     registerAuthTestServices(secure: secure, client: mocked.client);
     locator
       ..registerSingleton<PreferencesService>(await PreferencesService.create())
+      ..registerLazySingleton<OrderOptionRepository>(
+        () => OrderOptionRepository(locator<ApiClient>()),
+      )
       ..registerSingleton<TransactionRepository>(transactionRepository)
       ..registerLazySingleton<StoreSettingsRepository>(
         () => StoreSettingsRepository(locator<ApiClient>()),
@@ -100,6 +125,7 @@ void main() {
         },
       }),
     );
+    stubOrderOptions(adapter);
 
     container = ProviderContainer(
       overrides: [
@@ -136,11 +162,18 @@ void main() {
     );
   }
 
+  Future<void> prepareOrderOptionSelection() async {
+    await container.read(orderOptionsProvider.notifier).loadIfNeeded();
+    container
+        .read(checkoutProvider.notifier)
+        .selectOrderOption(kTestOrderOptionTakeAwayId);
+  }
+
   test('proceed submits correct cash transaction payload', () async {
     seedTwoLineCart();
+    await prepareOrderOptionSelection();
 
     final result = await container.read(checkoutProvider.notifier).proceed(
-          orderOptionId: kTestOrderOptionId,
           discountAmount: 5000,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 100000,
@@ -150,7 +183,6 @@ void main() {
     expect(result, isNotNull);
     final request = transactionRepository.lastRequest!;
     expect(request.method, 'CASH');
-    expect(request.orderOptionId, kTestOrderOptionId);
     expect(request.subtotalAmount, 78000);
     expect(request.discountAmount, 5000);
     expect(request.amount, 73000);
@@ -160,13 +192,15 @@ void main() {
     expect(request.items[0].note, 'less ice');
     expect(request.items[0].lineTotal, 8000);
     expect(request.items[1].lineTotal, 70000);
+    expect(request.orderOptionId, kTestOrderOptionTakeAwayId);
+    expect(result!.orderOptionName, 'Take Away');
   });
 
   test('proceed submits correct qris transaction payload', () async {
     seedTwoLineCart();
+    await prepareOrderOptionSelection();
 
     final result = await container.read(checkoutProvider.notifier).proceed(
-          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.qris,
           printReceipt: false,
@@ -177,13 +211,14 @@ void main() {
     expect(request.method, 'QRIS');
     expect(request.cashTendered, isNull);
     expect(request.changeAmount, isNull);
+    expect(request.orderOptionId, kTestOrderOptionTakeAwayId);
   });
 
   test('proceed without print completes sale and clears cart', () async {
     seedTwoLineCart();
+    await prepareOrderOptionSelection();
 
     final result = await container.read(checkoutProvider.notifier).proceed(
-          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -199,10 +234,12 @@ void main() {
     expect(container.read(orderProvider).lines, isEmpty);
     expect(container.read(checkoutProvider).error, isNull);
     expect(container.read(checkoutProvider).lastReceiptBytes, isNull);
+    expect(container.read(checkoutProvider).selectedOrderOptionId, isNull);
   });
 
   test('proceed without print when store-settings would fail', () async {
     seedTwoLineCart();
+    await prepareOrderOptionSelection();
     adapter.reset();
     adapter.onGet(
       '/api/v1/pos/store-settings',
@@ -211,9 +248,9 @@ void main() {
         'error': {'message': 'settings unavailable'},
       }),
     );
+    stubOrderOptions(adapter);
 
     final result = await container.read(checkoutProvider.notifier).proceed(
-          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -230,10 +267,10 @@ void main() {
 
   test('proceed with print calls printBytes and clears cart on success', () async {
     seedTwoLineCart();
+    await prepareOrderOptionSelection();
     await printer.connect('00:11:22:33:44:55');
 
     final result = await container.read(checkoutProvider.notifier).proceed(
-          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -255,6 +292,7 @@ void main() {
 
   test('proceed with print completes sale when printer unavailable', () async {
     seedTwoLineCart();
+    await prepareOrderOptionSelection();
     final prefs = locator<PreferencesService>();
     await prefs.setString(PrefKeys.printerDeviceId, '00:11:22:33:44:55');
     await prefs.setString(PrefKeys.printerDeviceName, 'Test Printer');
@@ -264,7 +302,6 @@ void main() {
     locator.registerSingleton<BluetoothPrinterService>(printer);
 
     final result = await container.read(checkoutProvider.notifier).proceed(
-          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -288,13 +325,13 @@ void main() {
 
   test('retryPrint succeeds after connection drop', () async {
     seedTwoLineCart();
+    await prepareOrderOptionSelection();
     final prefs = locator<PreferencesService>();
     await prefs.setString(PrefKeys.printerDeviceId, '00:11:22:33:44:55');
     await prefs.setString(PrefKeys.printerDeviceName, 'Test Printer');
     await printer.connect('00:11:22:33:44:55');
 
     final result = await container.read(checkoutProvider.notifier).proceed(
-          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -320,6 +357,7 @@ void main() {
 
   test('retryPrint returns specific error when reconnect fails', () async {
     seedTwoLineCart();
+    await prepareOrderOptionSelection();
     final prefs = locator<PreferencesService>();
     await prefs.setString(PrefKeys.printerDeviceId, '00:11:22:33:44:55');
     await prefs.setString(PrefKeys.printerDeviceName, 'Test Printer');
@@ -329,7 +367,6 @@ void main() {
     locator.registerSingleton<BluetoothPrinterService>(printer);
 
     final result = await container.read(checkoutProvider.notifier).proceed(
-          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -363,6 +400,7 @@ void main() {
   test('proceed with print completes sale when store settings fail after POST',
       () async {
     seedTwoLineCart();
+    await prepareOrderOptionSelection();
     adapter.reset();
     adapter.onGet(
       '/api/v1/pos/store-settings',
@@ -371,9 +409,9 @@ void main() {
         'error': {'message': 'settings unavailable'},
       }),
     );
+    stubOrderOptions(adapter);
 
     final result = await container.read(checkoutProvider.notifier).proceed(
-          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -389,8 +427,96 @@ void main() {
     expect(container.read(checkoutProvider).error, isNull);
   });
 
+  test('proceed without selected order option returns null', () async {
+    seedTwoLineCart();
+    await container.read(orderOptionsProvider.notifier).loadIfNeeded();
+
+    final result = await container.read(checkoutProvider.notifier).proceed(
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.cash,
+          cashTendered: 80000,
+          printReceipt: false,
+        );
+
+    expect(result, isNull);
+    expect(transactionRepository.lastRequest, isNull);
+    expect(container.read(orderProvider).lines, isNotEmpty);
+  });
+
+  test('proceed preserves cart on insufficient stock 422', () async {
+    seedTwoLineCart();
+    await prepareOrderOptionSelection();
+    locator.unregister<TransactionRepository>();
+    locator.registerSingleton<TransactionRepository>(
+      _ThrowingTransactionRepository(
+        locator<ApiClient>(),
+        exception: const ApiException(
+          type: ApiErrorType.unknown,
+          message: 'Something went wrong.',
+          statusCode: 422,
+          data: {
+            'error': {
+              'message': 'Insufficient packaging stock for Take Away.',
+              'fields': {
+                'order_option_id': 'Insufficient packaging stock for Take Away.',
+              },
+            },
+          },
+        ),
+      ),
+    );
+
+    final result = await container.read(checkoutProvider.notifier).proceed(
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.cash,
+          cashTendered: 80000,
+          printReceipt: false,
+        );
+
+    expect(result, isNull);
+    expect(container.read(orderProvider).lines, isNotEmpty);
+    expect(
+      container.read(checkoutProvider).error,
+      contains('Insufficient packaging stock'),
+    );
+  });
+
+  test('proceed refetches options and clears selection on invalid option 404',
+      () async {
+    seedTwoLineCart();
+    await prepareOrderOptionSelection();
+    locator.unregister<TransactionRepository>();
+    locator.registerSingleton<TransactionRepository>(
+      _ThrowingTransactionRepository(
+        locator<ApiClient>(),
+        exception: const ApiException(
+          type: ApiErrorType.notFound,
+          message: 'Not found.',
+          statusCode: 404,
+        ),
+      ),
+    );
+
+    final result = await container.read(checkoutProvider.notifier).proceed(
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.cash,
+          cashTendered: 80000,
+          printReceipt: false,
+        );
+
+    expect(result, isNull);
+    expect(container.read(orderProvider).lines, isNotEmpty);
+    expect(
+      container.read(checkoutProvider).error,
+      kOrderOptionInvalidMessage,
+    );
+    expect(container.read(checkoutProvider).selectedOrderOptionId, isNull);
+    expect(container.read(orderOptionsProvider).options, isNotEmpty);
+  });
+
   test('proceed surfaces validation message on 422 transaction POST', () async {
     seedTwoLineCart();
+    await prepareOrderOptionSelection();
     adapter.reset();
     adapter.onGet(
       '/api/v1/pos/store-settings',
@@ -405,6 +531,7 @@ void main() {
         },
       }),
     );
+    stubOrderOptions(adapter);
     adapter.onPost(
       '/api/v1/pos/transactions',
       (server) => server.reply(422, {
@@ -416,7 +543,7 @@ void main() {
         },
       }),
       data: {
-        ...kTestOrderOptionIdBodyField,
+        'order_option_id': kTestOrderOptionTakeAwayId,
         'method': 'CASH',
         'items': [
           {
@@ -451,7 +578,6 @@ void main() {
     );
 
     final result = await container.read(checkoutProvider.notifier).proceed(
-          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,

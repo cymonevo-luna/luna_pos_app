@@ -189,6 +189,17 @@ void main() {
     expect(text, isNot(contains('Kembalian')));
   });
 
+  test('receipt includes order option name when provided', () {
+    final text = decodeReceiptText(
+      builder.build(
+        sampleReceiptData().copyWith(orderOptionName: 'Take Away'),
+      ),
+    );
+
+    expect(text, contains('Tipe'));
+    expect(text, contains('Take Away'));
+  });
+
   test('builder output is deterministic for the same input', () {
     final data = sampleReceiptData();
     final first = builder.build(data);

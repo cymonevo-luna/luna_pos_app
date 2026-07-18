@@ -3,7 +3,7 @@ import 'package:http_mock_adapter/http_mock_adapter.dart';
 
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
-import 'package:luna_pos/features/order_option/data/order_option_repository.dart';
+import 'package:luna_pos/features/order/data/order_option_repository.dart';
 
 import 'helpers/auth_harness.dart';
 
@@ -21,29 +21,24 @@ void main() {
       );
   });
 
-  test('fetchOrderOptions parses POS options list', () async {
-    adapter.onGet(
-      '/api/v1/pos/order-options',
-      (server) => server.reply(200, {
-        'success': true,
-        'data': {
-          'options': [
-            {
-              'id': '11111111-1111-1111-1111-111111111111',
-              'name': 'Take Away',
-              'priority': 10,
-            },
-          ],
-        },
-      }),
-    );
+  test('fetchOrderOptions parses and repository returns options', () async {
+    stubOrderOptions(adapter);
 
-    final options =
+    final response =
         await locator<OrderOptionRepository>().fetchOrderOptions();
 
-    expect(options, hasLength(1));
-    expect(options.first.id, '11111111-1111-1111-1111-111111111111');
-    expect(options.first.name, 'Take Away');
-    expect(options.first.priority, 10);
+    expect(response.options, hasLength(2));
+    expect(response.options.first.id, kTestOrderOptionTakeAwayId);
+    expect(response.options.first.name, 'Take Away');
+    expect(response.options.first.priority, 10);
+  });
+
+  test('fetchOrderOptions handles empty list', () async {
+    stubEmptyOrderOptions(adapter);
+
+    final response =
+        await locator<OrderOptionRepository>().fetchOrderOptions();
+
+    expect(response.options, isEmpty);
   });
 }

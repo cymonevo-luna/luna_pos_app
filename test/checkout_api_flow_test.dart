@@ -11,10 +11,11 @@ import 'package:luna_pos/core/storage/preferences_service.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
 import 'package:luna_pos/features/menu/models/pos_menu.dart';
 import 'package:luna_pos/features/order/checkout_controller.dart';
+import 'package:luna_pos/features/order/data/order_option_repository.dart';
 import 'package:luna_pos/features/order/models/payment_method.dart';
 import 'package:luna_pos/features/order/order_controller.dart';
+import 'package:luna_pos/features/order/order_options_controller.dart';
 import 'package:luna_pos/features/receipt/receipt_print_service.dart';
-import 'package:luna_pos/features/order_option/data/order_option_repository.dart';
 import 'package:luna_pos/features/store_settings/data/store_settings_repository.dart';
 import 'package:luna_pos/features/transaction/data/transaction_repository.dart';
 import 'package:luna_pos/features/user/models/user.dart';
@@ -22,7 +23,6 @@ import 'package:luna_pos/testing/test_accounts.dart';
 
 import 'helpers/auth_harness.dart';
 import 'helpers/mock_bluetooth_printer_service.dart';
-import 'helpers/order_option_test_data.dart';
 
 class _FakeAuthController extends AuthController {
   @override
@@ -60,14 +60,14 @@ void main() {
     registerAuthTestServices(secure: secure, client: mocked.client);
     locator
       ..registerSingleton<PreferencesService>(await PreferencesService.create())
+      ..registerLazySingleton<OrderOptionRepository>(
+        () => OrderOptionRepository(locator<ApiClient>()),
+      )
       ..registerLazySingleton<TransactionRepository>(
         () => TransactionRepository(locator<ApiClient>()),
       )
       ..registerLazySingleton<StoreSettingsRepository>(
         () => StoreSettingsRepository(locator<ApiClient>()),
-      )
-      ..registerLazySingleton<OrderOptionRepository>(
-        () => OrderOptionRepository(locator<ApiClient>()),
       )
       ..registerSingleton<BluetoothPrinterService>(printer)
       ..registerLazySingleton<ReceiptPrintService>(ReceiptPrintService.new);
@@ -76,13 +76,6 @@ void main() {
       overrides: [
         authProvider.overrideWith(_FakeAuthController.new),
       ],
-    );
-  }
-
-  void registerOrderOptionsMock() {
-    adapter.onGet(
-      '/api/v1/pos/order-options',
-      (server) => server.reply(200, kTestOrderOptionsResponse),
     );
   }
 
@@ -100,6 +93,14 @@ void main() {
         },
       }),
     );
+    stubOrderOptions(adapter);
+  }
+
+  Future<void> prepareOrderOptionSelection() async {
+    await container.read(orderOptionsProvider.notifier).loadIfNeeded();
+    container
+        .read(checkoutProvider.notifier)
+        .selectOrderOption(kTestOrderOptionTakeAwayId);
   }
 
   void seedTwoLineCart() {
@@ -128,7 +129,6 @@ void main() {
   group('successful checkout API flow', () {
     setUp(() async {
       await setUpHarness();
-      registerOrderOptionsMock();
       registerStoreSettingsMock();
       adapter.onPost(
         '/api/v1/pos/transactions',
@@ -137,17 +137,17 @@ void main() {
           'data': {
             'id': 'tx-e2e-1',
             'method': 'CASH',
-            'subtotal_amount': 78000,
-            'discount_amount': 5000,
-            'amount': 73000,
-            'cash_tendered': 100000,
-            'change_amount': 27000,
-          },
-        }),
-        data: {
-          ...kTestOrderOptionIdBodyField,
-          'method': 'CASH',
-          'items': [
+          'subtotal_amount': 78000,
+          'discount_amount': 5000,
+          'amount': 73000,
+          'order_option_id': kTestOrderOptionTakeAwayId,
+          'cash_tendered': 100000,
+          'change_amount': 27000,
+        },
+      }),
+      data: {
+        'method': 'CASH',
+        'items': [
             {
               'menu_id': 'm1',
               'title': 'Es Teh',
@@ -167,6 +167,7 @@ void main() {
           'subtotal_amount': 78000,
           'discount_amount': 5000,
           'amount': 73000,
+          'order_option_id': kTestOrderOptionTakeAwayId,
           'cash_tendered': 100000,
           'change_amount': 27000,
         },
@@ -181,10 +182,10 @@ void main() {
     test('add item, checkout, proceed with print persists transaction via POST 201',
         () async {
       seedTwoLineCart();
+      await prepareOrderOptionSelection();
       await printer.connect('00:11:22:33:44:55');
 
       final result = await container.read(checkoutProvider.notifier).proceed(
-            orderOptionId: kTestOrderOptionId,
             discountAmount: 5000,
             paymentMethod: PaymentMethod.cash,
             cashTendered: 100000,
@@ -212,9 +213,9 @@ void main() {
       await printer.connect('00:11:22:33:44:55');
 
       seedTwoLineCart();
+      await prepareOrderOptionSelection();
 
       final result = await container.read(checkoutProvider.notifier).proceed(
-            orderOptionId: kTestOrderOptionId,
             discountAmount: 5000,
             paymentMethod: PaymentMethod.cash,
             cashTendered: 100000,
@@ -238,9 +239,9 @@ void main() {
 
     test('proceed without print skips printer and clears cart', () async {
       seedTwoLineCart();
+      await prepareOrderOptionSelection();
 
       final result = await container.read(checkoutProvider.notifier).proceed(
-            orderOptionId: kTestOrderOptionId,
             discountAmount: 5000,
             paymentMethod: PaymentMethod.cash,
             cashTendered: 100000,
@@ -258,6 +259,7 @@ void main() {
 
     test('transaction appears in POS history after proceed', () async {
       seedTwoLineCart();
+      await prepareOrderOptionSelection();
 
       adapter.onGet(
         '/api/v1/pos/transactions',
@@ -278,7 +280,6 @@ void main() {
       );
 
       final result = await container.read(checkoutProvider.notifier).proceed(
-            orderOptionId: kTestOrderOptionId,
             discountAmount: 5000,
             paymentMethod: PaymentMethod.cash,
             cashTendered: 100000,
@@ -300,7 +301,6 @@ void main() {
   group('successful qris checkout API flow', () {
     setUp(() async {
       await setUpHarness();
-      registerOrderOptionsMock();
       registerStoreSettingsMock();
       adapter.onPost(
         '/api/v1/pos/transactions',
@@ -309,14 +309,14 @@ void main() {
           'data': {
             'id': 'tx-qris-1',
             'method': 'QRIS',
-            'subtotal_amount': 78000,
-            'discount_amount': 0,
-            'amount': 78000,
-          },
-        }),
-        data: {
-          ...kTestOrderOptionIdBodyField,
-          'method': 'QRIS',
+          'subtotal_amount': 78000,
+          'discount_amount': 0,
+          'amount': 78000,
+          'order_option_id': kTestOrderOptionTakeAwayId,
+        },
+      }),
+      data: {
+        'method': 'QRIS',
           'items': [
             {
               'menu_id': 'm1',
@@ -337,6 +337,7 @@ void main() {
           'subtotal_amount': 78000,
           'discount_amount': 0,
           'amount': 78000,
+          'order_option_id': kTestOrderOptionTakeAwayId,
         },
       );
     });
@@ -348,10 +349,10 @@ void main() {
 
     test('qris checkout persists transaction without cash fields', () async {
       seedTwoLineCart();
+      await prepareOrderOptionSelection();
       await printer.connect('00:11:22:33:44:55');
 
       final result = await container.read(checkoutProvider.notifier).proceed(
-            orderOptionId: kTestOrderOptionId,
             discountAmount: 0,
             paymentMethod: PaymentMethod.qris,
             printReceipt: false,
@@ -368,7 +369,6 @@ void main() {
   group('failed transaction POST', () {
     setUp(() async {
       await setUpHarness();
-      registerOrderOptionsMock();
       registerStoreSettingsMock();
       adapter.onPost(
         '/api/v1/pos/transactions',
@@ -377,7 +377,6 @@ void main() {
           'error': {'message': 'server error'},
         }),
         data: {
-          ...kTestOrderOptionIdBodyField,
           'method': 'CASH',
           'items': [
             {
@@ -399,6 +398,7 @@ void main() {
           'subtotal_amount': 78000,
           'discount_amount': 0,
           'amount': 78000,
+          'order_option_id': kTestOrderOptionTakeAwayId,
           'cash_tendered': 80000,
           'change_amount': 2000,
         },
@@ -412,10 +412,10 @@ void main() {
 
     test('checkout does not print when transaction POST fails', () async {
       seedTwoLineCart();
+      await prepareOrderOptionSelection();
       await printer.connect('00:11:22:33:44:55');
 
       final result = await container.read(checkoutProvider.notifier).proceed(
-            orderOptionId: kTestOrderOptionId,
             discountAmount: 0,
             paymentMethod: PaymentMethod.cash,
             cashTendered: 80000,

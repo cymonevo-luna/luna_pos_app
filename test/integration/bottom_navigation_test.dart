@@ -26,7 +26,7 @@ void main() {
         ..stubSampleMenu()
         ..stubStoreSettings()
         ..stubProductionRequestInbox(requestId: 'pr-nav-1')
-        ..stubCashierBalance(balance: 0);
+        ..stubCashierBalance(balance: 175000);
       harness.adapter.onGet(
         '/api/v1/pos/transactions',
         (server) => server.reply(200, {
@@ -71,6 +71,7 @@ void main() {
       await tester.tap(find.text(l10n.cashierBalanceTitle));
       await tester.pumpAndSettle();
       expect(find.byType(CashierBalancePage), findsOneWidget);
+      expect(find.text('Rp 175.000'), findsOneWidget);
 
       await tester.tap(find.text(l10n.profile));
       await tester.pumpAndSettle();

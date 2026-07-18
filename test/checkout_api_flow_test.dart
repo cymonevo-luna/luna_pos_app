@@ -219,7 +219,6 @@ void main() {
             paymentMethod: PaymentMethod.cash,
             cashTendered: 100000,
             printReceipt: true,
-            orderOptionId: kTestOrderOptionId,
           );
 
       expect(result, isNotNull);

@@ -41,7 +41,7 @@ void main() {
       ..registerSingleton<SecureStorageService>(secure)
       ..registerSingleton<ApiClient>(client)
       ..registerLazySingleton<MenuRepository>(
-        () => MenuRepository(locator<ApiClient>()),
+        () => MenuRepository(locator<ApiClient>(), testResourceCache()),
       );
   });
 

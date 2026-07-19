@@ -10,6 +10,12 @@ final _idrFormatter = NumberFormat.currency(
 /// Formats a whole-number IDR amount (e.g. 35000 → "Rp 35.000").
 String formatRupiah(int amount) => _idrFormatter.format(amount);
 
+final _receiptIdrFormatter = NumberFormat('#,###', 'id_ID');
+
+/// Receipt-safe IDR formatting with plain ASCII (no locale-specific bytes).
+String formatRupiahForReceipt(int amount) =>
+    'Rp ${_receiptIdrFormatter.format(amount)}';
+
 /// Parses user-entered digits into a whole-number IDR amount.
 int parseIdrAmount(String input) {
   final digits = input.replaceAll(RegExp(r'[^0-9]'), '');

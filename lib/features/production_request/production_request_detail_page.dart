@@ -31,7 +31,8 @@ class ProductionRequestDetailPage extends ConsumerWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.deliveryConfirmed)),
       );
-      ref.invalidate(productionRequestListProvider);
+      await ref.read(productionRequestListProvider.notifier).refresh();
+      if (!context.mounted) return;
       context.pop();
       return;
     }

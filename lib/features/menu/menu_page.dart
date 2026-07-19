@@ -4,11 +4,13 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/formatting/currency_formatter.dart';
 import '../../core/router/app_router.dart';
+import '../../core/router/navigation_config.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_tokens.dart';
 import '../../features/auth/auth_controller.dart';
 import '../../features/order/order_controller.dart';
 import '../../l10n/app_localizations.dart';
+import '../../shared/widgets/lazy_shell_tab_loader.dart';
 import '../../shared/widgets/widgets.dart';
 import 'menu_controller.dart';
 import 'models/pos_menu.dart';
@@ -77,7 +79,10 @@ class _MenuPageState extends ConsumerState<MenuPage> {
     final menu = ref.watch(menuProvider);
     final order = ref.watch(orderProvider);
 
-    return Scaffold(
+    return LazyShellTabLoader(
+      branch: ShellBranch.home,
+      onVisible: (ref) => ref.read(menuProvider.notifier).loadIfNeeded(),
+      child: Scaffold(
       appBar: AppBar(
         title: Text(l10n.menu),
         actions: [
@@ -151,6 +156,7 @@ class _MenuPageState extends ConsumerState<MenuPage> {
           ),
         ],
       ),
+      ),
     );
   }
 }
@@ -176,16 +182,16 @@ class _MenuBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (state.loading && state.data == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
     if (state.error != null && state.data == null) {
       return _MenuErrorView(
         message: state.error!,
         retryLabel: retryLabel,
         onRetry: onRetry,
       );
+    }
+
+    if (state.data == null) {
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (state.isEmpty) {

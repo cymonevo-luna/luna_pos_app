@@ -18,7 +18,7 @@ void main() {
     locator
       ..registerSingleton<ApiClient>(mocked.client)
       ..registerLazySingleton<TransactionRepository>(
-        () => TransactionRepository(locator<ApiClient>()),
+        () => TransactionRepository(locator<ApiClient>(), testResourceCache()),
       );
   });
 

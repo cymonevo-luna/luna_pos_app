@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/di/locator.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/network/paginated_response.dart';
+import '../../core/network/resource_cache.dart';
 import '../../core/network/validation_errors.dart';
 import 'data/production_request_repository.dart';
 import 'models/production_request.dart';
@@ -76,15 +77,31 @@ class ProductionRequestListController extends Notifier<ProductionRequestListStat
   ProductionRequestRepository get _repository =>
       locator<ProductionRequestRepository>();
 
+  DateTime? _fetchedAt;
+
   @override
-  ProductionRequestListState build() {
-    Future.microtask(loadInitial);
-    return const ProductionRequestListState(loading: true);
+  ProductionRequestListState build() => const ProductionRequestListState();
+
+  Future<void> loadIfNeeded() async {
+    if (state.loading || state.refreshing) return;
+
+    final fetchedAt = _fetchedAt;
+    if (state.items.isNotEmpty &&
+        state.error == null &&
+        fetchedAt != null &&
+        DateTime.now().difference(fetchedAt) < ResourceCache.cacheTtl) {
+      return;
+    }
+
+    if (state.items.isEmpty && state.error == null) {
+      await loadInitial();
+    }
   }
 
   Future<void> loadInitial() => _fetch(page: 1, append: false);
 
-  Future<void> refresh() => _fetch(page: 1, append: false, refreshing: true);
+  Future<void> refresh() =>
+      _fetch(page: 1, append: false, refreshing: true, forceRefresh: true);
 
   Future<void> retry() => _fetch(page: 1, append: false, forceLoading: true);
 
@@ -105,7 +122,7 @@ class ProductionRequestListController extends Notifier<ProductionRequestListStat
       clearError: true,
       clearForbidden: true,
     );
-    await _fetch(page: 1, append: false, forceLoading: true);
+    await _fetch(page: 1, append: false, forceLoading: true, forceRefresh: true);
   }
 
   Future<void> _fetch({
@@ -114,6 +131,7 @@ class ProductionRequestListController extends Notifier<ProductionRequestListStat
     bool refreshing = false,
     bool loadingMore = false,
     bool forceLoading = false,
+    bool forceRefresh = false,
   }) async {
     state = state.copyWith(
       loading: forceLoading || (!refreshing && !loadingMore && !append),
@@ -129,10 +147,15 @@ class ProductionRequestListController extends Notifier<ProductionRequestListStat
         status: state.status,
         page: page,
         perPage: ProductionRequestRepository.defaultPerPage,
+        forceRefresh: forceRefresh,
       );
 
       final merged =
           append ? [...state.items, ...response.items] : response.items;
+
+      if (!append) {
+        _fetchedAt = DateTime.now();
+      }
 
       state = state.copyWith(
         loading: false,
@@ -220,6 +243,11 @@ class ProductionRequestDetailController extends Notifier<ProductionRequestDetail
   ProductionRequestDetailState build() {
     Future.microtask(load);
     return const ProductionRequestDetailState(loading: true);
+  }
+
+  Future<void> loadIfNeeded() async {
+    if (state.detail != null) return;
+    await load();
   }
 
   Future<void> load() async {

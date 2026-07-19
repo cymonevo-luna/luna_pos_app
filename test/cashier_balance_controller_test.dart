@@ -21,7 +21,7 @@ void main() {
     locator
       ..registerSingleton<ApiClient>(mocked.client)
       ..registerLazySingleton<CashierBalanceRepository>(
-        () => CashierBalanceRepository(locator<ApiClient>()),
+        () => CashierBalanceRepository(locator<ApiClient>(), testResourceCache()),
       );
     container = ProviderContainer();
   });
@@ -31,7 +31,7 @@ void main() {
   });
 
   Future<void> waitForInitialLoad() async {
-    container.read(cashierBalanceController.notifier);
+    await container.read(cashierBalanceController.notifier).loadIfNeeded();
     for (var i = 0;
         i < 50 && container.read(cashierBalanceController).loading;
         i++) {

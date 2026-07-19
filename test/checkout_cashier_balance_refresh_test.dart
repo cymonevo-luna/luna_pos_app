@@ -12,6 +12,7 @@ import 'package:luna_pos/core/storage/preferences_service.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
 import 'package:luna_pos/features/cashier_balance/cashier_balance_controller.dart';
 import 'package:luna_pos/features/cashier_balance/data/cashier_balance_repository.dart';
+import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/models/pos_menu.dart';
 import 'package:luna_pos/features/order/checkout_controller.dart';
 import 'package:luna_pos/features/order/data/order_option_repository.dart';
@@ -29,7 +30,7 @@ import 'helpers/auth_harness.dart';
 import 'helpers/mock_bluetooth_printer_service.dart';
 
 class _RecordingTransactionRepository extends TransactionRepository {
-  _RecordingTransactionRepository(super.api);
+  _RecordingTransactionRepository(super.api, super.cache);
 
   @override
   Future<TransactionResponse> createTransaction(
@@ -51,7 +52,8 @@ class _RecordingTransactionRepository extends TransactionRepository {
 
 class _ThrowingTransactionRepository extends TransactionRepository {
   _ThrowingTransactionRepository(
-    super.api, {
+    super.api,
+    super.cache, {
     required this.exception,
   });
 
@@ -97,19 +99,26 @@ void main() {
 
     final secure = FakeSecureStorage();
     registerAuthTestServices(secure: secure, client: mocked.client);
+    registerTestResourceCache();
     locator
       ..registerSingleton<PreferencesService>(await PreferencesService.create())
       ..registerLazySingleton<OrderOptionRepository>(
-        () => OrderOptionRepository(locator<ApiClient>()),
+        () => OrderOptionRepository(locator<ApiClient>(), testResourceCache()),
       )
       ..registerSingleton<TransactionRepository>(
-        _RecordingTransactionRepository(mocked.client),
+        _RecordingTransactionRepository(
+          mocked.client,
+          testResourceCache(),
+        ),
       )
       ..registerLazySingleton<StoreSettingsRepository>(
-        () => StoreSettingsRepository(locator<ApiClient>()),
+        () => StoreSettingsRepository(locator<ApiClient>(), testResourceCache()),
       )
       ..registerLazySingleton<CashierBalanceRepository>(
-        () => CashierBalanceRepository(locator<ApiClient>()),
+        () => CashierBalanceRepository(locator<ApiClient>(), testResourceCache()),
+      )
+      ..registerLazySingleton<MenuRepository>(
+        () => MenuRepository(locator<ApiClient>(), testResourceCache()),
       )
       ..registerSingleton<BluetoothPrinterService>(printer)
       ..registerLazySingleton<ReceiptPrintService>(ReceiptPrintService.new);
@@ -287,6 +296,7 @@ void main() {
     locator.registerSingleton<TransactionRepository>(
       _ThrowingTransactionRepository(
         locator<ApiClient>(),
+        testResourceCache(),
         exception: const ApiException(
           type: ApiErrorType.unknown,
           message: 'Transaction failed.',

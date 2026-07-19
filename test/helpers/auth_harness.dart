@@ -2,6 +2,7 @@ import 'package:luna_pos/core/auth/session_guard.dart';
 import 'package:luna_pos/core/auth/token_refresh_service.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
+import 'package:luna_pos/core/network/resource_cache.dart';
 import 'package:luna_pos/core/storage/secure_storage_service.dart';
 import 'package:luna_pos/testing/test_accounts.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
@@ -52,6 +53,22 @@ class FakeSecureStorage extends SecureStorageService {
   }
 
   return (client: client, adapter: adapter, tokenRefresh: tokenRefresh);
+}
+
+/// Shared in-memory API response cache for repository tests.
+ResourceCache registerTestResourceCache() {
+  if (locator.isRegistered<ResourceCache>()) {
+    return locator<ResourceCache>();
+  }
+  final cache = ResourceCache();
+  locator.registerSingleton<ResourceCache>(cache);
+  return cache;
+}
+
+ResourceCache testResourceCache() {
+  return locator.isRegistered<ResourceCache>()
+      ? locator<ResourceCache>()
+      : ResourceCache();
 }
 
 /// Registers the common auth stack used by controller/interceptor tests.

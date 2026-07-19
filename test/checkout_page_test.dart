@@ -65,16 +65,16 @@ void main() {
     locator
       ..registerSingleton<PreferencesService>(await PreferencesService.create())
       ..registerLazySingleton<OrderOptionRepository>(
-        () => OrderOptionRepository(locator<ApiClient>()),
+        () => OrderOptionRepository(locator<ApiClient>(), testResourceCache()),
       )
       ..registerLazySingleton<MenuRepository>(
-        () => MenuRepository(locator<ApiClient>()),
+        () => MenuRepository(locator<ApiClient>(), testResourceCache()),
       )
       ..registerLazySingleton<TransactionRepository>(
-        () => TransactionRepository(locator<ApiClient>()),
+        () => TransactionRepository(locator<ApiClient>(), testResourceCache()),
       )
       ..registerLazySingleton<StoreSettingsRepository>(
-        () => StoreSettingsRepository(locator<ApiClient>()),
+        () => StoreSettingsRepository(locator<ApiClient>(), testResourceCache()),
       )
       ..registerSingleton<BluetoothPrinterService>(printer)
       ..registerLazySingleton<ReceiptPrintService>(ReceiptPrintService.new);

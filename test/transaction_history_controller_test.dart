@@ -43,7 +43,7 @@ void main() {
     locator
       ..registerSingleton<ApiClient>(mocked.client)
       ..registerLazySingleton<TransactionRepository>(
-        () => TransactionRepository(locator<ApiClient>()),
+        () => TransactionRepository(locator<ApiClient>(), testResourceCache()),
       );
     container = ProviderContainer();
   });
@@ -53,7 +53,7 @@ void main() {
   });
 
   Future<void> waitForInitialLoad() async {
-    container.read(transactionHistoryProvider.notifier);
+    await container.read(transactionHistoryProvider.notifier).loadIfNeeded();
     for (var i = 0; i < 50 && container.read(transactionHistoryProvider).loading; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 5));
     }

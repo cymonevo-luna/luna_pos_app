@@ -4,6 +4,7 @@ import '../auth/session_guard.dart';
 import '../auth/token_refresh_service.dart';
 import '../config/app_config.dart';
 import '../network/api_client.dart';
+import '../network/resource_cache.dart';
 import '../printer/bluetooth_printer_service.dart';
 import '../storage/preferences_service.dart';
 import '../storage/secure_storage_service.dart';
@@ -55,18 +56,19 @@ Future<void> setupLocator() async {
 
   locator
     ..registerSingleton<TokenRefreshService>(tokenRefresh)
-    ..registerSingleton<ApiClient>(apiClient);
+    ..registerSingleton<ApiClient>(apiClient)
+    ..registerSingleton<ResourceCache>(ResourceCache());
 
   locator.registerLazySingleton<MenuRepository>(
-    () => MenuRepository(locator<ApiClient>()),
+    () => MenuRepository(locator<ApiClient>(), locator<ResourceCache>()),
   );
 
   locator.registerLazySingleton<OrderOptionRepository>(
-    () => OrderOptionRepository(locator<ApiClient>()),
+    () => OrderOptionRepository(locator<ApiClient>(), locator<ResourceCache>()),
   );
 
   locator.registerLazySingleton<TransactionRepository>(
-    () => TransactionRepository(locator<ApiClient>()),
+    () => TransactionRepository(locator<ApiClient>(), locator<ResourceCache>()),
   );
 
   locator.registerLazySingleton<PurchaseRequestRepository>(
@@ -86,7 +88,7 @@ Future<void> setupLocator() async {
   );
 
   locator.registerLazySingleton<StoreSettingsRepository>(
-    () => StoreSettingsRepository(locator<ApiClient>()),
+    () => StoreSettingsRepository(locator<ApiClient>(), locator<ResourceCache>()),
   );
 
   locator.registerLazySingleton<FoodSupplyRepository>(
@@ -98,11 +100,11 @@ Future<void> setupLocator() async {
   );
 
   locator.registerLazySingleton<CashierBalanceRepository>(
-    () => CashierBalanceRepository(locator<ApiClient>()),
+    () => CashierBalanceRepository(locator<ApiClient>(), locator<ResourceCache>()),
   );
 
   locator.registerLazySingleton<ProductionRequestRepository>(
-    () => ProductionRequestRepository(locator<ApiClient>()),
+    () => ProductionRequestRepository(locator<ApiClient>(), locator<ResourceCache>()),
   );
 
   locator.registerSingleton<BluetoothPrinterService>(

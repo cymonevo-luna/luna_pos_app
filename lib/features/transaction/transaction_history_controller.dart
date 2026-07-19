@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/di/locator.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/network/paginated_response.dart';
+import '../../core/network/resource_cache.dart';
 import 'data/transaction_repository.dart';
 import 'models/transaction.dart';
 
@@ -86,15 +87,40 @@ class TransactionHistoryState {
 class TransactionHistoryController extends Notifier<TransactionHistoryState> {
   TransactionRepository get _repository => locator<TransactionRepository>();
 
+  DateTime? _fetchedAt;
+
   @override
-  TransactionHistoryState build() {
-    Future.microtask(loadInitial);
-    return const TransactionHistoryState(loading: true);
+  TransactionHistoryState build() => const TransactionHistoryState();
+
+  Future<void> loadIfNeeded() async {
+    if (state.loading || state.refreshing) return;
+
+    final fetchedAt = _fetchedAt;
+    if (state.items.isNotEmpty &&
+        state.error == null &&
+        !state.filter.hasDateRange &&
+        fetchedAt != null &&
+        DateTime.now().difference(fetchedAt) < ResourceCache.cacheTtl) {
+      return;
+    }
+
+    if (state.items.isEmpty && state.error == null) {
+      await loadInitial();
+      return;
+    }
+
+    if (fetchedAt != null &&
+        DateTime.now().difference(fetchedAt) < ResourceCache.cacheTtl) {
+      return;
+    }
+
+    await loadInitial();
   }
 
   Future<void> loadInitial() => _fetch(page: 1, append: false);
 
-  Future<void> refresh() => _fetch(page: 1, append: false, refreshing: true);
+  Future<void> refresh() =>
+      _fetch(page: 1, append: false, refreshing: true, forceRefresh: true);
 
   Future<void> retry() => _fetch(page: 1, append: false, forceLoading: true);
 
@@ -118,7 +144,7 @@ class TransactionHistoryController extends Notifier<TransactionHistoryState> {
       clearError: true,
       clearForbidden: true,
     );
-    await _fetch(page: 1, append: false, forceLoading: true);
+    await _fetch(page: 1, append: false, forceLoading: true, forceRefresh: true);
   }
 
   Future<void> clearDateFilter() => applyDateFilter();
@@ -129,6 +155,7 @@ class TransactionHistoryController extends Notifier<TransactionHistoryState> {
     bool refreshing = false,
     bool loadingMore = false,
     bool forceLoading = false,
+    bool forceRefresh = false,
   }) async {
     state = state.copyWith(
       loading: forceLoading || (!refreshing && !loadingMore && !append),
@@ -145,11 +172,16 @@ class TransactionHistoryController extends Notifier<TransactionHistoryState> {
         perPage: TransactionRepository.defaultPerPage,
         dateFrom: state.filter.dateFrom,
         dateTo: state.filter.dateTo,
+        forceRefresh: forceRefresh,
       );
 
       final merged = append
           ? [...state.items, ...response.items]
           : response.items;
+
+      if (!append) {
+        _fetchedAt = DateTime.now();
+      }
 
       state = state.copyWith(
         loading: false,

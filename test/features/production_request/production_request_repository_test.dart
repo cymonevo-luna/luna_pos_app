@@ -18,7 +18,7 @@ void main() {
     locator
       ..registerSingleton<ApiClient>(mocked.client)
       ..registerLazySingleton<ProductionRequestRepository>(
-        () => ProductionRequestRepository(locator<ApiClient>()),
+        () => ProductionRequestRepository(locator<ApiClient>(), testResourceCache()),
       );
   });
 

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/di/locator.dart';
 import '../../core/network/api_exception.dart';
+import '../../core/network/resource_cache.dart';
 import '../auth/auth_controller.dart';
 import 'data/order_option_repository.dart';
 import 'models/order_option.dart';
@@ -41,6 +42,8 @@ class OrderOptionsState {
 class OrderOptionsController extends Notifier<OrderOptionsState> {
   OrderOptionRepository get _repository => locator<OrderOptionRepository>();
 
+  DateTime? _fetchedAt;
+
   @override
   OrderOptionsState build() {
     ref.listen(
@@ -61,20 +64,26 @@ class OrderOptionsController extends Notifier<OrderOptionsState> {
     if (merchantId != null &&
         state.merchantId == merchantId &&
         state.options.isNotEmpty) {
-      return;
+      final fetchedAt = _fetchedAt;
+      if (fetchedAt != null &&
+          DateTime.now().difference(fetchedAt) < ResourceCache.cacheTtl) {
+        return;
+      }
     }
     await refresh();
   }
 
-  Future<void> refresh() async {
+  Future<void> refresh({bool forceRefresh = false}) async {
     final merchantId = ref.read(authProvider).user?.merchantId;
     state = state.copyWith(loading: true, clearError: true);
 
     try {
-      final response = await _repository.fetchOrderOptions();
+      final response =
+          await _repository.fetchOrderOptions(forceRefresh: forceRefresh);
       final sorted = List<OrderOption>.from(response.options)
         ..sort((a, b) => b.priority.compareTo(a.priority));
 
+      _fetchedAt = DateTime.now();
       state = state.copyWith(
         loading: false,
         options: sorted,

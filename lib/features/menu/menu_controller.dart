@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/di/locator.dart';
 import '../../core/network/api_exception.dart';
+import '../../core/network/resource_cache.dart';
 import 'data/menu_repository.dart';
 import 'models/pos_menu.dart';
 
@@ -80,17 +81,37 @@ class MenuState {
 class MenuController extends Notifier<MenuState> {
   MenuRepository get _repository => locator<MenuRepository>();
 
+  DateTime? _fetchedAt;
+
   @override
-  MenuState build() {
-    Future.microtask(load);
-    return const MenuState(loading: true);
+  MenuState build() => const MenuState();
+
+  Future<void> loadIfNeeded() async {
+    if (state.loading || state.refreshing) return;
+
+    final fetchedAt = _fetchedAt;
+    if (state.data != null &&
+        state.error == null &&
+        fetchedAt != null &&
+        DateTime.now().difference(fetchedAt) < ResourceCache.cacheTtl) {
+      return;
+    }
+
+    await load();
   }
 
   Future<void> load() => _fetch(refreshing: false);
 
-  Future<void> refresh() => _fetch(refreshing: true);
+  Future<void> refresh() => _fetch(refreshing: true, forceRefresh: true);
 
   Future<void> retry() => _fetch(refreshing: false, forceLoading: true);
+
+  /// Clears in-memory and repository menu caches after stock-changing mutations.
+  void invalidateAfterMutation() {
+    _fetchedAt = null;
+    _repository.invalidateMenus();
+    state = const MenuState();
+  }
 
   void setSearch(String query) {
     state = state.copyWith(search: query);
@@ -99,6 +120,7 @@ class MenuController extends Notifier<MenuState> {
   Future<void> _fetch({
     required bool refreshing,
     bool forceLoading = false,
+    bool forceRefresh = false,
   }) async {
     state = state.copyWith(
       loading: forceLoading || (!refreshing && state.data == null),
@@ -107,7 +129,8 @@ class MenuController extends Notifier<MenuState> {
     );
 
     try {
-      final data = await _repository.fetchPOSMenus();
+      final data = await _repository.fetchPOSMenus(forceRefresh: forceRefresh);
+      _fetchedAt = DateTime.now();
 
       state = state.copyWith(loading: false, refreshing: false, data: data);
     } on ApiException catch (e) {

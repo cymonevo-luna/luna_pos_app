@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/router/navigation_config.dart';
+import '../../core/router/shell_branch_provider.dart';
 import '../../features/auth/auth_controller.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -15,8 +16,13 @@ class MainScaffold extends ConsumerWidget {
 
   final StatefulNavigationShell navigationShell;
 
-  void _onSelected(List<int> visibleBranches, int visibleIndex) {
+  void _onSelected(
+    WidgetRef ref,
+    List<int> visibleBranches,
+    int visibleIndex,
+  ) {
     final branchIndex = visibleBranches[visibleIndex];
+    ref.read(shellCurrentBranchProvider.notifier).setBranch(branchIndex);
     navigationShell.goBranch(
       branchIndex,
       initialLocation: branchIndex == navigationShell.currentIndex,
@@ -30,6 +36,12 @@ class MainScaffold extends ConsumerWidget {
     final visibleBranches = visibleShellBranches(user);
     final wideLayout = MediaQuery.sizeOf(context).width >= 600;
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(shellCurrentBranchProvider.notifier)
+          .setBranch(navigationShell.currentIndex);
+    });
+
     final destinations = <NavigationDestination>[];
     for (final branch in visibleBranches) {
       destinations.add(_destinationForBranch(branch, l10n));
@@ -42,7 +54,8 @@ class MainScaffold extends ConsumerWidget {
       body: navigationShell,
       bottomNavigationBar: NavigationBar(
         selectedIndex: selectedIndex,
-        onDestinationSelected: (index) => _onSelected(visibleBranches, index),
+        onDestinationSelected: (index) =>
+            _onSelected(ref, visibleBranches, index),
         labelBehavior: wideLayout
             ? NavigationDestinationLabelBehavior.alwaysShow
             : NavigationDestinationLabelBehavior.onlyShowSelected,

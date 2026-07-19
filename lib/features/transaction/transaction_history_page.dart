@@ -5,10 +5,12 @@ import 'package:intl/intl.dart';
 
 import '../../core/formatting/currency_formatter.dart';
 import '../../core/router/app_router.dart';
+import '../../core/router/navigation_config.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_tokens.dart';
 import '../../features/auth/auth_controller.dart';
 import '../../l10n/app_localizations.dart';
+import '../../shared/widgets/lazy_shell_tab_loader.dart';
 import '../../shared/widgets/widgets.dart';
 import 'models/transaction.dart';
 import 'payment_method_label.dart';
@@ -87,7 +89,11 @@ class _TransactionHistoryPageState
     final locale = Localizations.localeOf(context);
     final dateFormat = DateFormat.yMMMd(locale.toString()).add_jm();
 
-    return Scaffold(
+    return LazyShellTabLoader(
+      branch: ShellBranch.transactions,
+      onVisible: (ref) =>
+          ref.read(transactionHistoryProvider.notifier).loadIfNeeded(),
+      child: Scaffold(
       appBar: AppBar(
         title: Text(l10n.transactionHistory),
         actions: [
@@ -127,6 +133,7 @@ class _TransactionHistoryPageState
         notAuthorizedMessage: l10n.notAuthorizedMessage,
         logoutLabel: l10n.logout,
         scrollController: _scrollController,
+      ),
       ),
     );
   }
@@ -174,10 +181,6 @@ class _TransactionHistoryBody extends StatelessWidget {
       );
     }
 
-    if (state.loading && state.items.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
     if (state.error != null && state.items.isEmpty) {
       return _ErrorView(
         message: state.error!,
@@ -186,7 +189,10 @@ class _TransactionHistoryBody extends StatelessWidget {
       );
     }
 
-    if (state.isEmpty) {
+    if (state.items.isEmpty) {
+      if (state.loading || state.page == 0) {
+        return const Center(child: CircularProgressIndicator());
+      }
       return _EmptyView(message: emptyLabel, onRefresh: onRefresh);
     }
 

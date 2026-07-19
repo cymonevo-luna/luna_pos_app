@@ -41,7 +41,7 @@ void main() {
     adapter = mocked.adapter;
     registerAuthTestServices(secure: FakeSecureStorage(), client: mocked.client);
     locator.registerLazySingleton<OrderOptionRepository>(
-      () => OrderOptionRepository(locator<ApiClient>()),
+      () => OrderOptionRepository(locator<ApiClient>(), testResourceCache()),
     );
     stubOrderOptions(adapter);
 

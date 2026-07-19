@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:luna_pos/core/router/navigation_config.dart';
+import 'package:luna_pos/core/router/shell_branch_provider.dart';
 import 'package:luna_pos/core/theme/app_palette.dart';
 import 'package:luna_pos/core/theme/app_theme.dart';
 import 'package:luna_pos/features/production_request/models/production_request.dart';
@@ -12,11 +14,23 @@ import 'package:luna_pos/features/production_request/production_request_list_pag
 import 'package:luna_pos/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+class _EmptyProductionRequestListController
+    extends ProductionRequestListController {
+  @override
+  ProductionRequestListState build() {
+    return const ProductionRequestListState(page: 1);
+  }
+
+  @override
+  Future<void> loadIfNeeded() async {}
+}
+
 class _LoadedProductionRequestListController
     extends ProductionRequestListController {
   @override
   ProductionRequestListState build() {
     return ProductionRequestListState(
+      page: 1,
       items: const [
         ProductionRequestSummary(
           id: 'pr-1',
@@ -31,14 +45,9 @@ class _LoadedProductionRequestListController
       ],
     );
   }
-}
 
-class _EmptyProductionRequestListController
-    extends ProductionRequestListController {
   @override
-  ProductionRequestListState build() {
-    return const ProductionRequestListState();
-  }
+  Future<void> loadIfNeeded() async {}
 }
 
 class _LoadedProductionRequestDetailController
@@ -66,6 +75,14 @@ class _LoadedProductionRequestDetailController
     markDoneCalled = true;
     return true;
   }
+
+  @override
+  Future<void> loadIfNeeded() async {}
+}
+
+class _ProductionShellNotifier extends ShellBranchNotifier {
+  @override
+  int build() => ShellBranch.calendar.branchIndex;
 }
 
 void main() {
@@ -74,6 +91,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          shellCurrentBranchProvider.overrideWith(_ProductionShellNotifier.new),
           productionRequestListProvider
               .overrideWith(_EmptyProductionRequestListController.new),
         ],
@@ -102,6 +120,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          shellCurrentBranchProvider.overrideWith(_ProductionShellNotifier.new),
           productionRequestListProvider
               .overrideWith(_EmptyProductionRequestListController.new),
         ],
@@ -170,6 +189,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          shellCurrentBranchProvider.overrideWith(_ProductionShellNotifier.new),
           productionRequestListProvider
               .overrideWith(_LoadedProductionRequestListController.new),
         ],
@@ -198,6 +218,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          shellCurrentBranchProvider.overrideWith(_ProductionShellNotifier.new),
           productionRequestListProvider
               .overrideWith(_EmptyProductionRequestListController.new),
         ],
@@ -240,6 +261,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          shellCurrentBranchProvider.overrideWith(_ProductionShellNotifier.new),
           productionRequestListProvider
               .overrideWith(_EmptyProductionRequestListController.new),
           productionRequestDetailProvider('pr-1')

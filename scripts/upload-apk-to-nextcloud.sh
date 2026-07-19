@@ -19,6 +19,7 @@
 #                        folder (default: empty = the remote root itself)
 #   APP_NAME             override the app folder name (default: pubspec `name`)
 #   RCLONE_CONFIG        path to an rclone.conf (the deploy host stages this)
+#   APK_RETENTION_COUNT  newest APKs to keep per build-type folder (default: 2)
 set -euo pipefail
 
 log() { printf '>> %s\n' "$*" >&2; }
@@ -73,4 +74,9 @@ log "Uploading $BUILD_TYPE APK to Nextcloud: ${REMOTE_PATH}"
 rclone copyto "$APK_PATH" "$DEST" --no-traverse >&2
 
 log "Upload complete: ${REMOTE_PATH}"
+
+if [ "${APK_PRUNE_AFTER_UPLOAD:-1}" = "1" ]; then
+	"$SCRIPT_DIR/prune-apk-uploads.sh" "$BUILD_TYPE"
+fi
+
 printf '%s\n' "${REMOTE_PATH}"

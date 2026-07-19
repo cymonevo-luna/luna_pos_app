@@ -20,6 +20,7 @@ WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 mkdir -p "$WORK/scripts" "$WORK/bin"
 cp "$UPLOAD" "$WORK/scripts/upload-apk-to-nextcloud.sh"
+cp "$SCRIPT_DIR/prune-apk-uploads.sh" "$WORK/scripts/prune-apk-uploads.sh"
 
 # Minimal pubspec the script parses for name + version.
 cat > "$WORK/pubspec.yaml" <<'EOF'

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import '../auth/token_refresh_service.dart';
 import 'api_exception.dart';
 import 'auth_token_interceptor.dart';
+import 'rate_limit_interceptor.dart';
 
 /// Decodes a raw JSON body (`Map`/`List`) into a typed model.
 typedef JsonDecoder<T> = T Function(dynamic data);
@@ -49,6 +50,7 @@ class ApiClient {
         },
       ),
     );
+    _dio.interceptors.add(RateLimitInterceptor(_dio));
   }
 
   final Dio _dio;

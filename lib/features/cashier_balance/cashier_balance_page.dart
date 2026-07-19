@@ -84,6 +84,9 @@ class _CashierBalancePageState extends ConsumerState<CashierBalancePage> {
           IconButton(
             key: const Key('cashier_balance_deduct_button'),
             tooltip: l10n.cashierBalanceDeduct,
+            style: IconButton.styleFrom(
+              foregroundColor: context.tokens.danger,
+            ),
             onPressed: state.submitting
                 ? null
                 : () => _openAdjust(CashierBalanceAdjustmentType.deduct),

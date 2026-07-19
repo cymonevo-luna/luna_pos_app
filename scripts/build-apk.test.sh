@@ -36,8 +36,12 @@ cat > "$WORK/bin/flutter" <<'EOF'
 case "$1" in
   pub)   exit 0 ;;
   build) mkdir -p build/app/outputs/flutter-apk
-         : > build/app/outputs/flutter-apk/app-debug.apk
-         : > build/app/outputs/flutter-apk/app-release.apk
+         if printf '%s\n' "$@" | grep -q -- '--split-per-abi'; then
+           : > build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+         else
+           : > build/app/outputs/flutter-apk/app-debug.apk
+           : > build/app/outputs/flutter-apk/app-release.apk
+         fi
          exit 0 ;;
 esac
 EOF
@@ -50,13 +54,14 @@ write_dart_mock() {
 		local on="${1##succeed-on-}"
 		cat > "$WORK/bin/dart" <<EOF
 #!/usr/bin/env bash
+if printf '%s\n' "\$@" | grep -q 'build_runner clean'; then exit 0; fi
 C="\$BR_COUNTER_FILE"; n=\$(cat "\$C" 2>/dev/null || echo 0); n=\$((n+1)); echo "\$n" > "\$C"
-if [ "\$n" -lt $on ]; then sleep 60; fi
+if [ "\$n" -lt $on ]; then sleep 3; fi
 exit 0
 EOF
 		;;
-	error) printf '#!/usr/bin/env bash\nexit 1\n' > "$WORK/bin/dart" ;;
-	hang) printf '#!/usr/bin/env bash\nsleep 60\n' > "$WORK/bin/dart" ;;
+	error) printf '#!/usr/bin/env bash\nif printf "%%s\\n" "$@" | grep -q "build_runner clean"; then exit 0; fi\nexit 1\n' > "$WORK/bin/dart" ;;
+	hang) printf '#!/usr/bin/env bash\nif printf "%%s\\n" "$@" | grep -q "build_runner clean"; then exit 0; fi\nsleep 3\n' > "$WORK/bin/dart" ;;
 	esac
 	chmod +x "$WORK/bin/dart"
 }
@@ -100,6 +105,17 @@ if [ "$rc" -eq 0 ]; then
 	echo "ok   - skips codegen when SKIP_CODEGEN=1"
 else
 	echo "FAIL - skips codegen when SKIP_CODEGEN=1: exit $rc"; sed 's/^/       | /' "$WORK/out"; fails=$((fails + 1))
+fi
+
+# 5. Release + APK_SPLIT_ABI selects the arm64-v8a split artifact.
+rc=0
+apk_path=""
+PATH="$WORK/bin:$PATH" SKIP_CODEGEN=1 APK_SPLIT_ABI=1 bash "$WORK/scripts/build-apk.sh" release >"$WORK/out" 2>&1 || rc=$?
+apk_path="$(tail -n1 "$WORK/out" 2>/dev/null || true)"
+if [ "$rc" -eq 0 ] && [ "$apk_path" = "$WORK/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk" ]; then
+	echo "ok   - release split-per-abi returns arm64-v8a artifact path"
+else
+	echo "FAIL - release split-per-abi: exit=$rc path=[$apk_path]"; sed 's/^/       | /' "$WORK/out"; fails=$((fails + 1))
 fi
 
 if [ "$fails" -gt 0 ]; then

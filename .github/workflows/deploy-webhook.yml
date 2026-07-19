@@ -3,10 +3,8 @@
 #
 # luna_jenkins (the host-side deploy runner) exposes a Generic Webhook Trigger
 # endpoint. This workflow POSTs the push details there; the deploy-<app> job
-# filters on repo + refs/heads/master, builds the APK and uploads it to Google
-# Drive. Auto-deploys always build the DEBUG apk (the Jenkins job's BUILD_TYPE
-# defaults to "debug"); a release build is chosen manually via the dropdown in
-# Jenkins.
+# filters on repo + refs/heads/master, builds the APK and uploads it to Nextcloud.
+# Per-app auto-deploy defaults (debug vs release) live in luna_jenkins/config/flutter-apk-build.conf.
 #
 # Required GitHub repository secrets (Settings -> Secrets and variables -> Actions):
 #   LUNA_DEPLOY_WEBHOOK_URL    e.g. https://<jenkins-host>/generic-webhook-trigger/invoke

@@ -17,6 +17,9 @@
 #   BUILD_RUNNER_TIMEOUT   seconds before a codegen ATTEMPT is killed (default: 600)
 #   BUILD_RUNNER_ATTEMPTS  codegen attempts before giving up (default: 3); codegen
 #                          intermittently deadlocks and a fresh run clears it
+#   APK_SPLIT_ABI          set to 1 for release builds to use --split-per-abi and
+#                          ship the APK_TARGET_ABI slice (smaller than a fat apk)
+#   APK_TARGET_ABI         abi slice to return when APK_SPLIT_ABI=1 (default: arm64-v8a)
 set -euo pipefail
 
 log() { printf '>> %s\n' "$*" >&2; }
@@ -152,10 +155,21 @@ else
 	"$SCRIPT_DIR/verify-codegen.sh"
 fi
 
-log "flutter build apk --$BUILD_TYPE"
-"$FLUTTER_BIN" build apk "--$BUILD_TYPE" >&2
-
-APK_PATH="$REPO_DIR/build/app/outputs/flutter-apk/app-$BUILD_TYPE.apk"
+APK_OUTPUT_DIR="$REPO_DIR/build/app/outputs/flutter-apk"
+SPLIT_ABI=0
+if [ "$BUILD_TYPE" = "release" ] && [ "${APK_SPLIT_ABI:-1}" = "1" ]; then
+	SPLIT_ABI=1
+fi
+if [ "$SPLIT_ABI" = "1" ]; then
+	TARGET_ABI="${APK_TARGET_ABI:-arm64-v8a}"
+	log "flutter build apk --release --split-per-abi (artifact: app-${TARGET_ABI}-release.apk)"
+	"$FLUTTER_BIN" build apk --release --split-per-abi >&2
+	APK_PATH="$APK_OUTPUT_DIR/app-${TARGET_ABI}-release.apk"
+else
+	log "flutter build apk --$BUILD_TYPE"
+	"$FLUTTER_BIN" build apk "--$BUILD_TYPE" >&2
+	APK_PATH="$APK_OUTPUT_DIR/app-$BUILD_TYPE.apk"
+fi
 [ -f "$APK_PATH" ] || {
 	echo "ERROR: expected APK not found at $APK_PATH" >&2
 	exit 1

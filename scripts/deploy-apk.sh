@@ -6,10 +6,10 @@
 # the Flutter analogue of the backend services' scripts/refresh-daemon.sh.
 #
 # Usage:
-#   scripts/deploy-apk.sh [debug|release]   # default: debug
+#   scripts/deploy-apk.sh [debug|release]   # default: debug (see apk-build-config.sh)
 #
-# Auto-deploys (GitHub master push -> Jenkins webhook) always pass "debug";
-# a "release" build is chosen manually via the Jenkins BUILD_TYPE dropdown.
+# Auto-deploy BUILD_TYPE defaults are configured in luna_jenkins/config/flutter-apk-build.conf
+# and passed by Jenkins; manual runs default to debug unless APK_BUILD_TYPE is set.
 #
 # All build/upload env overrides (FLUTTER_BIN, NEXTCLOUD_REMOTE,
 # NEXTCLOUD_BASE_DIR, APP_NAME, RCLONE_CONFIG, ...) are honored by the scripts
@@ -17,7 +17,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
-BUILD_TYPE="${1:-debug}"
+BUILD_TYPE="$("$SCRIPT_DIR/apk-build-config.sh" "${1:-}")"
 
 # Jenkins deploys reuse a persistent checkout where build_runner intermittently
 # deadlocks on stale .dart_tool/build asset graphs. Generated *.freezed.dart /

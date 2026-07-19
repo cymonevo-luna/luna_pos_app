@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../core/formatting/currency_formatter.dart';
 import '../../core/router/app_router.dart';
+import '../../core/router/navigation_config.dart';
+import '../../core/formatting/currency_formatter.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_tokens.dart';
 import '../../features/auth/auth_controller.dart';
 import '../../l10n/app_localizations.dart';
+import '../../shared/widgets/lazy_shell_tab_loader.dart';
 import '../../shared/widgets/widgets.dart';
 import 'cashier_balance_adjust_sheet.dart';
 import 'cashier_balance_controller.dart';
@@ -63,7 +65,11 @@ class _CashierBalancePageState extends ConsumerState<CashierBalancePage> {
     final locale = Localizations.localeOf(context);
     final dateFormat = DateFormat.yMMMd(locale.toString()).add_jm();
 
-    return Scaffold(
+    return LazyShellTabLoader(
+      branch: ShellBranch.cashierBalance,
+      onVisible: (ref) =>
+          ref.read(cashierBalanceController.notifier).loadIfNeeded(),
+      child: Scaffold(
       appBar: AppBar(
         title: Text(l10n.cashierBalanceTitle),
         actions: [
@@ -123,6 +129,7 @@ class _CashierBalancePageState extends ConsumerState<CashierBalancePage> {
             ),
           ),
         ],
+      ),
       ),
     );
   }
@@ -200,10 +207,6 @@ class _CashierBalanceHistoryBody extends StatelessWidget {
       );
     }
 
-    if (state.loading && state.entries.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
     if (state.error != null && state.entries.isEmpty) {
       return _ErrorView(
         message: state.error!,
@@ -212,7 +215,10 @@ class _CashierBalanceHistoryBody extends StatelessWidget {
       );
     }
 
-    if (state.isEmpty) {
+    if (state.entries.isEmpty) {
+      if (state.loading || state.page == 0) {
+        return const Center(child: CircularProgressIndicator());
+      }
       return _EmptyView(message: emptyLabel, onRefresh: onRefresh);
     }
 

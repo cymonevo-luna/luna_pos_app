@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/di/locator.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/network/paginated_response.dart';
+import '../../core/network/resource_cache.dart';
 import 'data/cashier_balance_repository.dart';
 import 'models/cashier_balance.dart';
 
@@ -72,15 +73,32 @@ class CashierBalanceController extends Notifier<CashierBalanceState> {
   CashierBalanceRepository get _repository =>
       locator<CashierBalanceRepository>();
 
+  DateTime? _fetchedAt;
+
   @override
-  CashierBalanceState build() {
-    Future.microtask(loadInitial);
-    return const CashierBalanceState(loading: true);
+  CashierBalanceState build() => const CashierBalanceState();
+
+  Future<void> loadIfNeeded() async {
+    if (state.loading || state.refreshing) return;
+
+    final fetchedAt = _fetchedAt;
+    if (state.entries.isNotEmpty &&
+        state.balance != null &&
+        state.error == null &&
+        fetchedAt != null &&
+        DateTime.now().difference(fetchedAt) < ResourceCache.cacheTtl) {
+      return;
+    }
+
+    if (state.entries.isEmpty && state.error == null) {
+      await loadInitial();
+    }
   }
 
   Future<void> loadInitial() => _fetch(page: 1, append: false);
 
-  Future<void> refresh() => _fetch(page: 1, append: false, refreshing: true);
+  Future<void> refresh() =>
+      _fetch(page: 1, append: false, refreshing: true, forceRefresh: true);
 
   Future<void> retry() => _fetch(page: 1, append: false, forceLoading: true);
 
@@ -105,6 +123,7 @@ class CashierBalanceController extends Notifier<CashierBalanceState> {
         response.entry,
         ...state.entries.where((entry) => entry.id != response.entry.id),
       ];
+      _fetchedAt = DateTime.now();
       state = state.copyWith(
         submitting: false,
         balance: response.balance,
@@ -130,6 +149,7 @@ class CashierBalanceController extends Notifier<CashierBalanceState> {
     bool refreshing = false,
     bool loadingMore = false,
     bool forceLoading = false,
+    bool forceRefresh = false,
   }) async {
     if (!ref.mounted) return;
     state = state.copyWith(
@@ -141,11 +161,14 @@ class CashierBalanceController extends Notifier<CashierBalanceState> {
     );
 
     try {
-      final balanceFuture = append ? null : _repository.fetchBalance();
+      final balanceFuture = append
+          ? null
+          : _repository.fetchBalance(forceRefresh: forceRefresh);
       final PaginatedResponse<CashierBalanceEntry> entriesResponse =
           await _repository.fetchEntries(
         page: page,
         perPage: CashierBalanceRepository.defaultPerPage,
+        forceRefresh: forceRefresh,
       );
       final balance = balanceFuture != null ? await balanceFuture : null;
 
@@ -154,6 +177,10 @@ class CashierBalanceController extends Notifier<CashierBalanceState> {
       final merged = append
           ? [...state.entries, ...entriesResponse.items]
           : entriesResponse.items;
+
+      if (!append) {
+        _fetchedAt = DateTime.now();
+      }
 
       state = state.copyWith(
         loading: false,

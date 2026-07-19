@@ -4,6 +4,7 @@ import 'package:http_mock_adapter/http_mock_adapter.dart';
 
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
+import 'package:luna_pos/core/network/resource_cache.dart';
 import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/menu_controller.dart';
 import 'package:luna_pos/features/menu/models/pos_menu.dart';
@@ -20,8 +21,9 @@ void main() {
     adapter = mocked.adapter;
     locator
       ..registerSingleton<ApiClient>(mocked.client)
+      ..registerSingleton<ResourceCache>(ResourceCache())
       ..registerLazySingleton<MenuRepository>(
-        () => MenuRepository(locator<ApiClient>()),
+        () => MenuRepository(locator<ApiClient>(), locator<ResourceCache>()),
       );
     container = ProviderContainer();
   });
@@ -116,7 +118,7 @@ void main() {
       (server) => server.reply(200, response),
     );
 
-    container.read(menuProvider.notifier);
+    await container.read(menuProvider.notifier).loadIfNeeded();
     for (var i = 0; i < 50 && container.read(menuProvider).loading; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 5));
     }
@@ -198,7 +200,7 @@ void main() {
       (server) => server.reply(200, sampleMenusResponse()),
     );
 
-    container.read(menuProvider.notifier);
+    await container.read(menuProvider.notifier).loadIfNeeded();
     for (var i = 0; i < 50 && container.read(menuProvider).loading; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 5));
     }
@@ -219,7 +221,7 @@ void main() {
       }),
     );
 
-    container.read(menuProvider.notifier);
+    await container.read(menuProvider.notifier).loadIfNeeded();
     for (var i = 0; i < 50 && container.read(menuProvider).loading; i++) {
       await Future<void>.delayed(const Duration(milliseconds: 5));
     }

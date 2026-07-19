@@ -43,7 +43,7 @@ void main() {
     locator
       ..registerSingleton<PreferencesService>(await PreferencesService.create())
       ..registerLazySingleton<TransactionRepository>(
-        () => TransactionRepository(locator<ApiClient>()),
+        () => TransactionRepository(locator<ApiClient>(), testResourceCache()),
       );
 
     seedAuthenticatedTestAccount(

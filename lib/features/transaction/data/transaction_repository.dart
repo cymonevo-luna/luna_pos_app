@@ -1,14 +1,18 @@
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_envelope.dart';
 import '../../../core/network/paginated_response.dart';
+import '../../../core/network/resource_cache.dart';
 import '../models/transaction.dart';
 
 class TransactionRepository {
-  TransactionRepository(this._api);
+  TransactionRepository(this._api, this._cache);
 
   final ApiClient _api;
+  final ResourceCache _cache;
 
   static const defaultPerPage = 20;
+  static const listPath = '/api/v1/pos/transactions';
+  static const listCachePrefix = 'GET:$listPath';
 
   Future<TransactionResponse> createTransaction(
     CreateTransactionRequest request,
@@ -35,8 +39,10 @@ class TransactionRepository {
       body['change_amount'] = request.changeAmount;
     }
 
+    _cache.invalidatePrefix(listCachePrefix);
+
     return _api.post<TransactionResponse>(
-      '/api/v1/pos/transactions',
+      listPath,
       body: body,
       decoder: (raw) =>
           TransactionResponse.fromJson(unwrapApiEnvelope(raw)),
@@ -48,6 +54,7 @@ class TransactionRepository {
     int perPage = defaultPerPage,
     DateTime? dateFrom,
     DateTime? dateTo,
+    bool forceRefresh = false,
   }) {
     final query = <String, dynamic>{
       'page': page,
@@ -60,23 +67,31 @@ class TransactionRepository {
       query['date_to'] = _formatQueryDate(dateTo);
     }
 
-    return _api.get<PaginatedResponse<TransactionListItem>>(
-      '/api/v1/pos/transactions',
-      query: query,
-      decoder: (raw) => decodePaginatedEnvelope(
-        raw,
-        TransactionListItem.fromJson,
+    final cacheKey = resourceCacheKey('GET', listPath, query);
+
+    return _cache.get(
+      cacheKey,
+      () => _api.get<PaginatedResponse<TransactionListItem>>(
+        listPath,
+        query: query,
+        decoder: (raw) => decodePaginatedEnvelope(
+          raw,
+          TransactionListItem.fromJson,
+        ),
       ),
+      forceRefresh: forceRefresh,
     );
   }
 
   Future<TransactionDetail> fetchTransactionDetail(String id) {
     return _api.get<TransactionDetail>(
-      '/api/v1/pos/transactions/$id',
+      '$listPath/$id',
       decoder: (raw) =>
           TransactionDetail.fromJson(unwrapApiEnvelope(raw)),
     );
   }
+
+  void invalidateTransactionList() => _cache.invalidatePrefix(listCachePrefix);
 
   static String _formatQueryDate(DateTime date) {
     final local = DateTime(date.year, date.month, date.day);

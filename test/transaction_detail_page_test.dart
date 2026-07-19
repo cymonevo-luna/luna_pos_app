@@ -72,10 +72,10 @@ void main() {
     locator
       ..registerSingleton<PreferencesService>(await PreferencesService.create())
       ..registerLazySingleton<TransactionRepository>(
-        () => TransactionRepository(locator<ApiClient>()),
+        () => TransactionRepository(locator<ApiClient>(), testResourceCache()),
       )
       ..registerLazySingleton<StoreSettingsRepository>(
-        () => StoreSettingsRepository(locator<ApiClient>()),
+        () => StoreSettingsRepository(locator<ApiClient>(), testResourceCache()),
       )
       ..registerSingleton<BluetoothPrinterService>(printer)
       ..registerLazySingleton<ReceiptPrintService>(ReceiptPrintService.new);

@@ -17,7 +17,7 @@ void main() {
     locator
       ..registerSingleton<ApiClient>(mocked.client)
       ..registerLazySingleton<OrderOptionRepository>(
-        () => OrderOptionRepository(locator<ApiClient>()),
+        () => OrderOptionRepository(locator<ApiClient>(), testResourceCache()),
       );
   });
 

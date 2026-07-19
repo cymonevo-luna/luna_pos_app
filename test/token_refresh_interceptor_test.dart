@@ -39,7 +39,7 @@ void main() {
       ..registerSingleton<TokenRefreshService>(tokenRefresh)
       ..registerSingleton<ApiClient>(client)
       ..registerLazySingleton<MenuRepository>(
-        () => MenuRepository(locator<ApiClient>()),
+        () => MenuRepository(locator<ApiClient>(), testResourceCache()),
       );
   });
 

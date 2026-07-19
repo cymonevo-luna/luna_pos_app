@@ -18,7 +18,7 @@ import 'helpers/auth_harness.dart';
 import 'helpers/mock_bluetooth_printer_service.dart';
 
 class _FakeTransactionRepository extends TransactionRepository {
-  _FakeTransactionRepository(super.api, this._detail);
+  _FakeTransactionRepository(super.api, super.cache, this._detail);
 
   final TransactionDetail _detail;
 
@@ -62,13 +62,14 @@ void main() {
     printer = MockBluetoothPrinterService();
 
     registerAuthTestServices(client: mocked.client, secure: FakeSecureStorage());
+    registerTestResourceCache();
     locator
       ..registerSingleton<PreferencesService>(await PreferencesService.create())
       ..registerSingleton<TransactionRepository>(
-        _FakeTransactionRepository(mocked.client, detail),
+        _FakeTransactionRepository(mocked.client, testResourceCache(), detail),
       )
       ..registerLazySingleton<StoreSettingsRepository>(
-        () => StoreSettingsRepository(locator<ApiClient>()),
+        () => StoreSettingsRepository(locator<ApiClient>(), testResourceCache()),
       )
       ..registerSingleton<BluetoothPrinterService>(printer)
       ..registerLazySingleton<ReceiptPrintService>(ReceiptPrintService.new);

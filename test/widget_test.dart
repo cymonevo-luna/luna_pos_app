@@ -31,7 +31,7 @@ void main() {
     locator
       ..registerSingleton<PreferencesService>(await PreferencesService.create())
       ..registerLazySingleton<MenuRepository>(
-        () => MenuRepository(locator<ApiClient>()),
+        () => MenuRepository(locator<ApiClient>(), testResourceCache()),
       );
   });
 

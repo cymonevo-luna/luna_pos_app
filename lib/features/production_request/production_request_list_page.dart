@@ -4,10 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/router/app_router.dart';
+import '../../core/router/navigation_config.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_tokens.dart';
 import '../../features/auth/auth_controller.dart';
 import '../../l10n/app_localizations.dart';
+import '../../shared/widgets/lazy_shell_tab_loader.dart';
 import '../../shared/widgets/widgets.dart';
 import 'models/production_request.dart';
 import 'production_request_controller.dart';
@@ -59,7 +61,11 @@ class _ProductionRequestListPageState
     final locale = Localizations.localeOf(context);
     final dateFormat = DateFormat.yMMMd(locale.toString()).add_jm();
 
-    return Scaffold(
+    return LazyShellTabLoader(
+      branch: ShellBranch.calendar,
+      onVisible: (ref) =>
+          ref.read(productionRequestListProvider.notifier).loadIfNeeded(),
+      child: Scaffold(
       appBar: AppBar(title: Text(l10n.productionDeliveries)),
       body: _ProductionRequestListBody(
         state: state,
@@ -78,6 +84,7 @@ class _ProductionRequestListPageState
         notAuthorizedMessage: l10n.notAuthorizedMessage,
         logoutLabel: l10n.logout,
         scrollController: _scrollController,
+      ),
       ),
     );
   }
@@ -123,10 +130,6 @@ class _ProductionRequestListBody extends StatelessWidget {
       );
     }
 
-    if (state.loading && state.items.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
     if (state.error != null && state.items.isEmpty) {
       return _ErrorView(
         message: state.error!,
@@ -135,7 +138,10 @@ class _ProductionRequestListBody extends StatelessWidget {
       );
     }
 
-    if (state.isEmpty) {
+    if (state.items.isEmpty) {
+      if (state.loading || state.page == 0) {
+        return const Center(child: CircularProgressIndicator());
+      }
       return _EmptyView(message: emptyLabel, onRefresh: onRefresh);
     }
 

@@ -10,6 +10,7 @@ import 'package:luna_pos/core/network/api_exception.dart';
 import 'package:luna_pos/core/printer/bluetooth_printer_service.dart';
 import 'package:luna_pos/core/storage/preferences_service.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
+import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/models/pos_menu.dart';
 import 'package:luna_pos/features/order/checkout_controller.dart';
 import 'package:luna_pos/features/order/models/payment_method.dart';
@@ -40,7 +41,7 @@ class _FakeAuthController extends AuthController {
 }
 
 class _RecordingTransactionRepository extends TransactionRepository {
-  _RecordingTransactionRepository(super.api);
+  _RecordingTransactionRepository(super.api, super.cache);
 
   CreateTransactionRequest? lastRequest;
 
@@ -67,7 +68,8 @@ class _RecordingTransactionRepository extends TransactionRepository {
 
 class _ThrowingTransactionRepository extends TransactionRepository {
   _ThrowingTransactionRepository(
-    super.api, {
+    super.api,
+    super.cache, {
     required this.exception,
   });
 
@@ -96,18 +98,25 @@ void main() {
     final mocked = buildMockedApiClient();
     adapter = mocked.adapter;
     printer = MockBluetoothPrinterService();
-    transactionRepository = _RecordingTransactionRepository(mocked.client);
+    transactionRepository = _RecordingTransactionRepository(
+      mocked.client,
+      registerTestResourceCache(),
+    );
 
     final secure = FakeSecureStorage();
     registerAuthTestServices(secure: secure, client: mocked.client);
+    registerTestResourceCache();
     locator
       ..registerSingleton<PreferencesService>(await PreferencesService.create())
       ..registerLazySingleton<OrderOptionRepository>(
-        () => OrderOptionRepository(locator<ApiClient>()),
+        () => OrderOptionRepository(locator<ApiClient>(), testResourceCache()),
       )
       ..registerSingleton<TransactionRepository>(transactionRepository)
       ..registerLazySingleton<StoreSettingsRepository>(
-        () => StoreSettingsRepository(locator<ApiClient>()),
+        () => StoreSettingsRepository(locator<ApiClient>(), testResourceCache()),
+      )
+      ..registerLazySingleton<MenuRepository>(
+        () => MenuRepository(locator<ApiClient>(), testResourceCache()),
       )
       ..registerSingleton<BluetoothPrinterService>(printer)
       ..registerLazySingleton<ReceiptPrintService>(ReceiptPrintService.new);
@@ -123,6 +132,20 @@ void main() {
           'phone': '021-1234567',
           'thank_you_note': 'Terima kasih!',
         },
+      }),
+    );
+    adapter.onGet(
+      '/api/v1/pos/menus',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {'categories': []},
+      }),
+    );
+    adapter.onGet(
+      '/api/v1/pos/menus',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {'categories': []},
       }),
     );
     stubOrderOptions(adapter);
@@ -450,6 +473,7 @@ void main() {
     locator.registerSingleton<TransactionRepository>(
       _ThrowingTransactionRepository(
         locator<ApiClient>(),
+        testResourceCache(),
         exception: const ApiException(
           type: ApiErrorType.unknown,
           message: 'Something went wrong.',
@@ -489,6 +513,7 @@ void main() {
     locator.registerSingleton<TransactionRepository>(
       _ThrowingTransactionRepository(
         locator<ApiClient>(),
+        testResourceCache(),
         exception: const ApiException(
           type: ApiErrorType.notFound,
           message: 'Not found.',
@@ -574,7 +599,7 @@ void main() {
       locator.unregister<TransactionRepository>();
     }
     locator.registerLazySingleton<TransactionRepository>(
-      () => TransactionRepository(locator<ApiClient>()),
+      () => TransactionRepository(locator<ApiClient>(), testResourceCache()),
     );
 
     final result = await container.read(checkoutProvider.notifier).proceed(

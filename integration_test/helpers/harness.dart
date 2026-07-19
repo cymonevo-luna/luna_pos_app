@@ -9,6 +9,7 @@ import 'package:luna_pos/core/auth/token_refresh_service.dart';
 import 'package:luna_pos/core/config/app_config.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
+import 'package:luna_pos/core/network/resource_cache.dart';
 import 'package:luna_pos/core/localization/locale_provider.dart';
 import 'package:luna_pos/core/router/app_router.dart';
 import 'package:luna_pos/core/storage/preferences_service.dart';
@@ -161,17 +162,18 @@ Future<IntegrationTestHarness> setUpIntegrationHarness() async {
     ..registerSingleton<SessionGuard>(sessionGuard)
     ..registerSingleton<TokenRefreshService>(tokenRefresh)
     ..registerSingleton<ApiClient>(mocked.client)
+    ..registerSingleton<ResourceCache>(ResourceCache())
     ..registerLazySingleton<MenuRepository>(
-      () => MenuRepository(locator<ApiClient>()),
+      () => MenuRepository(locator<ApiClient>(), locator<ResourceCache>()),
     )
     ..registerLazySingleton<FoodSupplyRepository>(
       () => FoodSupplyRepository(locator<ApiClient>()),
     )
     ..registerLazySingleton<ProductionRequestRepository>(
-      () => ProductionRequestRepository(locator<ApiClient>()),
+      () => ProductionRequestRepository(locator<ApiClient>(), locator<ResourceCache>()),
     )
     ..registerLazySingleton<CashierBalanceRepository>(
-      () => CashierBalanceRepository(locator<ApiClient>()),
+      () => CashierBalanceRepository(locator<ApiClient>(), locator<ResourceCache>()),
     );
 
   return IntegrationTestHarness(

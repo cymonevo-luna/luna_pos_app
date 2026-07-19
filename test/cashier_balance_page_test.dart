@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 
+import 'package:luna_pos/core/router/navigation_config.dart';
+import 'package:luna_pos/core/router/shell_branch_provider.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
 import 'package:luna_pos/core/router/app_router.dart';
@@ -31,6 +33,11 @@ class _CashierAuthController extends AuthController {
       );
 }
 
+class _CashierBalanceShellNotifier extends ShellBranchNotifier {
+  @override
+  int build() => ShellBranch.cashierBalance.branchIndex;
+}
+
 void main() {
   late DioAdapter adapter;
 
@@ -41,7 +48,7 @@ void main() {
     locator
       ..registerSingleton<ApiClient>(mocked.client)
       ..registerLazySingleton<CashierBalanceRepository>(
-        () => CashierBalanceRepository(locator<ApiClient>()),
+        () => CashierBalanceRepository(locator<ApiClient>(), testResourceCache()),
       );
   });
 
@@ -60,6 +67,7 @@ void main() {
     return ProviderScope(
       overrides: [
         authProvider.overrideWith(_CashierAuthController.new),
+        shellCurrentBranchProvider.overrideWith(_CashierBalanceShellNotifier.new),
       ],
       child: MaterialApp.router(
         routerConfig: router,

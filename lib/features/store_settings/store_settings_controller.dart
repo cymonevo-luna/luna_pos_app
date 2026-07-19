@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/di/locator.dart';
 import '../../core/network/api_exception.dart';
+import '../../core/network/resource_cache.dart';
 import 'data/store_settings_repository.dart';
 import 'models/store_settings.dart';
 
@@ -33,18 +34,26 @@ class StoreSettingsState {
 class StoreSettingsController extends Notifier<StoreSettingsState> {
   StoreSettingsRepository get _repository => locator<StoreSettingsRepository>();
 
+  DateTime? _fetchedAt;
+
   @override
   StoreSettingsState build() => const StoreSettingsState();
 
-  /// Returns cached settings when available; otherwise fetches once per session.
+  /// Returns cached settings when available; otherwise fetches once per TTL window.
   Future<StoreSettings> loadIfNeeded() async {
     final cached = state.settings;
-    if (cached != null) return cached;
+    final fetchedAt = _fetchedAt;
+    if (cached != null &&
+        fetchedAt != null &&
+        DateTime.now().difference(fetchedAt) < ResourceCache.cacheTtl) {
+      return cached;
+    }
 
     state = state.copyWith(loading: true, clearError: true);
 
     try {
       final settings = await _repository.fetchStoreSettings();
+      _fetchedAt = DateTime.now();
       state = state.copyWith(loading: false, settings: settings);
       return settings;
     } on ApiException catch (error) {

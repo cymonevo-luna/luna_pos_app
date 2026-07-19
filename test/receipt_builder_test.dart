@@ -83,13 +83,14 @@ void main() {
     expect(text, contains('Rp 16.000'));
   });
 
-  test('receipt omits zero discount and change lines', () {
+  test('receipt omits zero discount and prints Kembalian as negative zero', () {
     final text = decodeReceiptText(
       builder.build(sampleReceiptData(discountAmount: 0, changeAmount: 0)),
     );
 
     expect(text, isNot(contains('Discount')));
-    expect(text, isNot(contains('Kembalian')));
+    expect(text, contains('Kembalian'));
+    expect(text, contains('-Rp 0'));
     expect(text, contains('Bayar'));
     expect(text, contains('Subtotal'));
     expect(text, contains('TOTAL'));
@@ -103,7 +104,7 @@ void main() {
     expect(text, contains('Discount'));
     expect(text, contains('Kembalian'));
     expect(text, contains('Rp 5.000'));
-    expect(text, contains('Rp 44.000'));
+    expect(text, contains('-Rp 44.000'));
   });
 
   test('fromCheckout maps transaction, store, and cashier fields', () {
@@ -198,6 +199,72 @@ void main() {
 
     expect(text, contains('Tipe'));
     expect(text, contains('Take Away'));
+  });
+
+  test('cash payment Bayar line has no a2Rp corruption', () {
+    final text = decodeReceiptText(
+      builder.build(
+        sampleReceiptData().copyWith(
+          cashTendered: 50000,
+          changeAmount: 15000,
+          totalAmount: 35000,
+        ),
+      ),
+    );
+
+    expect(text, contains('Bayar'));
+    expect(text, contains('Rp 50.000'));
+    expect(text, isNot(contains('a2Rp')));
+  });
+
+  test('million-rupiah Bayar and Kembalian fit on one line', () {
+    final text = decodeReceiptText(
+      builder.build(
+        sampleReceiptData().copyWith(
+          cashTendered: 1000000,
+          changeAmount: 0,
+          totalAmount: 1000000,
+        ),
+      ),
+    );
+
+    expect(text, contains('Rp 1.000.000'));
+    expect(text, isNot(contains('a2Rp')));
+    expect(text, isNot(contains('BayarRp')));
+    expect(text, isNot(contains('KembalianRp')));
+    expect(text, isNot(contains('Bayar a')));
+    expect(text, isNot(contains('Kembalian a')));
+  });
+
+  test('Kembalian prints as negative value', () {
+    final text = decodeReceiptText(
+      builder.build(
+        sampleReceiptData().copyWith(
+          cashTendered: 50000,
+          changeAmount: 15000,
+          totalAmount: 35000,
+        ),
+      ),
+    );
+
+    expect(text, contains('Kembalian'));
+    expect(text, contains('-Rp 15.000'));
+  });
+
+  test('zero change prints Kembalian as negative zero', () {
+    final text = decodeReceiptText(
+      builder.build(
+        sampleReceiptData().copyWith(
+          cashTendered: 51000,
+          changeAmount: 0,
+          totalAmount: 51000,
+        ),
+      ),
+    );
+
+    expect(text, contains('Bayar'));
+    expect(text, contains('Kembalian'));
+    expect(text, contains('-Rp 0'));
   });
 
   test('builder output is deterministic for the same input', () {

@@ -71,11 +71,17 @@ class ReceiptBuilder {
 
     bytes
       ..addAll(_separatorLine(generator))
-      ..addAll(_totalRow(generator, 'Subtotal', formatRupiah(data.subtotalAmount)));
+      ..addAll(
+        _totalRow(generator, 'Subtotal', formatRupiahForReceipt(data.subtotalAmount)),
+      );
 
     if (data.discountAmount > 0) {
       bytes.addAll(
-        _totalRow(generator, 'Discount', formatRupiah(data.discountAmount)),
+        _totalRow(
+          generator,
+          'Discount',
+          formatRupiahForReceipt(data.discountAmount),
+        ),
       );
     }
 
@@ -83,7 +89,7 @@ class ReceiptBuilder {
       _totalRow(
         generator,
         'TOTAL',
-        formatRupiah(data.totalAmount),
+        formatRupiahForReceipt(data.totalAmount),
         bold: true,
       ),
     );
@@ -100,13 +106,18 @@ class ReceiptBuilder {
 
     if (data.cashTendered != null) {
       bytes.addAll(
-        _totalRow(generator, 'Bayar', formatRupiah(data.cashTendered!)),
+        _totalRow(
+          generator,
+          'Bayar',
+          formatRupiahForReceipt(data.cashTendered!),
+        ),
       );
-    }
-
-    if (data.changeAmount > 0) {
       bytes.addAll(
-        _totalRow(generator, 'Kembalian', formatRupiah(data.changeAmount)),
+        _totalRow(
+          generator,
+          'Kembalian',
+          '-${formatRupiahForReceipt(data.changeAmount)}',
+        ),
       );
     }
 
@@ -140,7 +151,7 @@ class ReceiptBuilder {
           styles: const PosStyles(align: PosAlign.left),
         ),
         PosColumn(
-          text: formatRupiah(item.lineTotal),
+          text: formatRupiahForReceipt(item.lineTotal),
           width: 4,
           styles: const PosStyles(align: PosAlign.right),
         ),
@@ -169,12 +180,12 @@ class ReceiptBuilder {
     return generator.row([
       PosColumn(
         text: label,
-        width: 6,
+        width: 4,
         styles: PosStyles(align: PosAlign.left, bold: bold),
       ),
       PosColumn(
         text: amount,
-        width: 6,
+        width: 8,
         styles: PosStyles(align: PosAlign.right, bold: bold),
       ),
     ]);

@@ -115,7 +115,7 @@ void main() {
     expect(text, contains('Bayar'));
     expect(text, contains('Rp 50.000'));
     expect(text, contains('Kembalian'));
-    expect(text, contains('Rp 15.000'));
+    expect(text, contains('-Rp 15.000'));
   });
 
   test('fromTransactionDetail omits cash lines for QRIS', () {

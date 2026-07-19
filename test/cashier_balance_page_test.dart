@@ -9,6 +9,7 @@ import 'package:luna_pos/core/router/shell_branch_provider.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
 import 'package:luna_pos/core/router/app_router.dart';
+import 'package:luna_pos/core/theme/app_tokens.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
 import 'package:luna_pos/features/cashier_balance/cashier_balance_page.dart';
 import 'package:luna_pos/features/cashier_balance/data/cashier_balance_repository.dart';
@@ -106,6 +107,44 @@ void main() {
     expect(find.text('Current balance'), findsOneWidget);
   });
 
+  testWidgets('deduct button uses danger styling', (tester) async {
+    adapter.onGet(
+      CashierBalanceRepository.balancePath,
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'balance': 100000,
+          'updated_at': '2026-07-18T10:00:00Z',
+        },
+      }),
+    );
+    adapter.onGet(
+      CashierBalanceRepository.entriesPath,
+      (server) => server.reply(200, {
+        'success': true,
+        'data': [],
+        'meta': {'page': 1, 'per_page': 20, 'total': 0},
+      }),
+      queryParameters: {'page': '1', 'per_page': '20'},
+    );
+
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
+
+    final deductButton = tester.widget<IconButton>(
+      find.byKey(const Key('cashier_balance_deduct_button')),
+    );
+    final addButton = tester.widget<IconButton>(
+      find.byKey(const Key('cashier_balance_add_button')),
+    );
+    final dangerColor = tester.element(find.byType(CashierBalancePage))
+        .tokens
+        .danger;
+
+    expect(deductButton.style?.foregroundColor?.resolve({}), dangerColor);
+    expect(addButton.style?.foregroundColor?.resolve({}), isNull);
+  });
+
   testWidgets('manual add shows success snackbar and updates balance', (tester) async {
     adapter.onGet(
       CashierBalanceRepository.balancePath,
@@ -172,6 +211,76 @@ void main() {
     expect(find.text('Cashier balance updated'), findsOneWidget);
     expect(find.text('Rp 125.000'), findsOneWidget);
     expect(find.text('POS test'), findsOneWidget);
+    expect(find.textContaining('cashier-test'), findsOneWidget);
+  });
+
+  testWidgets('manual deduct shows success snackbar and updates balance',
+      (tester) async {
+    adapter.onGet(
+      CashierBalanceRepository.balancePath,
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'balance': 100000,
+          'updated_at': '2026-07-18T10:00:00Z',
+        },
+      }),
+    );
+    adapter.onGet(
+      CashierBalanceRepository.entriesPath,
+      (server) => server.reply(200, {
+        'success': true,
+        'data': [],
+        'meta': {'page': 1, 'per_page': 20, 'total': 0},
+      }),
+      queryParameters: {'page': '1', 'per_page': '20'},
+    );
+    adapter.onPost(
+      CashierBalanceRepository.adjustmentsPath,
+      (server) => server.reply(201, {
+        'success': true,
+        'data': {
+          'balance': {
+            'balance': 75000,
+            'updated_at': '2026-07-18T10:05:00Z',
+          },
+          'entry': {
+            'id': 'entry-2',
+            'amount': -25000,
+            'purpose': 'POS deduct test',
+            'requested_by_username': 'cashier-test',
+            'type': 'DEDUCT',
+            'created_at': '2026-07-18T10:05:00Z',
+          },
+        },
+      }),
+      data: {
+        'amount': 25000,
+        'purpose': 'POS deduct test',
+        'type': 'DEDUCT',
+      },
+    );
+
+    await tester.pumpWidget(buildTestApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('cashier_balance_deduct_button')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('cashier_balance_adjust_amount')),
+      '25000',
+    );
+    await tester.enterText(
+      find.byKey(const Key('cashier_balance_adjust_purpose')),
+      'POS deduct test',
+    );
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Cashier balance updated'), findsOneWidget);
+    expect(find.text('Rp 75.000'), findsOneWidget);
+    expect(find.text('POS deduct test'), findsOneWidget);
     expect(find.textContaining('cashier-test'), findsOneWidget);
   });
 }

@@ -440,6 +440,24 @@ abstract class AppLocalizations {
   /// **'Menu'**
   String get menu;
 
+  /// Tooltip for menu layout toggle in the app bar
+  ///
+  /// In en, this message translates to:
+  /// **'Menu layout'**
+  String get menuLayout;
+
+  /// No description provided for @menuLayoutGrid.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid'**
+  String get menuLayoutGrid;
+
+  /// No description provided for @menuLayoutList.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get menuLayoutList;
+
   /// No description provided for @refreshMenu.
   ///
   /// In en, this message translates to:

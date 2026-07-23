@@ -182,6 +182,15 @@ class AppLocalizationsId extends AppLocalizations {
   String get menu => 'Menu';
 
   @override
+  String get menuLayout => 'Tata letak menu';
+
+  @override
+  String get menuLayoutGrid => 'Grid';
+
+  @override
+  String get menuLayoutList => 'Daftar';
+
+  @override
   String get refreshMenu => 'Muat ulang menu';
 
   @override

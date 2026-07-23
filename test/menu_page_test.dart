@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Icons, Key, Offset, PopupMenuItem, RenderBox, Size, TextField;
+import 'package:flutter/material.dart' show AlertDialog, GridView, Icons, Key, Offset, PopupMenuItem, RenderBox, Size, SizedBox, TextField;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
@@ -14,6 +14,7 @@ import 'package:luna_pos/features/menu/data/menu_repository.dart';
 import 'package:luna_pos/features/menu/menu_layout_provider.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/features/menu/widgets/menu_item_card.dart';
+import 'package:luna_pos/features/menu/widgets/menu_item_list_row.dart';
 import 'package:luna_pos/features/order/order_controller.dart';
 import 'package:luna_pos/shared/widgets/app_button.dart';
 import 'package:luna_pos/shared/widgets/app_section_header.dart';
@@ -225,6 +226,33 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+  }
+
+  Future<void> selectListLayout(WidgetTester tester) async {
+    await tester.tap(find.byKey(const Key('menu_layout_toggle')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('List'));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> tapListIncrement(WidgetTester tester, String menuId) async {
+    await tester.tap(find.byKey(Key('menu_list_inc_$menuId')));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> tapListDecrement(WidgetTester tester, String menuId) async {
+    await tester.tap(find.byKey(Key('menu_list_dec_$menuId')));
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> tapListNote(WidgetTester tester, String menuId) async {
+    await tester.tap(find.byKey(Key('menu_list_note_$menuId')));
+    await tester.pumpAndSettle();
+  }
+
+  ProviderContainer menuPageContainer(WidgetTester tester) {
+    final menuPage = tester.element(find.byType(MenuPage));
+    return ProviderScope.containerOf(menuPage);
   }
 
   Map<String, dynamic> sampleMenusResponse() => {
@@ -664,5 +692,192 @@ void main() {
       find.descendant(of: listItem, matching: find.byIcon(Icons.check)),
       findsOneWidget,
     );
+  });
+
+  testWidgets('list layout renders compact rows', (WidgetTester tester) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: denseMenusResponse(),
+      surfaceSize: const Size(800, 2000),
+    );
+
+    await selectListLayout(tester);
+
+    expect(find.byType(MenuItemListRow), findsWidgets);
+    expect(find.byType(MenuItemCard), findsNothing);
+    expect(find.byType(GridView), findsNothing);
+
+    final headers = tester
+        .widgetList<AppSectionHeader>(find.byType(AppSectionHeader))
+        .toList();
+    expect(headers.map((header) => header.title).toList(), ['Mains', 'Drinks']);
+  });
+
+  testWidgets('grid layout regression', (WidgetTester tester) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: sampleMenusResponse(),
+    );
+
+    expect(find.byType(MenuItemCard), findsWidgets);
+    expect(find.byType(MenuItemListRow), findsNothing);
+
+    await tapMenuItemCard(tester, 'Nasi Goreng');
+
+    expect(find.text('Qty'), findsOneWidget);
+    expect(find.text('Add'), findsOneWidget);
+  });
+
+  testWidgets('list increment adds to cart', (WidgetTester tester) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: sampleMenusResponse(),
+    );
+
+    await selectListLayout(tester);
+    await tapListIncrement(tester, 'm1');
+
+    final container = menuPageContainer(tester);
+    expect(container.read(orderProvider).itemCount, 1);
+    expect(find.text('1 item'), findsOneWidget);
+    expect(find.text('Qty'), findsNothing);
+  });
+
+  testWidgets('list decrement removes item at zero', (
+    WidgetTester tester,
+  ) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: sampleMenusResponse(),
+    );
+
+    await selectListLayout(tester);
+    await tapListIncrement(tester, 'm1');
+    await tapListDecrement(tester, 'm1');
+
+    final container = menuPageContainer(tester);
+    expect(container.read(orderProvider).itemCount, 0);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('menu_list_qty_m1')),
+        matching: find.text('0'),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('list note dialog updates cart', (WidgetTester tester) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: sampleMenusResponse(),
+    );
+
+    await selectListLayout(tester);
+    await tapListNote(tester, 'm1');
+
+    expect(find.text('Edit note'), findsOneWidget);
+
+    await tester.enterText(
+      find.descendant(
+        of: find.byType(AlertDialog),
+        matching: find.byType(TextField),
+      ),
+      'extra spicy',
+    );
+    await tester.tap(find.text('Confirm'));
+    await tester.pumpAndSettle();
+
+    final container = menuPageContainer(tester);
+    final lines = container.read(orderProvider).lines;
+    expect(lines, hasLength(1));
+    expect(lines.single.menuId, 'm1');
+    expect(lines.single.note, 'extra spicy');
+    expect(lines.single.quantity, 1);
+  });
+
+  testWidgets('list mode respects stock limits', (WidgetTester tester) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: {
+        'success': true,
+        'data': {
+          'categories': [
+            {
+              'id': 'c1',
+              'name': 'Mains',
+              'menus': [
+                {
+                  'id': 'm-low',
+                  'title': 'Limited Item',
+                  'description': '',
+                  'photo_url': '/static/default-food.png',
+                  'available_stock': 1,
+                  'sell_price': 10000,
+                },
+              ],
+            },
+          ],
+        },
+      },
+    );
+
+    await selectListLayout(tester);
+    await tapListIncrement(tester, 'm-low');
+    await tapListIncrement(tester, 'm-low');
+
+    final container = menuPageContainer(tester);
+    expect(container.read(orderProvider).itemCount, 1);
+    expect(find.text('Not enough stock for Limited Item'), findsOneWidget);
+  });
+
+  testWidgets('search works in list layout', (WidgetTester tester) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: denseMenusResponse(),
+    );
+
+    await selectListLayout(tester);
+
+    await tester.enterText(
+      find.byKey(const Key('menu_search_field')),
+      'Nasi',
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nasi Goreng'), findsOneWidget);
+    expect(find.text('Es Teh'), findsNothing);
+    expect(find.byType(MenuItemListRow), findsOneWidget);
+
+    final headers = tester
+        .widgetList<AppSectionHeader>(find.byType(AppSectionHeader))
+        .toList();
+    expect(headers, hasLength(1));
+    expect(headers.single.title, 'Mains');
+  });
+
+  testWidgets('layout preference survives restart', (
+    WidgetTester tester,
+  ) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: sampleMenusResponse(),
+    );
+
+    await selectListLayout(tester);
+
+    final prefs = locator<PreferencesService>();
+    expect(prefs.getString(PrefKeys.menuLayout), 'list');
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
+
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: sampleMenusResponse(),
+    );
+
+    expect(find.byType(MenuItemListRow), findsWidgets);
+    expect(find.byType(MenuItemCard), findsNothing);
+    expect(find.byType(GridView), findsNothing);
   });
 }

@@ -2,10 +2,18 @@ class PurchaseLineInput {
   const PurchaseLineInput({
     required this.foodSupplyId,
     required this.quantity,
+    this.lineActualAmount,
+    this.updateCatalogPrice = false,
+    this.catalogPriceAmount,
+    this.catalogPriceQuantity,
   });
 
   final String foodSupplyId;
   final num quantity;
+  final int? lineActualAmount;
+  final bool updateCatalogPrice;
+  final int? catalogPriceAmount;
+  final num? catalogPriceQuantity;
 }
 
 class PurchaseCreateValidationResult {
@@ -27,6 +35,9 @@ typedef PurchaseCreateValidationMessages = ({
   String atLeastOneItem,
   String duplicateItem,
   String quantityRequired,
+  String actualPriceRequired,
+  String catalogPriceAmountRequired,
+  String catalogPriceQuantityRequired,
 });
 
 PurchaseCreateValidationResult validatePurchaseCreate({
@@ -53,6 +64,21 @@ PurchaseCreateValidationResult validatePurchaseCreate({
     }
     if (item.quantity <= 0) {
       fieldErrors['items[$index].quantity'] = messages.quantityRequired;
+    }
+    if (item.lineActualAmount != null && item.lineActualAmount! <= 0) {
+      fieldErrors['items[$index].line_actual_amount'] =
+          messages.actualPriceRequired;
+    }
+    if (item.updateCatalogPrice) {
+      if (item.catalogPriceAmount == null || item.catalogPriceAmount! <= 0) {
+        fieldErrors['items[$index].supplier_price_update.price_amount'] =
+            messages.catalogPriceAmountRequired;
+      }
+      if (item.catalogPriceQuantity == null ||
+          item.catalogPriceQuantity! <= 0) {
+        fieldErrors['items[$index].supplier_price_update.price_quantity'] =
+            messages.catalogPriceQuantityRequired;
+      }
     }
   }
 

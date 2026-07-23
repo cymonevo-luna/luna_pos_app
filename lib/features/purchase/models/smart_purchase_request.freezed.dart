@@ -1690,9 +1690,571 @@ as List<SmartPurchaseSupplierGroup>,
 
 
 /// @nodoc
+mixin _$SmartPurchaseSupplierPriceUpdate {
+
+@JsonKey(name: 'price_amount') int get priceAmount;@JsonKey(name: 'price_quantity', fromJson: _decimalFromJson, toJson: _quantityToJson) num get priceQuantity;
+/// Create a copy of SmartPurchaseSupplierPriceUpdate
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SmartPurchaseSupplierPriceUpdateCopyWith<SmartPurchaseSupplierPriceUpdate> get copyWith => _$SmartPurchaseSupplierPriceUpdateCopyWithImpl<SmartPurchaseSupplierPriceUpdate>(this as SmartPurchaseSupplierPriceUpdate, _$identity);
+
+  /// Serializes this SmartPurchaseSupplierPriceUpdate to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SmartPurchaseSupplierPriceUpdate&&(identical(other.priceAmount, priceAmount) || other.priceAmount == priceAmount)&&(identical(other.priceQuantity, priceQuantity) || other.priceQuantity == priceQuantity));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,priceAmount,priceQuantity);
+
+@override
+String toString() {
+  return 'SmartPurchaseSupplierPriceUpdate(priceAmount: $priceAmount, priceQuantity: $priceQuantity)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SmartPurchaseSupplierPriceUpdateCopyWith<$Res>  {
+  factory $SmartPurchaseSupplierPriceUpdateCopyWith(SmartPurchaseSupplierPriceUpdate value, $Res Function(SmartPurchaseSupplierPriceUpdate) _then) = _$SmartPurchaseSupplierPriceUpdateCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'price_amount') int priceAmount,@JsonKey(name: 'price_quantity', fromJson: _decimalFromJson, toJson: _quantityToJson) num priceQuantity
+});
+
+
+
+
+}
+/// @nodoc
+class _$SmartPurchaseSupplierPriceUpdateCopyWithImpl<$Res>
+    implements $SmartPurchaseSupplierPriceUpdateCopyWith<$Res> {
+  _$SmartPurchaseSupplierPriceUpdateCopyWithImpl(this._self, this._then);
+
+  final SmartPurchaseSupplierPriceUpdate _self;
+  final $Res Function(SmartPurchaseSupplierPriceUpdate) _then;
+
+/// Create a copy of SmartPurchaseSupplierPriceUpdate
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? priceAmount = null,Object? priceQuantity = null,}) {
+  return _then(_self.copyWith(
+priceAmount: null == priceAmount ? _self.priceAmount : priceAmount // ignore: cast_nullable_to_non_nullable
+as int,priceQuantity: null == priceQuantity ? _self.priceQuantity : priceQuantity // ignore: cast_nullable_to_non_nullable
+as num,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [SmartPurchaseSupplierPriceUpdate].
+extension SmartPurchaseSupplierPriceUpdatePatterns on SmartPurchaseSupplierPriceUpdate {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SmartPurchaseSupplierPriceUpdate value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _SmartPurchaseSupplierPriceUpdate() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SmartPurchaseSupplierPriceUpdate value)  $default,){
+final _that = this;
+switch (_that) {
+case _SmartPurchaseSupplierPriceUpdate():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SmartPurchaseSupplierPriceUpdate value)?  $default,){
+final _that = this;
+switch (_that) {
+case _SmartPurchaseSupplierPriceUpdate() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'price_amount')  int priceAmount, @JsonKey(name: 'price_quantity', fromJson: _decimalFromJson, toJson: _quantityToJson)  num priceQuantity)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _SmartPurchaseSupplierPriceUpdate() when $default != null:
+return $default(_that.priceAmount,_that.priceQuantity);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'price_amount')  int priceAmount, @JsonKey(name: 'price_quantity', fromJson: _decimalFromJson, toJson: _quantityToJson)  num priceQuantity)  $default,) {final _that = this;
+switch (_that) {
+case _SmartPurchaseSupplierPriceUpdate():
+return $default(_that.priceAmount,_that.priceQuantity);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'price_amount')  int priceAmount, @JsonKey(name: 'price_quantity', fromJson: _decimalFromJson, toJson: _quantityToJson)  num priceQuantity)?  $default,) {final _that = this;
+switch (_that) {
+case _SmartPurchaseSupplierPriceUpdate() when $default != null:
+return $default(_that.priceAmount,_that.priceQuantity);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _SmartPurchaseSupplierPriceUpdate implements SmartPurchaseSupplierPriceUpdate {
+  const _SmartPurchaseSupplierPriceUpdate({@JsonKey(name: 'price_amount') required this.priceAmount, @JsonKey(name: 'price_quantity', fromJson: _decimalFromJson, toJson: _quantityToJson) required this.priceQuantity});
+  factory _SmartPurchaseSupplierPriceUpdate.fromJson(Map<String, dynamic> json) => _$SmartPurchaseSupplierPriceUpdateFromJson(json);
+
+@override@JsonKey(name: 'price_amount') final  int priceAmount;
+@override@JsonKey(name: 'price_quantity', fromJson: _decimalFromJson, toJson: _quantityToJson) final  num priceQuantity;
+
+/// Create a copy of SmartPurchaseSupplierPriceUpdate
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SmartPurchaseSupplierPriceUpdateCopyWith<_SmartPurchaseSupplierPriceUpdate> get copyWith => __$SmartPurchaseSupplierPriceUpdateCopyWithImpl<_SmartPurchaseSupplierPriceUpdate>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$SmartPurchaseSupplierPriceUpdateToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SmartPurchaseSupplierPriceUpdate&&(identical(other.priceAmount, priceAmount) || other.priceAmount == priceAmount)&&(identical(other.priceQuantity, priceQuantity) || other.priceQuantity == priceQuantity));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,priceAmount,priceQuantity);
+
+@override
+String toString() {
+  return 'SmartPurchaseSupplierPriceUpdate(priceAmount: $priceAmount, priceQuantity: $priceQuantity)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SmartPurchaseSupplierPriceUpdateCopyWith<$Res> implements $SmartPurchaseSupplierPriceUpdateCopyWith<$Res> {
+  factory _$SmartPurchaseSupplierPriceUpdateCopyWith(_SmartPurchaseSupplierPriceUpdate value, $Res Function(_SmartPurchaseSupplierPriceUpdate) _then) = __$SmartPurchaseSupplierPriceUpdateCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'price_amount') int priceAmount,@JsonKey(name: 'price_quantity', fromJson: _decimalFromJson, toJson: _quantityToJson) num priceQuantity
+});
+
+
+
+
+}
+/// @nodoc
+class __$SmartPurchaseSupplierPriceUpdateCopyWithImpl<$Res>
+    implements _$SmartPurchaseSupplierPriceUpdateCopyWith<$Res> {
+  __$SmartPurchaseSupplierPriceUpdateCopyWithImpl(this._self, this._then);
+
+  final _SmartPurchaseSupplierPriceUpdate _self;
+  final $Res Function(_SmartPurchaseSupplierPriceUpdate) _then;
+
+/// Create a copy of SmartPurchaseSupplierPriceUpdate
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? priceAmount = null,Object? priceQuantity = null,}) {
+  return _then(_SmartPurchaseSupplierPriceUpdate(
+priceAmount: null == priceAmount ? _self.priceAmount : priceAmount // ignore: cast_nullable_to_non_nullable
+as int,priceQuantity: null == priceQuantity ? _self.priceQuantity : priceQuantity // ignore: cast_nullable_to_non_nullable
+as num,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$SmartPurchaseBatchItemInput {
+
+@JsonKey(name: 'food_supply_id') String get foodSupplyId;@JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson) num get quantity;@JsonKey(name: 'line_actual_amount', fromJson: _nullableIntFromJson) int? get lineActualAmount;@JsonKey(name: 'supplier_price_update') SmartPurchaseSupplierPriceUpdate? get supplierPriceUpdate;
+/// Create a copy of SmartPurchaseBatchItemInput
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SmartPurchaseBatchItemInputCopyWith<SmartPurchaseBatchItemInput> get copyWith => _$SmartPurchaseBatchItemInputCopyWithImpl<SmartPurchaseBatchItemInput>(this as SmartPurchaseBatchItemInput, _$identity);
+
+  /// Serializes this SmartPurchaseBatchItemInput to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SmartPurchaseBatchItemInput&&(identical(other.foodSupplyId, foodSupplyId) || other.foodSupplyId == foodSupplyId)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.lineActualAmount, lineActualAmount) || other.lineActualAmount == lineActualAmount)&&(identical(other.supplierPriceUpdate, supplierPriceUpdate) || other.supplierPriceUpdate == supplierPriceUpdate));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,foodSupplyId,quantity,lineActualAmount,supplierPriceUpdate);
+
+@override
+String toString() {
+  return 'SmartPurchaseBatchItemInput(foodSupplyId: $foodSupplyId, quantity: $quantity, lineActualAmount: $lineActualAmount, supplierPriceUpdate: $supplierPriceUpdate)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SmartPurchaseBatchItemInputCopyWith<$Res>  {
+  factory $SmartPurchaseBatchItemInputCopyWith(SmartPurchaseBatchItemInput value, $Res Function(SmartPurchaseBatchItemInput) _then) = _$SmartPurchaseBatchItemInputCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'food_supply_id') String foodSupplyId,@JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson) num quantity,@JsonKey(name: 'line_actual_amount', fromJson: _nullableIntFromJson) int? lineActualAmount,@JsonKey(name: 'supplier_price_update') SmartPurchaseSupplierPriceUpdate? supplierPriceUpdate
+});
+
+
+$SmartPurchaseSupplierPriceUpdateCopyWith<$Res>? get supplierPriceUpdate;
+
+}
+/// @nodoc
+class _$SmartPurchaseBatchItemInputCopyWithImpl<$Res>
+    implements $SmartPurchaseBatchItemInputCopyWith<$Res> {
+  _$SmartPurchaseBatchItemInputCopyWithImpl(this._self, this._then);
+
+  final SmartPurchaseBatchItemInput _self;
+  final $Res Function(SmartPurchaseBatchItemInput) _then;
+
+/// Create a copy of SmartPurchaseBatchItemInput
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? foodSupplyId = null,Object? quantity = null,Object? lineActualAmount = freezed,Object? supplierPriceUpdate = freezed,}) {
+  return _then(_self.copyWith(
+foodSupplyId: null == foodSupplyId ? _self.foodSupplyId : foodSupplyId // ignore: cast_nullable_to_non_nullable
+as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as num,lineActualAmount: freezed == lineActualAmount ? _self.lineActualAmount : lineActualAmount // ignore: cast_nullable_to_non_nullable
+as int?,supplierPriceUpdate: freezed == supplierPriceUpdate ? _self.supplierPriceUpdate : supplierPriceUpdate // ignore: cast_nullable_to_non_nullable
+as SmartPurchaseSupplierPriceUpdate?,
+  ));
+}
+/// Create a copy of SmartPurchaseBatchItemInput
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SmartPurchaseSupplierPriceUpdateCopyWith<$Res>? get supplierPriceUpdate {
+    if (_self.supplierPriceUpdate == null) {
+    return null;
+  }
+
+  return $SmartPurchaseSupplierPriceUpdateCopyWith<$Res>(_self.supplierPriceUpdate!, (value) {
+    return _then(_self.copyWith(supplierPriceUpdate: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [SmartPurchaseBatchItemInput].
+extension SmartPurchaseBatchItemInputPatterns on SmartPurchaseBatchItemInput {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SmartPurchaseBatchItemInput value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _SmartPurchaseBatchItemInput() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SmartPurchaseBatchItemInput value)  $default,){
+final _that = this;
+switch (_that) {
+case _SmartPurchaseBatchItemInput():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SmartPurchaseBatchItemInput value)?  $default,){
+final _that = this;
+switch (_that) {
+case _SmartPurchaseBatchItemInput() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'food_supply_id')  String foodSupplyId, @JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson)  num quantity, @JsonKey(name: 'line_actual_amount', fromJson: _nullableIntFromJson)  int? lineActualAmount, @JsonKey(name: 'supplier_price_update')  SmartPurchaseSupplierPriceUpdate? supplierPriceUpdate)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _SmartPurchaseBatchItemInput() when $default != null:
+return $default(_that.foodSupplyId,_that.quantity,_that.lineActualAmount,_that.supplierPriceUpdate);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'food_supply_id')  String foodSupplyId, @JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson)  num quantity, @JsonKey(name: 'line_actual_amount', fromJson: _nullableIntFromJson)  int? lineActualAmount, @JsonKey(name: 'supplier_price_update')  SmartPurchaseSupplierPriceUpdate? supplierPriceUpdate)  $default,) {final _that = this;
+switch (_that) {
+case _SmartPurchaseBatchItemInput():
+return $default(_that.foodSupplyId,_that.quantity,_that.lineActualAmount,_that.supplierPriceUpdate);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'food_supply_id')  String foodSupplyId, @JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson)  num quantity, @JsonKey(name: 'line_actual_amount', fromJson: _nullableIntFromJson)  int? lineActualAmount, @JsonKey(name: 'supplier_price_update')  SmartPurchaseSupplierPriceUpdate? supplierPriceUpdate)?  $default,) {final _that = this;
+switch (_that) {
+case _SmartPurchaseBatchItemInput() when $default != null:
+return $default(_that.foodSupplyId,_that.quantity,_that.lineActualAmount,_that.supplierPriceUpdate);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _SmartPurchaseBatchItemInput implements SmartPurchaseBatchItemInput {
+  const _SmartPurchaseBatchItemInput({@JsonKey(name: 'food_supply_id') required this.foodSupplyId, @JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson) required this.quantity, @JsonKey(name: 'line_actual_amount', fromJson: _nullableIntFromJson) this.lineActualAmount, @JsonKey(name: 'supplier_price_update') this.supplierPriceUpdate});
+  factory _SmartPurchaseBatchItemInput.fromJson(Map<String, dynamic> json) => _$SmartPurchaseBatchItemInputFromJson(json);
+
+@override@JsonKey(name: 'food_supply_id') final  String foodSupplyId;
+@override@JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson) final  num quantity;
+@override@JsonKey(name: 'line_actual_amount', fromJson: _nullableIntFromJson) final  int? lineActualAmount;
+@override@JsonKey(name: 'supplier_price_update') final  SmartPurchaseSupplierPriceUpdate? supplierPriceUpdate;
+
+/// Create a copy of SmartPurchaseBatchItemInput
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SmartPurchaseBatchItemInputCopyWith<_SmartPurchaseBatchItemInput> get copyWith => __$SmartPurchaseBatchItemInputCopyWithImpl<_SmartPurchaseBatchItemInput>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$SmartPurchaseBatchItemInputToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SmartPurchaseBatchItemInput&&(identical(other.foodSupplyId, foodSupplyId) || other.foodSupplyId == foodSupplyId)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.lineActualAmount, lineActualAmount) || other.lineActualAmount == lineActualAmount)&&(identical(other.supplierPriceUpdate, supplierPriceUpdate) || other.supplierPriceUpdate == supplierPriceUpdate));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,foodSupplyId,quantity,lineActualAmount,supplierPriceUpdate);
+
+@override
+String toString() {
+  return 'SmartPurchaseBatchItemInput(foodSupplyId: $foodSupplyId, quantity: $quantity, lineActualAmount: $lineActualAmount, supplierPriceUpdate: $supplierPriceUpdate)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SmartPurchaseBatchItemInputCopyWith<$Res> implements $SmartPurchaseBatchItemInputCopyWith<$Res> {
+  factory _$SmartPurchaseBatchItemInputCopyWith(_SmartPurchaseBatchItemInput value, $Res Function(_SmartPurchaseBatchItemInput) _then) = __$SmartPurchaseBatchItemInputCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'food_supply_id') String foodSupplyId,@JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson) num quantity,@JsonKey(name: 'line_actual_amount', fromJson: _nullableIntFromJson) int? lineActualAmount,@JsonKey(name: 'supplier_price_update') SmartPurchaseSupplierPriceUpdate? supplierPriceUpdate
+});
+
+
+@override $SmartPurchaseSupplierPriceUpdateCopyWith<$Res>? get supplierPriceUpdate;
+
+}
+/// @nodoc
+class __$SmartPurchaseBatchItemInputCopyWithImpl<$Res>
+    implements _$SmartPurchaseBatchItemInputCopyWith<$Res> {
+  __$SmartPurchaseBatchItemInputCopyWithImpl(this._self, this._then);
+
+  final _SmartPurchaseBatchItemInput _self;
+  final $Res Function(_SmartPurchaseBatchItemInput) _then;
+
+/// Create a copy of SmartPurchaseBatchItemInput
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? foodSupplyId = null,Object? quantity = null,Object? lineActualAmount = freezed,Object? supplierPriceUpdate = freezed,}) {
+  return _then(_SmartPurchaseBatchItemInput(
+foodSupplyId: null == foodSupplyId ? _self.foodSupplyId : foodSupplyId // ignore: cast_nullable_to_non_nullable
+as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as num,lineActualAmount: freezed == lineActualAmount ? _self.lineActualAmount : lineActualAmount // ignore: cast_nullable_to_non_nullable
+as int?,supplierPriceUpdate: freezed == supplierPriceUpdate ? _self.supplierPriceUpdate : supplierPriceUpdate // ignore: cast_nullable_to_non_nullable
+as SmartPurchaseSupplierPriceUpdate?,
+  ));
+}
+
+/// Create a copy of SmartPurchaseBatchItemInput
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$SmartPurchaseSupplierPriceUpdateCopyWith<$Res>? get supplierPriceUpdate {
+    if (_self.supplierPriceUpdate == null) {
+    return null;
+  }
+
+  return $SmartPurchaseSupplierPriceUpdateCopyWith<$Res>(_self.supplierPriceUpdate!, (value) {
+    return _then(_self.copyWith(supplierPriceUpdate: value));
+  });
+}
+}
+
+
+/// @nodoc
 mixin _$SmartPurchaseBatchGroupInput {
 
-@JsonKey(name: 'supplier_id') String get supplierId; List<SmartPurchaseSuggestInput> get items;
+@JsonKey(name: 'supplier_id') String get supplierId; List<SmartPurchaseBatchItemInput> get items;
 /// Create a copy of SmartPurchaseBatchGroupInput
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1725,7 +2287,7 @@ abstract mixin class $SmartPurchaseBatchGroupInputCopyWith<$Res>  {
   factory $SmartPurchaseBatchGroupInputCopyWith(SmartPurchaseBatchGroupInput value, $Res Function(SmartPurchaseBatchGroupInput) _then) = _$SmartPurchaseBatchGroupInputCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'supplier_id') String supplierId, List<SmartPurchaseSuggestInput> items
+@JsonKey(name: 'supplier_id') String supplierId, List<SmartPurchaseBatchItemInput> items
 });
 
 
@@ -1746,7 +2308,7 @@ class _$SmartPurchaseBatchGroupInputCopyWithImpl<$Res>
   return _then(_self.copyWith(
 supplierId: null == supplierId ? _self.supplierId : supplierId // ignore: cast_nullable_to_non_nullable
 as String,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
-as List<SmartPurchaseSuggestInput>,
+as List<SmartPurchaseBatchItemInput>,
   ));
 }
 
@@ -1831,7 +2393,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'supplier_id')  String supplierId,  List<SmartPurchaseSuggestInput> items)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'supplier_id')  String supplierId,  List<SmartPurchaseBatchItemInput> items)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SmartPurchaseBatchGroupInput() when $default != null:
 return $default(_that.supplierId,_that.items);case _:
@@ -1852,7 +2414,7 @@ return $default(_that.supplierId,_that.items);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'supplier_id')  String supplierId,  List<SmartPurchaseSuggestInput> items)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'supplier_id')  String supplierId,  List<SmartPurchaseBatchItemInput> items)  $default,) {final _that = this;
 switch (_that) {
 case _SmartPurchaseBatchGroupInput():
 return $default(_that.supplierId,_that.items);case _:
@@ -1872,7 +2434,7 @@ return $default(_that.supplierId,_that.items);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'supplier_id')  String supplierId,  List<SmartPurchaseSuggestInput> items)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'supplier_id')  String supplierId,  List<SmartPurchaseBatchItemInput> items)?  $default,) {final _that = this;
 switch (_that) {
 case _SmartPurchaseBatchGroupInput() when $default != null:
 return $default(_that.supplierId,_that.items);case _:
@@ -1887,12 +2449,12 @@ return $default(_that.supplierId,_that.items);case _:
 @JsonSerializable()
 
 class _SmartPurchaseBatchGroupInput implements SmartPurchaseBatchGroupInput {
-  const _SmartPurchaseBatchGroupInput({@JsonKey(name: 'supplier_id') required this.supplierId, required final  List<SmartPurchaseSuggestInput> items}): _items = items;
+  const _SmartPurchaseBatchGroupInput({@JsonKey(name: 'supplier_id') required this.supplierId, required final  List<SmartPurchaseBatchItemInput> items}): _items = items;
   factory _SmartPurchaseBatchGroupInput.fromJson(Map<String, dynamic> json) => _$SmartPurchaseBatchGroupInputFromJson(json);
 
 @override@JsonKey(name: 'supplier_id') final  String supplierId;
- final  List<SmartPurchaseSuggestInput> _items;
-@override List<SmartPurchaseSuggestInput> get items {
+ final  List<SmartPurchaseBatchItemInput> _items;
+@override List<SmartPurchaseBatchItemInput> get items {
   if (_items is EqualUnmodifiableListView) return _items;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_items);
@@ -1932,7 +2494,7 @@ abstract mixin class _$SmartPurchaseBatchGroupInputCopyWith<$Res> implements $Sm
   factory _$SmartPurchaseBatchGroupInputCopyWith(_SmartPurchaseBatchGroupInput value, $Res Function(_SmartPurchaseBatchGroupInput) _then) = __$SmartPurchaseBatchGroupInputCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'supplier_id') String supplierId, List<SmartPurchaseSuggestInput> items
+@JsonKey(name: 'supplier_id') String supplierId, List<SmartPurchaseBatchItemInput> items
 });
 
 
@@ -1953,7 +2515,7 @@ class __$SmartPurchaseBatchGroupInputCopyWithImpl<$Res>
   return _then(_SmartPurchaseBatchGroupInput(
 supplierId: null == supplierId ? _self.supplierId : supplierId // ignore: cast_nullable_to_non_nullable
 as String,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
-as List<SmartPurchaseSuggestInput>,
+as List<SmartPurchaseBatchItemInput>,
   ));
 }
 

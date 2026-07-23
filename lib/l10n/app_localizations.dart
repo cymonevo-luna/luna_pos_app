@@ -680,6 +680,12 @@ abstract class AppLocalizations {
   /// **'Clear cart'**
   String get clearCart;
 
+  /// Reset all banknote denomination counts to zero
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get clearBanknotes;
+
   /// Remove a line from the cart
   ///
   /// In en, this message translates to:
@@ -1070,6 +1076,54 @@ abstract class AppLocalizations {
   /// **'Enter a quantity greater than 0'**
   String get purchaseQuantityRequired;
 
+  /// Optional actual line total input on purchase create
+  ///
+  /// In en, this message translates to:
+  /// **'Actual price (Rp)'**
+  String get purchaseActualPriceLabel;
+
+  /// Switch to update supplier catalog price on purchase create
+  ///
+  /// In en, this message translates to:
+  /// **'Update supplier catalog price'**
+  String get purchaseUpdateCatalogPrice;
+
+  /// Editable catalog price amount when updating supplier price
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog price amount'**
+  String get purchaseCatalogPriceAmount;
+
+  /// Editable catalog price quantity when updating supplier price
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog price quantity'**
+  String get purchaseCatalogPriceQuantity;
+
+  /// Sticky footer label for actual purchase total
+  ///
+  /// In en, this message translates to:
+  /// **'Actual total'**
+  String get purchaseActualTotal;
+
+  /// Validation when actual line price is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an actual price greater than 0'**
+  String get purchaseActualPriceRequired;
+
+  /// Validation when catalog price amount is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a catalog price amount greater than 0'**
+  String get purchaseCatalogPriceAmountRequired;
+
+  /// Validation when catalog price quantity is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a catalog price quantity greater than 0'**
+  String get purchaseCatalogPriceQuantityRequired;
+
   /// Title for catalog item picker sheet
   ///
   /// In en, this message translates to:
@@ -1255,6 +1309,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Purchase requests created'**
   String get smartPurchaseSubmitSuccess;
+
+  /// Label for optional actual line amount on smart purchase review
+  ///
+  /// In en, this message translates to:
+  /// **'Actual price (optional)'**
+  String get smartPurchaseActualPriceLabel;
+
+  /// Switch label to submit supplier price update with batch
+  ///
+  /// In en, this message translates to:
+  /// **'Update supplier catalog price'**
+  String get smartPurchaseCatalogUpdateLabel;
+
+  /// Label for catalog update price amount field
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog price amount'**
+  String get smartPurchaseCatalogPriceAmount;
+
+  /// Label for catalog update price quantity field
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog price quantity'**
+  String get smartPurchaseCatalogPriceQuantity;
 
   /// Search field hint on stock list
   ///

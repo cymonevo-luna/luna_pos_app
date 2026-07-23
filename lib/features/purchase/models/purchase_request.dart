@@ -21,6 +21,8 @@ abstract class PurchaseRequestSummary with _$PurchaseRequestSummary {
     @JsonKey(name: 'supplier_name') required String supplierName,
     required PurchaseRequestStatus status,
     @JsonKey(name: 'total_estimated_amount') required int totalEstimatedAmount,
+    @JsonKey(name: 'total_actual_amount', fromJson: _nullableIntFromJson)
+    int? totalActualAmount,
     @JsonKey(name: 'item_count') required int itemCount,
     @JsonKey(name: 'created_by_username') String? createdByUsername,
     @JsonKey(
@@ -53,6 +55,13 @@ int? _nullableIntFromJson(dynamic value) {
   throw FormatException('Invalid int: $value');
 }
 
+num? _nullableNumFromJson(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value;
+  if (value is String) return num.parse(value);
+  throw FormatException('Invalid num: $value');
+}
+
 @freezed
 abstract class PurchaseRequestItem with _$PurchaseRequestItem {
   const factory PurchaseRequestItem({
@@ -60,8 +69,11 @@ abstract class PurchaseRequestItem with _$PurchaseRequestItem {
     @JsonKey(name: 'food_supply_title') String? foodSupplyTitle,
     @JsonKey(fromJson: _quantityFromJson) required num quantity,
     String? unit,
-    @JsonKey(name: 'unit_price', fromJson: _nullableIntFromJson) int? unitPrice,
-    @JsonKey(name: 'line_total', fromJson: _nullableIntFromJson) int? lineTotal,
+    @JsonKey(name: 'unit_price', fromJson: _nullableNumFromJson) num? unitPrice,
+    @JsonKey(name: 'line_estimated_amount', fromJson: _nullableIntFromJson)
+    int? lineEstimatedAmount,
+    @JsonKey(name: 'line_actual_amount', fromJson: _nullableIntFromJson)
+    int? lineActualAmount,
   }) = _PurchaseRequestItem;
 
   factory PurchaseRequestItem.fromJson(Map<String, dynamic> json) =>
@@ -77,6 +89,8 @@ abstract class PurchaseRequestDetail with _$PurchaseRequestDetail {
     @JsonKey(name: 'supplier_contact_info') String? supplierContactInfo,
     required PurchaseRequestStatus status,
     @JsonKey(name: 'total_estimated_amount') int? totalEstimatedAmount,
+    @JsonKey(name: 'total_actual_amount', fromJson: _nullableIntFromJson)
+    int? totalActualAmount,
     @Default([]) List<PurchaseRequestItem> items,
     String? notes,
     @JsonKey(name: 'paid_proof_url') String? paidProofUrl,

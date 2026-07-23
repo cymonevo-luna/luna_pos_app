@@ -154,12 +154,50 @@ Map<String, dynamic> _$SmartPurchaseSuggestResponseToJson(
   'grouped_by_supplier': instance.groupedBySupplier,
 };
 
+_SmartPurchaseSupplierPriceUpdate _$SmartPurchaseSupplierPriceUpdateFromJson(
+  Map<String, dynamic> json,
+) => _SmartPurchaseSupplierPriceUpdate(
+  priceAmount: (json['price_amount'] as num).toInt(),
+  priceQuantity: _decimalFromJson(json['price_quantity']),
+);
+
+Map<String, dynamic> _$SmartPurchaseSupplierPriceUpdateToJson(
+  _SmartPurchaseSupplierPriceUpdate instance,
+) => <String, dynamic>{
+  'price_amount': instance.priceAmount,
+  'price_quantity': _quantityToJson(instance.priceQuantity),
+};
+
+_SmartPurchaseBatchItemInput _$SmartPurchaseBatchItemInputFromJson(
+  Map<String, dynamic> json,
+) => _SmartPurchaseBatchItemInput(
+  foodSupplyId: json['food_supply_id'] as String,
+  quantity: _quantityFromJson(json['quantity']),
+  lineActualAmount: _nullableIntFromJson(json['line_actual_amount']),
+  supplierPriceUpdate: json['supplier_price_update'] == null
+      ? null
+      : SmartPurchaseSupplierPriceUpdate.fromJson(
+          json['supplier_price_update'] as Map<String, dynamic>,
+        ),
+);
+
+Map<String, dynamic> _$SmartPurchaseBatchItemInputToJson(
+  _SmartPurchaseBatchItemInput instance,
+) => <String, dynamic>{
+  'food_supply_id': instance.foodSupplyId,
+  'quantity': _quantityToJson(instance.quantity),
+  'line_actual_amount': instance.lineActualAmount,
+  'supplier_price_update': instance.supplierPriceUpdate,
+};
+
 _SmartPurchaseBatchGroupInput _$SmartPurchaseBatchGroupInputFromJson(
   Map<String, dynamic> json,
 ) => _SmartPurchaseBatchGroupInput(
   supplierId: json['supplier_id'] as String,
   items: (json['items'] as List<dynamic>)
-      .map((e) => SmartPurchaseSuggestInput.fromJson(e as Map<String, dynamic>))
+      .map(
+        (e) => SmartPurchaseBatchItemInput.fromJson(e as Map<String, dynamic>),
+      )
       .toList(),
 );
 

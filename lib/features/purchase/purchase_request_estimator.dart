@@ -42,3 +42,36 @@ int estimateGrandTotal(
             quote: line.quote,
           ),
     );
+
+/// Resolves a line total using [lineActualAmount] when provided, otherwise
+/// falls back to the catalog estimate (COALESCE semantics).
+int resolvedLineTotal({
+  required num quantity,
+  required PriceQuote quote,
+  int? lineActualAmount,
+}) =>
+    lineActualAmount ??
+    estimateLineTotalForQuote(quantity: quantity, quote: quote);
+
+int resolvedGrandTotal(
+  Iterable<({
+    PriceQuote quote,
+    num quantity,
+    int? lineActualAmount,
+  })> lines,
+) =>
+    lines.fold(
+      0,
+      (sum, line) =>
+          sum +
+          resolvedLineTotal(
+            quantity: line.quantity,
+            quote: line.quote,
+            lineActualAmount: line.lineActualAmount,
+          ),
+    );
+
+bool hasAnyActualAmount(
+  Iterable<({int? lineActualAmount})> lines,
+) =>
+    lines.any((line) => line.lineActualAmount != null);

@@ -17,6 +17,7 @@ import 'menu_layout_provider.dart';
 import 'models/pos_menu.dart';
 import 'widgets/add_to_cart_sheet.dart';
 import 'widgets/menu_item_card.dart';
+import 'widgets/menu_item_list_row.dart';
 
 class MenuPage extends ConsumerStatefulWidget {
   const MenuPage({super.key});
@@ -203,7 +204,7 @@ class _MenuPageState extends ConsumerState<MenuPage> {
   }
 }
 
-class _MenuBody extends StatelessWidget {
+class _MenuBody extends ConsumerWidget {
   const _MenuBody({
     required this.state,
     required this.onRetry,
@@ -222,8 +223,76 @@ class _MenuBody extends StatelessWidget {
   final String noSearchResultsLabel;
   final String retryLabel;
 
+  Future<void> _showNoteDialog(
+    BuildContext context,
+    WidgetRef ref,
+    POSMenuItem item,
+  ) async {
+    final order = ref.read(orderProvider);
+    final emptyNoteLineId = order.findLineIdForMenu(item.id);
+    final initialNote = emptyNoteLineId == null
+        ? ''
+        : order.lines.firstWhere((line) => line.id == emptyNoteLineId).note;
+
+    final controller = TextEditingController(text: initialNote);
+    final updated = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        final dialogL10n = AppLocalizations.of(dialogContext);
+        return AlertDialog(
+          title: Text(dialogL10n.editNote),
+          content: AppTextField(
+            controller: controller,
+            hint: dialogL10n.noteHint,
+            textInputAction: TextInputAction.done,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(controller.text),
+              child: Text(dialogL10n.confirm),
+            ),
+          ],
+        );
+      },
+    );
+    if (updated != null && context.mounted) {
+      final notifier = ref.read(orderProvider.notifier);
+      final lineId = notifier.findLineIdForMenu(item.id);
+      if (lineId != null) {
+        notifier.updateLineNote(lineId, updated);
+      } else {
+        notifier.addLine(item, quantity: 1, note: updated);
+      }
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) => controller.dispose());
+  }
+
+  void _incrementItem(WidgetRef ref, POSMenuItem item) {
+    final notifier = ref.read(orderProvider.notifier);
+    final lineId = notifier.findLineIdForMenu(item.id);
+    if (lineId == null) {
+      notifier.addLine(item, quantity: 1, note: '');
+      return;
+    }
+    final qty = notifier.quantityForMenu(item.id);
+    notifier.updateLineQuantity(lineId, qty + 1);
+  }
+
+  void _decrementItem(WidgetRef ref, POSMenuItem item) {
+    final notifier = ref.read(orderProvider.notifier);
+    final lineId = notifier.findLineIdForMenu(item.id);
+    if (lineId == null) return;
+
+    final qty = notifier.quantityForMenu(item.id);
+    if (qty > 1) {
+      notifier.updateLineQuantity(lineId, qty - 1);
+    } else if (qty == 1) {
+      notifier.removeLine(lineId);
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (state.error != null && state.data == null) {
       return _MenuErrorView(
         message: state.error!,
@@ -247,6 +316,8 @@ class _MenuBody extends StatelessWidget {
       );
     }
 
+    final layout = ref.watch(menuLayoutProvider);
+    final order = ref.watch(orderProvider);
     final data = state.filteredData!;
     return RefreshIndicator(
       onRefresh: onRefresh,
@@ -267,21 +338,39 @@ class _MenuBody extends StatelessWidget {
                 if (category.menus.isNotEmpty) ...[
                   AppSectionHeader(title: category.name),
                   const VGap(AppSpacing.sm),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: category.menus.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount,
-                      mainAxisSpacing: AppSpacing.xs,
-                      crossAxisSpacing: AppSpacing.xs,
-                      childAspectRatio: 0.92,
+                  if (layout == MenuLayout.list)
+                    Column(
+                      children: [
+                        for (final item in category.menus)
+                          MenuItemListRow(
+                            item: item,
+                            // List inline qty targets the empty-note line only.
+                            cartQuantity: order.quantityForMenu(item.id),
+                            onIncrement: () => _incrementItem(ref, item),
+                            onDecrement: () => _decrementItem(ref, item),
+                            onAddNote: () => _showNoteDialog(context, ref, item),
+                          ),
+                      ],
+                    )
+                  else
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: category.menus.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: crossAxisCount,
+                        mainAxisSpacing: AppSpacing.xs,
+                        crossAxisSpacing: AppSpacing.xs,
+                        childAspectRatio: 0.92,
+                      ),
+                      itemBuilder: (context, index) {
+                        final item = category.menus[index];
+                        return MenuItemCard(
+                          item: item,
+                          onAdd: () => onAdd(item),
+                        );
+                      },
                     ),
-                    itemBuilder: (context, index) {
-                      final item = category.menus[index];
-                      return MenuItemCard(item: item, onAdd: () => onAdd(item));
-                    },
-                  ),
                   const VGap(AppSpacing.lg),
                 ],
               ],

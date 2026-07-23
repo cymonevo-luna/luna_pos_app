@@ -71,6 +71,20 @@ void main() {
     expect(state.grandTotal, 16000);
   });
 
+  test('quantityForMenu targets empty-note line only', () {
+    final controller = container.read(orderProvider.notifier);
+    final item = sampleItem();
+
+    controller.addLine(item, quantity: 2, note: 'less ice');
+    controller.addLine(item, quantity: 3);
+
+    final state = container.read(orderProvider);
+    expect(state.quantityForMenu('m1'), 3);
+    expect(state.quantityForMenu('m1', note: 'less ice'), 2);
+    expect(state.findLineIdForMenu('m1'), isNotNull);
+    expect(state.findLineIdForMenu('m1', note: 'missing'), isNull);
+  });
+
   test('clear empties cart', () {
     final controller = container.read(orderProvider.notifier);
 

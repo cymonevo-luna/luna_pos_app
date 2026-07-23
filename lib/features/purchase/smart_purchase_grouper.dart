@@ -16,6 +16,10 @@ class SmartPurchaseReviewItem {
     this.priceQuantity,
     this.unitPrice,
     this.hasSupplierPrice = true,
+    this.lineActualAmount,
+    this.catalogUpdateEnabled = false,
+    this.catalogUpdatePriceAmount,
+    this.catalogUpdatePriceQuantity,
   });
 
   final String foodSupplyId;
@@ -30,6 +34,10 @@ class SmartPurchaseReviewItem {
   final int? priceAmount;
   final num? priceQuantity;
   final num? unitPrice;
+  final int? lineActualAmount;
+  final bool catalogUpdateEnabled;
+  final int? catalogUpdatePriceAmount;
+  final num? catalogUpdatePriceQuantity;
 
   bool get isMatched =>
       selectedSupplierId != null &&
@@ -37,7 +45,20 @@ class SmartPurchaseReviewItem {
       supplierPriceId != null &&
       supplierPriceId!.isNotEmpty;
 
-  int get lineTotal {
+  bool get canOfferCatalogUpdate =>
+      priceAmount != null &&
+      priceQuantity != null &&
+      priceAmount! > 0 &&
+      priceQuantity! > 0;
+
+  bool get canSubmitCatalogUpdate =>
+      catalogUpdateEnabled &&
+      catalogUpdatePriceAmount != null &&
+      catalogUpdatePriceQuantity != null &&
+      catalogUpdatePriceAmount! > 0 &&
+      catalogUpdatePriceQuantity! > 0;
+
+  int get estimatedLineTotal {
     if (priceAmount != null && priceQuantity != null) {
       return estimateLineTotal(
         quantity: quantity,
@@ -51,6 +72,8 @@ class SmartPurchaseReviewItem {
     return 0;
   }
 
+  int get lineTotal => lineActualAmount ?? estimatedLineTotal;
+
   SmartPurchaseReviewItem copyWith({
     String? selectedSupplierId,
     String? selectedSupplierName,
@@ -60,6 +83,11 @@ class SmartPurchaseReviewItem {
     num? unitPrice,
     bool? hasSupplierPrice,
     List<SmartPurchaseSupplierQuote>? allSupplierQuotes,
+    int? lineActualAmount,
+    bool clearLineActualAmount = false,
+    bool? catalogUpdateEnabled,
+    int? catalogUpdatePriceAmount,
+    num? catalogUpdatePriceQuantity,
   }) {
     return SmartPurchaseReviewItem(
       foodSupplyId: foodSupplyId,
@@ -74,6 +102,14 @@ class SmartPurchaseReviewItem {
       priceAmount: priceAmount ?? this.priceAmount,
       priceQuantity: priceQuantity ?? this.priceQuantity,
       unitPrice: unitPrice ?? this.unitPrice,
+      lineActualAmount: clearLineActualAmount
+          ? null
+          : (lineActualAmount ?? this.lineActualAmount),
+      catalogUpdateEnabled: catalogUpdateEnabled ?? this.catalogUpdateEnabled,
+      catalogUpdatePriceAmount:
+          catalogUpdatePriceAmount ?? this.catalogUpdatePriceAmount,
+      catalogUpdatePriceQuantity:
+          catalogUpdatePriceQuantity ?? this.catalogUpdatePriceQuantity,
     );
   }
 
@@ -96,6 +132,8 @@ class SmartPurchaseReviewItem {
       priceAmount: selectedQuote?.priceAmount,
       priceQuantity: selectedQuote?.priceQuantity,
       unitPrice: selectedQuote?.unitPrice,
+      catalogUpdatePriceAmount: selectedQuote?.priceAmount,
+      catalogUpdatePriceQuantity: selectedQuote?.priceQuantity,
     );
   }
 
@@ -108,6 +146,9 @@ class SmartPurchaseReviewItem {
       priceQuantity: quote.priceQuantity,
       unitPrice: quote.unitPrice,
       hasSupplierPrice: true,
+      catalogUpdateEnabled: false,
+      catalogUpdatePriceAmount: quote.priceAmount,
+      catalogUpdatePriceQuantity: quote.priceQuantity,
     );
   }
 
@@ -200,6 +241,16 @@ List<SmartPurchaseSupplierGroupView> regroupSmartPurchaseItems(
   return sorted;
 }
 
+SmartPurchaseSupplierPriceUpdate? _supplierPriceUpdateFor(
+  SmartPurchaseReviewItem item,
+) {
+  if (!item.canSubmitCatalogUpdate) return null;
+  return SmartPurchaseSupplierPriceUpdate(
+    priceAmount: item.catalogUpdatePriceAmount!,
+    priceQuantity: item.catalogUpdatePriceQuantity!,
+  );
+}
+
 List<SmartPurchaseBatchGroupInput> buildBatchGroups(
   List<SmartPurchaseSupplierGroupView> groups,
 ) =>
@@ -209,9 +260,11 @@ List<SmartPurchaseBatchGroupInput> buildBatchGroups(
             supplierId: group.supplierId,
             items: group.items
                 .map(
-                  (item) => SmartPurchaseSuggestInput(
+                  (item) => SmartPurchaseBatchItemInput(
                     foodSupplyId: item.foodSupplyId,
                     quantity: item.quantity,
+                    lineActualAmount: item.lineActualAmount,
+                    supplierPriceUpdate: _supplierPriceUpdateFor(item),
                   ),
                 )
                 .toList(),

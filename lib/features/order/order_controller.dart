@@ -31,6 +31,23 @@ class OrderState {
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
+
+  /// Cart line identity is menuId + trimmed note. List-mode inline qty uses the
+  /// empty-note line only; lines with other notes are managed from the cart page.
+  String? findLineIdForMenu(String menuId, {String note = ''}) {
+    final trimmedNote = note.trim();
+    final index = lines.indexWhere(
+      (line) => line.menuId == menuId && line.note == trimmedNote,
+    );
+    if (index < 0) return null;
+    return lines[index].id;
+  }
+
+  int quantityForMenu(String menuId, {String note = ''}) {
+    final lineId = findLineIdForMenu(menuId, note: note);
+    if (lineId == null) return 0;
+    return lines.firstWhere((line) => line.id == lineId).quantity;
+  }
 }
 
 class OrderController extends Notifier<OrderState> {
@@ -139,6 +156,12 @@ class OrderController extends Notifier<OrderState> {
   void clear() {
     state = const OrderState();
   }
+
+  String? findLineIdForMenu(String menuId, {String note = ''}) =>
+      state.findLineIdForMenu(menuId, note: note);
+
+  int quantityForMenu(String menuId, {String note = ''}) =>
+      state.quantityForMenu(menuId, note: note);
 
   bool _canSetMenuQuantity(
     String menuId,

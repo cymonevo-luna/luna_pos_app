@@ -9,11 +9,13 @@ import '../../core/theme/app_tokens.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/widgets.dart';
 import 'checkout_controller.dart';
+import 'models/idr_banknote.dart';
 import 'models/order_line_item.dart';
 import 'models/order_option.dart';
 import 'models/payment_method.dart';
 import 'order_controller.dart';
 import 'order_options_controller.dart';
+import 'widgets/banknote_keyboard_panel.dart';
 
 class CheckoutPage extends ConsumerStatefulWidget {
   const CheckoutPage({super.key});
@@ -24,7 +26,7 @@ class CheckoutPage extends ConsumerStatefulWidget {
 
 class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   final _discountController = TextEditingController(text: '0');
-  final _cashController = TextEditingController();
+  Map<int, int> _banknoteCounts = {};
   PaymentMethod _paymentMethod = PaymentMethod.cash;
   bool _printReceiptChecked = false;
 
@@ -45,12 +47,11 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   @override
   void dispose() {
     _discountController.dispose();
-    _cashController.dispose();
     super.dispose();
   }
 
   int get _discountAmount => parseIdrAmount(_discountController.text);
-  int get _cashTendered => parseIdrAmount(_cashController.text);
+  int get _cashTendered => calculateCashTotalFromBanknotes(_banknoteCounts);
   bool get _isCashPayment => _paymentMethod == PaymentMethod.cash;
 
   String _paymentMethodLabel(AppLocalizations l10n, PaymentMethod method) {
@@ -248,14 +249,10 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                 ),
                 if (_isCashPayment) ...[
                   const VGap(AppSpacing.lg),
-                  AppTextField(
-                    fieldKey: const Key('cash_tendered_field'),
-                    label: l10n.cashReceived,
-                    hint: '0',
-                    controller: _cashController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [IdrWholeNumberInputFormatter()],
-                    onChanged: (_) => setState(() {}),
+                  BanknoteKeyboardPanel(
+                    counts: _banknoteCounts,
+                    onCountsChanged: (counts) =>
+                        setState(() => _banknoteCounts = counts),
                   ),
                   if (_cashTendered > 0) ...[
                     const VGap(AppSpacing.sm),
@@ -272,7 +269,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                       color: context.colors.error,
                       align: TextAlign.center,
                     )
-                  else if (_cashTendered >= totalAmount)
+                  else if (_cashTendered >= totalAmount && totalAmount > 0)
                     _SummaryRow(
                       label: l10n.change,
                       value: '-${formatRupiah(changeAmount)}',
@@ -325,7 +322,12 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                               .toList(),
                           onChanged: (method) {
                             if (method == null) return;
-                            setState(() => _paymentMethod = method);
+                            setState(() {
+                              _paymentMethod = method;
+                              if (method != PaymentMethod.cash) {
+                                _banknoteCounts = {};
+                              }
+                            });
                           },
                         ),
                       ),

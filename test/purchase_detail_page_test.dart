@@ -70,7 +70,7 @@ void main() {
                 'quantity': '2',
                 'unit': 'kg',
                 'unit_price': 50000,
-                'line_total': 100000,
+                'line_estimated_amount': 100000,
               },
               {
                 'food_supply_id': 'fs-2',
@@ -78,7 +78,7 @@ void main() {
                 'quantity': '3',
                 'unit': 'kg',
                 'unit_price': 50000,
-                'line_total': 150000,
+                'line_estimated_amount': 150000,
               },
             ],
         'notes': 'Weekly restock',

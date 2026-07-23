@@ -9,13 +9,14 @@ import '../../core/theme/app_tokens.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/widgets.dart';
 import 'checkout_controller.dart';
-import 'models/idr_banknote.dart';
+import 'models/cash_denominations.dart';
 import 'models/order_line_item.dart';
 import 'models/order_option.dart';
 import 'models/payment_method.dart';
 import 'order_controller.dart';
 import 'order_options_controller.dart';
-import 'widgets/banknote_keyboard_panel.dart';
+import 'widgets/banknote_cash_keyboard.dart';
+import 'widgets/cash_payment_summary.dart';
 
 class CheckoutPage extends ConsumerStatefulWidget {
   const CheckoutPage({super.key});
@@ -26,7 +27,7 @@ class CheckoutPage extends ConsumerStatefulWidget {
 
 class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   final _discountController = TextEditingController(text: '0');
-  Map<int, int> _banknoteCounts = {};
+  Map<int, int> _denominationCounts = emptyDenominationCounts();
   PaymentMethod _paymentMethod = PaymentMethod.cash;
   bool _printReceiptChecked = false;
 
@@ -51,7 +52,8 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
   }
 
   int get _discountAmount => parseIdrAmount(_discountController.text);
-  int get _cashTendered => calculateCashTotalFromBanknotes(_banknoteCounts);
+  int get _cashTendered =>
+      calculateCashTenderedFromCounts(_denominationCounts);
   bool get _isCashPayment => _paymentMethod == PaymentMethod.cash;
 
   String _paymentMethodLabel(AppLocalizations l10n, PaymentMethod method) {
@@ -160,10 +162,6 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
           cashReceived: _cashTendered,
           grandTotal: totalAmount,
         );
-    final changeAmount = calculatePaymentChange(
-      cashReceived: _cashTendered,
-      grandTotal: totalAmount,
-    );
     final canConfirm = order.lines.isNotEmpty &&
         discountValid &&
         sufficient &&
@@ -249,33 +247,18 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                 ),
                 if (_isCashPayment) ...[
                   const VGap(AppSpacing.lg),
-                  BanknoteKeyboardPanel(
-                    counts: _banknoteCounts,
+                  BanknoteCashKeyboard(
+                    counts: _denominationCounts,
                     onCountsChanged: (counts) =>
-                        setState(() => _banknoteCounts = counts),
+                        setState(() => _denominationCounts = counts),
+                    enabled: !checkout.submitting,
                   ),
-                  if (_cashTendered > 0) ...[
-                    const VGap(AppSpacing.sm),
-                    AppText.body(
-                      formatRupiah(_cashTendered),
-                      muted: true,
-                      align: TextAlign.end,
-                    ),
-                  ],
                   const VGap(AppSpacing.md),
-                  if (_cashTendered > 0 && !sufficient)
-                    AppText.body(
-                      l10n.insufficientPayment,
-                      color: context.colors.error,
-                      align: TextAlign.center,
-                    )
-                  else if (_cashTendered >= totalAmount && totalAmount > 0)
-                    _SummaryRow(
-                      label: l10n.change,
-                      value: '-${formatRupiah(changeAmount)}',
-                      color: context.colors.error,
-                      emphasized: true,
-                    ),
+                  CashPaymentSummary(
+                    cashTendered: _cashTendered,
+                    grandTotal: totalAmount,
+                    l10n: l10n,
+                  ),
                 ],
               ],
             ),
@@ -322,12 +305,7 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                               .toList(),
                           onChanged: (method) {
                             if (method == null) return;
-                            setState(() {
-                              _paymentMethod = method;
-                              if (method != PaymentMethod.cash) {
-                                _banknoteCounts = {};
-                              }
-                            });
+                            setState(() => _paymentMethod = method);
                           },
                         ),
                       ),
@@ -496,24 +474,21 @@ class _SummaryRow extends StatelessWidget {
     required this.label,
     required this.value,
     this.emphasized = false,
-    this.color,
   });
 
   final String label;
   final String value;
   final bool emphasized;
-  final Color? color;
 
   @override
   Widget build(BuildContext context) {
-    final valueColor = color ?? (emphasized ? context.colors.primary : null);
+    final valueColor = emphasized ? context.colors.primary : null;
 
     return Row(
       children: [
         Expanded(
           child: AppText.title(
             label,
-            color: color,
             weight: emphasized ? FontWeight.w700 : null,
           ),
         ),

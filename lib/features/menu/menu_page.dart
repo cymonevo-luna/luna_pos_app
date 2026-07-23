@@ -13,6 +13,7 @@ import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/lazy_shell_tab_loader.dart';
 import '../../shared/widgets/widgets.dart';
 import 'menu_controller.dart';
+import 'menu_layout_provider.dart';
 import 'models/pos_menu.dart';
 import 'widgets/add_to_cart_sheet.dart';
 import 'widgets/menu_item_card.dart';
@@ -78,6 +79,7 @@ class _MenuPageState extends ConsumerState<MenuPage> {
     final l10n = AppLocalizations.of(context);
     final menu = ref.watch(menuProvider);
     final order = ref.watch(orderProvider);
+    final layout = ref.watch(menuLayoutProvider);
 
     return LazyShellTabLoader(
       branch: ShellBranch.home,
@@ -94,6 +96,46 @@ class _MenuPageState extends ConsumerState<MenuPage> {
               label: Text('${order.itemCount}'),
               child: const Icon(Icons.shopping_cart_outlined),
             ),
+          ),
+          PopupMenuButton<MenuLayout>(
+            key: const Key('menu_layout_toggle'),
+            tooltip: l10n.menuLayout,
+            icon: Icon(
+              layout == MenuLayout.grid ? Icons.grid_view : Icons.view_list,
+            ),
+            onSelected: ref.read(menuLayoutProvider.notifier).setLayout,
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: MenuLayout.grid,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 20,
+                      child: layout == MenuLayout.grid
+                          ? const Icon(Icons.check, size: 20)
+                          : null,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(l10n.menuLayoutGrid),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: MenuLayout.list,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 20,
+                      child: layout == MenuLayout.list
+                          ? const Icon(Icons.check, size: 20)
+                          : null,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(l10n.menuLayoutList),
+                  ],
+                ),
+              ),
+            ],
           ),
           IconButton(
             tooltip: l10n.refreshMenu,

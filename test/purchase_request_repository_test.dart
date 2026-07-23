@@ -127,6 +127,64 @@ void main() {
     expect(created.items.first.quantity, 1000);
   });
 
+  test('create posts optional actual price and catalog update fields', () async {
+    adapter.onPost(
+      PurchaseRequestRepository.listPath,
+      (server) => server.reply(201, {
+        'success': true,
+        'data': {
+          'id': 'pr-new',
+          'supplier_id': 'sup-1',
+          'supplier_name': 'Toko Sembako Jaya',
+          'status': 'PENDING',
+          'total_estimated_amount': 140000,
+          'total_actual_amount': 135000,
+          'items': [
+            {
+              'food_supply_id': 'fs-1',
+              'food_supply_title': 'Flour',
+              'quantity': '1000',
+              'unit': 'gr',
+              'line_actual_amount': 135000,
+            },
+          ],
+        },
+      }),
+      data: {
+        'supplier_id': 'sup-1',
+        'items': [
+          {
+            'food_supply_id': 'fs-1',
+            'quantity': '1000',
+            'line_actual_amount': 135000,
+            'supplier_price_update': {
+              'price_amount': 150000,
+              'price_quantity': '1000',
+            },
+          },
+        ],
+      },
+    );
+
+    final created = await locator<PurchaseRequestRepository>().create(
+      supplierId: 'sup-1',
+      items: const [
+        PurchaseLineCreateInput(
+          foodSupplyId: 'fs-1',
+          quantity: 1000,
+          lineActualAmount: 135000,
+          supplierPriceUpdate: SupplierPriceUpdateInput(
+            priceAmount: 150000,
+            priceQuantity: 1000,
+          ),
+        ),
+      ],
+    );
+
+    expect(created.totalActualAmount, 135000);
+    expect(created.items.first.lineActualAmount, 135000);
+  });
+
   test('get parses purchase request detail', () async {
     adapter.onGet(
       '/api/admin/purchase-requests/pr-1',
@@ -146,7 +204,7 @@ void main() {
               'quantity': '1000',
               'unit': 'gr',
               'unit_price': 140,
-              'line_total': 140000,
+              'line_estimated_amount': 140000,
             },
           ],
         },
@@ -157,7 +215,7 @@ void main() {
 
     expect(detail.status, PurchaseRequestStatus.paid);
     expect(detail.paidProofUrl, '/uploads/paid.jpg');
-    expect(detail.items.first.lineTotal, 140000);
+    expect(detail.items.first.lineEstimatedAmount, 140000);
   });
 
   test('updateStatus patches status with optional proof url', () async {

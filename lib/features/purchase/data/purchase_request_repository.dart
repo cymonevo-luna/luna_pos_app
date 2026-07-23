@@ -137,6 +137,14 @@ class PurchaseRequestRepository {
               (item) => {
                 'food_supply_id': item.foodSupplyId,
                 'quantity': item.quantity.toString(),
+                if (item.lineActualAmount != null)
+                  'line_actual_amount': item.lineActualAmount,
+                if (item.supplierPriceUpdate != null)
+                  'supplier_price_update': {
+                    'price_amount': item.supplierPriceUpdate!.priceAmount,
+                    'price_quantity':
+                        item.supplierPriceUpdate!.priceQuantity.toString(),
+                  },
               },
             )
             .toList(),
@@ -157,12 +165,26 @@ class PurchaseRequestRepository {
       };
 }
 
+class SupplierPriceUpdateInput {
+  const SupplierPriceUpdateInput({
+    required this.priceAmount,
+    required this.priceQuantity,
+  });
+
+  final int priceAmount;
+  final num priceQuantity;
+}
+
 class PurchaseLineCreateInput {
   const PurchaseLineCreateInput({
     required this.foodSupplyId,
     required this.quantity,
+    this.lineActualAmount,
+    this.supplierPriceUpdate,
   });
 
   final String foodSupplyId;
   final num quantity;
+  final int? lineActualAmount;
+  final SupplierPriceUpdateInput? supplierPriceUpdate;
 }

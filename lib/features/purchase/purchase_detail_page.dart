@@ -220,19 +220,43 @@ class _PurchaseDetailContent extends StatelessWidget {
                 label: l10n.purchaseEstimatedTotal,
               ),
             ),
-            const HGap(AppSpacing.sm),
-            Expanded(
-              child: AppStatCard(
-                icon: Icons.schedule_outlined,
-                color: context.colors.secondary,
-                value: createdAt != null
-                    ? dateFormat.format(createdAt.toLocal())
-                    : '—',
-                label: l10n.purchaseCreatedAt,
+            if (detail.totalActualAmount != null) ...[
+              const HGap(AppSpacing.sm),
+              Expanded(
+                child: AppStatCard(
+                  icon: Icons.price_check_outlined,
+                  color: context.colors.tertiary,
+                  value: formatRupiah(detail.totalActualAmount!),
+                  label: l10n.purchaseActualTotal,
+                ),
               ),
-            ),
+            ],
+            if (detail.totalActualAmount == null) ...[
+              const HGap(AppSpacing.sm),
+              Expanded(
+                child: AppStatCard(
+                  icon: Icons.schedule_outlined,
+                  color: context.colors.secondary,
+                  value: createdAt != null
+                      ? dateFormat.format(createdAt.toLocal())
+                      : '—',
+                  label: l10n.purchaseCreatedAt,
+                ),
+              ),
+            ],
           ],
         ),
+        if (detail.totalActualAmount != null) ...[
+          const VGap(AppSpacing.sm),
+          AppStatCard(
+            icon: Icons.schedule_outlined,
+            color: context.colors.secondary,
+            value: createdAt != null
+                ? dateFormat.format(createdAt.toLocal())
+                : '—',
+            label: l10n.purchaseCreatedAt,
+          ),
+        ],
         if (detail.createdByUsername != null) ...[
           const VGap(AppSpacing.sm),
           AppText.body(
@@ -386,14 +410,16 @@ class _LineItemRow extends StatelessWidget {
               Expanded(
                 child: AppText.title(item.foodSupplyTitle ?? item.foodSupplyId),
               ),
-              if (item.lineTotal != null)
-                AppText.title(formatRupiah(item.lineTotal!)),
+              if (item.lineActualAmount != null)
+                AppText.title(formatRupiah(item.lineActualAmount!))
+              else if (item.lineEstimatedAmount != null)
+                AppText.title(formatRupiah(item.lineEstimatedAmount!)),
             ],
           ),
           const VGap(AppSpacing.xxs),
           AppText.caption(
             '${l10n.quantityLabel}: $quantityLabel'
-            '${item.unitPrice != null ? ' · ${l10n.unitPrice}: ${formatRupiah(item.unitPrice!)}' : ''}',
+            '${item.unitPrice != null ? ' · ${l10n.unitPrice}: ${formatRupiah(item.unitPrice!.round())}' : ''}',
           ),
         ],
       ),

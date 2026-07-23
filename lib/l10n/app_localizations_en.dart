@@ -530,6 +530,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get purchaseQuantityRequired => 'Enter a quantity greater than 0';
 
   @override
+  String get purchaseActualPriceLabel => 'Actual price (Rp)';
+
+  @override
+  String get purchaseUpdateCatalogPrice => 'Update supplier catalog price';
+
+  @override
+  String get purchaseCatalogPriceAmount => 'Catalog price amount';
+
+  @override
+  String get purchaseCatalogPriceQuantity => 'Catalog price quantity';
+
+  @override
+  String get purchaseActualTotal => 'Actual total';
+
+  @override
+  String get purchaseActualPriceRequired =>
+      'Enter an actual price greater than 0';
+
+  @override
+  String get purchaseCatalogPriceAmountRequired =>
+      'Enter a catalog price amount greater than 0';
+
+  @override
+  String get purchaseCatalogPriceQuantityRequired =>
+      'Enter a catalog price quantity greater than 0';
+
+  @override
   String get purchaseSelectCatalogItem => 'Select catalog item';
 
   @override

@@ -13,6 +13,7 @@ _PurchaseRequestSummary _$PurchaseRequestSummaryFromJson(
   supplierName: json['supplier_name'] as String,
   status: $enumDecode(_$PurchaseRequestStatusEnumMap, json['status']),
   totalEstimatedAmount: (json['total_estimated_amount'] as num).toInt(),
+  totalActualAmount: _nullableIntFromJson(json['total_actual_amount']),
   itemCount: (json['item_count'] as num).toInt(),
   createdByUsername: json['created_by_username'] as String?,
   createdAt: _nullableDateTimeFromJson(json['created_at']),
@@ -25,6 +26,7 @@ Map<String, dynamic> _$PurchaseRequestSummaryToJson(
   'supplier_name': instance.supplierName,
   'status': _$PurchaseRequestStatusEnumMap[instance.status]!,
   'total_estimated_amount': instance.totalEstimatedAmount,
+  'total_actual_amount': instance.totalActualAmount,
   'item_count': instance.itemCount,
   'created_by_username': instance.createdByUsername,
   'created_at': instance.createdAt?.toIso8601String(),
@@ -43,8 +45,9 @@ _PurchaseRequestItem _$PurchaseRequestItemFromJson(Map<String, dynamic> json) =>
       foodSupplyTitle: json['food_supply_title'] as String?,
       quantity: _quantityFromJson(json['quantity']),
       unit: json['unit'] as String?,
-      unitPrice: _nullableIntFromJson(json['unit_price']),
-      lineTotal: _nullableIntFromJson(json['line_total']),
+      unitPrice: _nullableNumFromJson(json['unit_price']),
+      lineEstimatedAmount: _nullableIntFromJson(json['line_estimated_amount']),
+      lineActualAmount: _nullableIntFromJson(json['line_actual_amount']),
     );
 
 Map<String, dynamic> _$PurchaseRequestItemToJson(
@@ -55,7 +58,8 @@ Map<String, dynamic> _$PurchaseRequestItemToJson(
   'quantity': instance.quantity,
   'unit': instance.unit,
   'unit_price': instance.unitPrice,
-  'line_total': instance.lineTotal,
+  'line_estimated_amount': instance.lineEstimatedAmount,
+  'line_actual_amount': instance.lineActualAmount,
 };
 
 _PurchaseRequestDetail _$PurchaseRequestDetailFromJson(
@@ -67,6 +71,7 @@ _PurchaseRequestDetail _$PurchaseRequestDetailFromJson(
   supplierContactInfo: json['supplier_contact_info'] as String?,
   status: $enumDecode(_$PurchaseRequestStatusEnumMap, json['status']),
   totalEstimatedAmount: (json['total_estimated_amount'] as num?)?.toInt(),
+  totalActualAmount: _nullableIntFromJson(json['total_actual_amount']),
   items:
       (json['items'] as List<dynamic>?)
           ?.map((e) => PurchaseRequestItem.fromJson(e as Map<String, dynamic>))
@@ -88,6 +93,7 @@ Map<String, dynamic> _$PurchaseRequestDetailToJson(
   'supplier_contact_info': instance.supplierContactInfo,
   'status': _$PurchaseRequestStatusEnumMap[instance.status]!,
   'total_estimated_amount': instance.totalEstimatedAmount,
+  'total_actual_amount': instance.totalActualAmount,
   'items': instance.items,
   'notes': instance.notes,
   'paid_proof_url': instance.paidProofUrl,

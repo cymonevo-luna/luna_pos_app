@@ -23,10 +23,19 @@ class PurchaseLineDraft {
   PurchaseLineDraft({
     required this.quote,
     this.quantity = 1,
-  });
+    this.lineActualAmount,
+    this.updateCatalogPrice = false,
+    int? catalogPriceAmount,
+    num? catalogPriceQuantity,
+  })  : catalogPriceAmount = catalogPriceAmount ?? quote.priceAmount,
+        catalogPriceQuantity = catalogPriceQuantity ?? quote.priceQuantity;
 
   final PriceQuote quote;
   num quantity;
+  int? lineActualAmount;
+  bool updateCatalogPrice;
+  int catalogPriceAmount;
+  num catalogPriceQuantity;
 }
 
 class PurchaseCreatePage extends ConsumerStatefulWidget {
@@ -64,10 +73,27 @@ class _PurchaseCreatePageState extends ConsumerState<PurchaseCreatePage> {
         atLeastOneItem: l10n.purchaseAtLeastOneItem,
         duplicateItem: l10n.purchaseDuplicateItemError,
         quantityRequired: l10n.purchaseQuantityRequired,
+        actualPriceRequired: l10n.purchaseActualPriceRequired,
+        catalogPriceAmountRequired: l10n.purchaseCatalogPriceAmountRequired,
+        catalogPriceQuantityRequired: l10n.purchaseCatalogPriceQuantityRequired,
       );
 
-  int get _grandTotal => estimateGrandTotal(
+  int get _estimatedGrandTotal => estimateGrandTotal(
         _lines.map((line) => (quote: line.quote, quantity: line.quantity)),
+      );
+
+  int get _actualGrandTotal => resolvedGrandTotal(
+        _lines.map(
+          (line) => (
+            quote: line.quote,
+            quantity: line.quantity,
+            lineActualAmount: line.lineActualAmount,
+          ),
+        ),
+      );
+
+  bool get _showActualTotal => hasAnyActualAmount(
+        _lines.map((line) => (lineActualAmount: line.lineActualAmount)),
       );
 
   Future<void> _selectSupplier() async {
@@ -128,6 +154,39 @@ class _PurchaseCreatePageState extends ConsumerState<PurchaseCreatePage> {
     });
   }
 
+  void _updateLineActualAmount(int index, int? amount) {
+    setState(() {
+      _lines[index].lineActualAmount = amount;
+      _fieldErrors = const {};
+    });
+  }
+
+  void _updateCatalogPriceEnabled(int index, bool enabled) {
+    setState(() {
+      final line = _lines[index];
+      line.updateCatalogPrice = enabled;
+      if (enabled) {
+        line.catalogPriceAmount = line.quote.priceAmount;
+        line.catalogPriceQuantity = line.quote.priceQuantity;
+      }
+      _fieldErrors = const {};
+    });
+  }
+
+  void _updateCatalogPriceAmount(int index, int amount) {
+    setState(() {
+      _lines[index].catalogPriceAmount = amount;
+      _fieldErrors = const {};
+    });
+  }
+
+  void _updateCatalogPriceQuantity(int index, num quantity) {
+    setState(() {
+      _lines[index].catalogPriceQuantity = quantity;
+      _fieldErrors = const {};
+    });
+  }
+
   bool _validateForm(AppLocalizations l10n) {
     final result = validatePurchaseCreate(
       supplierId: _selectedSupplier?.id,
@@ -136,6 +195,12 @@ class _PurchaseCreatePageState extends ConsumerState<PurchaseCreatePage> {
             (line) => PurchaseLineInput(
               foodSupplyId: line.quote.foodSupplyId,
               quantity: line.quantity,
+              lineActualAmount: line.lineActualAmount,
+              updateCatalogPrice: line.updateCatalogPrice,
+              catalogPriceAmount:
+                  line.updateCatalogPrice ? line.catalogPriceAmount : null,
+              catalogPriceQuantity:
+                  line.updateCatalogPrice ? line.catalogPriceQuantity : null,
             ),
           )
           .toList(),
@@ -168,6 +233,13 @@ class _PurchaseCreatePageState extends ConsumerState<PurchaseCreatePage> {
               (line) => PurchaseLineCreateInput(
                 foodSupplyId: line.quote.foodSupplyId,
                 quantity: line.quantity,
+                lineActualAmount: line.lineActualAmount,
+                supplierPriceUpdate: line.updateCatalogPrice
+                    ? SupplierPriceUpdateInput(
+                        priceAmount: line.catalogPriceAmount,
+                        priceQuantity: line.catalogPriceQuantity,
+                      )
+                    : null,
               ),
             )
             .toList(),
@@ -271,7 +343,12 @@ class _PurchaseCreatePageState extends ConsumerState<PurchaseCreatePage> {
                       );
                       final fieldKey = 'items[$index].food_supply_id';
                       final itemError = _fieldErrors[fieldKey] ??
-                          _fieldErrors['items[$index].quantity'];
+                          _fieldErrors['items[$index].quantity'] ??
+                          _fieldErrors['items[$index].line_actual_amount'] ??
+                          _fieldErrors[
+                              'items[$index].supplier_price_update.price_amount'] ??
+                          _fieldErrors[
+                              'items[$index].supplier_price_update.price_quantity'];
 
                       return Padding(
                         padding: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -324,6 +401,50 @@ class _PurchaseCreatePageState extends ConsumerState<PurchaseCreatePage> {
                                   AppText.title(formatRupiah(lineTotal)),
                                 ],
                               ),
+                              const VGap(AppSpacing.sm),
+                              AppTextField(
+                                fieldKey: Key(
+                                  'purchase_line_item_${line.quote.foodSupplyId}_actual_price',
+                                ),
+                                label: l10n.purchaseActualPriceLabel,
+                                hint: l10n.purchaseActualPriceLabel,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
+                                onChanged: (value) {
+                                  final trimmed = value.trim();
+                                  _updateLineActualAmount(
+                                    index,
+                                    trimmed.isEmpty ? null : int.tryParse(trimmed),
+                                  );
+                                },
+                              ),
+                              const VGap(AppSpacing.sm),
+                              SwitchListTile.adaptive(
+                                key: Key(
+                                  'purchase_line_item_${line.quote.foodSupplyId}_update_catalog',
+                                ),
+                                contentPadding: EdgeInsets.zero,
+                                title: AppText.body(
+                                  l10n.purchaseUpdateCatalogPrice,
+                                ),
+                                value: line.updateCatalogPrice,
+                                onChanged: (value) =>
+                                    _updateCatalogPriceEnabled(index, value),
+                              ),
+                              if (line.updateCatalogPrice) ...[
+                                const VGap(AppSpacing.sm),
+                                _CatalogPriceUpdateFields(
+                                  foodSupplyId: line.quote.foodSupplyId,
+                                  initialPriceAmount: line.catalogPriceAmount,
+                                  initialPriceQuantity: line.catalogPriceQuantity,
+                                  onPriceAmountChanged: (value) =>
+                                      _updateCatalogPriceAmount(index, value),
+                                  onPriceQuantityChanged: (value) =>
+                                      _updateCatalogPriceQuantity(index, value),
+                                ),
+                              ],
                               if (itemError != null) ...[
                                 const VGap(AppSpacing.xs),
                                 Text(
@@ -364,8 +485,11 @@ class _PurchaseCreatePageState extends ConsumerState<PurchaseCreatePage> {
               ),
             ),
             _PurchaseSummaryFooter(
-              totalLabel: l10n.purchaseEstimatedTotal,
-              totalAmount: formatRupiah(_grandTotal),
+              estimatedLabel: l10n.purchaseEstimatedTotal,
+              estimatedAmount: formatRupiah(_estimatedGrandTotal),
+              actualLabel: l10n.purchaseActualTotal,
+              actualAmount: formatRupiah(_actualGrandTotal),
+              showActualTotal: _showActualTotal,
               submitLabel: l10n.purchaseSubmit,
               submitting: _submitting,
               onSubmit: _submit,
@@ -551,17 +675,123 @@ class _StepperButton extends StatelessWidget {
   }
 }
 
+class _CatalogPriceUpdateFields extends StatefulWidget {
+  const _CatalogPriceUpdateFields({
+    required this.foodSupplyId,
+    required this.initialPriceAmount,
+    required this.initialPriceQuantity,
+    required this.onPriceAmountChanged,
+    required this.onPriceQuantityChanged,
+  });
+
+  final String foodSupplyId;
+  final int initialPriceAmount;
+  final num initialPriceQuantity;
+  final ValueChanged<int> onPriceAmountChanged;
+  final ValueChanged<num> onPriceQuantityChanged;
+
+  @override
+  State<_CatalogPriceUpdateFields> createState() =>
+      _CatalogPriceUpdateFieldsState();
+}
+
+class _CatalogPriceUpdateFieldsState extends State<_CatalogPriceUpdateFields> {
+  late final TextEditingController _amountController;
+  late final TextEditingController _quantityController;
+
+  @override
+  void initState() {
+    super.initState();
+    _amountController =
+        TextEditingController(text: widget.initialPriceAmount.toString());
+    _quantityController =
+        TextEditingController(text: widget.initialPriceQuantity.toString());
+  }
+
+  @override
+  void didUpdateWidget(covariant _CatalogPriceUpdateFields oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialPriceAmount != widget.initialPriceAmount) {
+      _amountController.text = widget.initialPriceAmount.toString();
+    }
+    if (oldWidget.initialPriceQuantity != widget.initialPriceQuantity) {
+      _quantityController.text = widget.initialPriceQuantity.toString();
+    }
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    _quantityController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AppTextField(
+          fieldKey: Key(
+            'purchase_line_item_${widget.foodSupplyId}_catalog_price_amount',
+          ),
+          label: l10n.purchaseCatalogPriceAmount,
+          hint: l10n.purchaseCatalogPriceAmount,
+          controller: _amountController,
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+          ],
+          onChanged: (value) {
+            final parsed = int.tryParse(value.trim());
+            if (parsed != null) {
+              widget.onPriceAmountChanged(parsed);
+            }
+          },
+        ),
+        const VGap(AppSpacing.sm),
+        AppTextField(
+          fieldKey: Key(
+            'purchase_line_item_${widget.foodSupplyId}_catalog_price_quantity',
+          ),
+          label: l10n.purchaseCatalogPriceQuantity,
+          hint: l10n.purchaseCatalogPriceQuantity,
+          controller: _quantityController,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+          ],
+          onChanged: (value) {
+            final parsed = num.tryParse(value.trim());
+            if (parsed != null) {
+              widget.onPriceQuantityChanged(parsed);
+            }
+          },
+        ),
+      ],
+    );
+  }
+}
+
 class _PurchaseSummaryFooter extends StatelessWidget {
   const _PurchaseSummaryFooter({
-    required this.totalLabel,
-    required this.totalAmount,
+    required this.estimatedLabel,
+    required this.estimatedAmount,
+    required this.actualLabel,
+    required this.actualAmount,
+    required this.showActualTotal,
     required this.submitLabel,
     required this.submitting,
     required this.onSubmit,
   });
 
-  final String totalLabel;
-  final String totalAmount;
+  final String estimatedLabel;
+  final String estimatedAmount;
+  final String actualLabel;
+  final String actualAmount;
+  final bool showActualTotal;
   final String submitLabel;
   final bool submitting;
   final VoidCallback onSubmit;
@@ -581,10 +811,20 @@ class _PurchaseSummaryFooter extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AppText.title(totalLabel),
-                  AppText.title(totalAmount),
+                  AppText.title(estimatedLabel),
+                  AppText.title(estimatedAmount),
                 ],
               ),
+              if (showActualTotal) ...[
+                const VGap(AppSpacing.xs),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    AppText.title(actualLabel),
+                    AppText.title(actualAmount),
+                  ],
+                ),
+              ],
               const VGap(AppSpacing.md),
               AppButton(
                 submitLabel,

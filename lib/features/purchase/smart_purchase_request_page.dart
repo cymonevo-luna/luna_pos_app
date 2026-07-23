@@ -190,6 +190,49 @@ class _SmartPurchaseRequestPageState
     });
   }
 
+  void _updateLineActualAmount(String foodSupplyId, int? amount) {
+    final item = _reviewItems.firstWhere(
+      (entry) => entry.foodSupplyId == foodSupplyId,
+    );
+    _replaceReviewItem(
+      foodSupplyId,
+      item.copyWith(
+        lineActualAmount: amount,
+        clearLineActualAmount: amount == null,
+      ),
+    );
+  }
+
+  void _updateCatalogUpdateEnabled(String foodSupplyId, bool enabled) {
+    final item = _reviewItems.firstWhere(
+      (entry) => entry.foodSupplyId == foodSupplyId,
+    );
+    _replaceReviewItem(
+      foodSupplyId,
+      item.copyWith(catalogUpdateEnabled: enabled),
+    );
+  }
+
+  void _updateCatalogUpdatePriceAmount(String foodSupplyId, int amount) {
+    final item = _reviewItems.firstWhere(
+      (entry) => entry.foodSupplyId == foodSupplyId,
+    );
+    _replaceReviewItem(
+      foodSupplyId,
+      item.copyWith(catalogUpdatePriceAmount: amount),
+    );
+  }
+
+  void _updateCatalogUpdatePriceQuantity(String foodSupplyId, num quantity) {
+    final item = _reviewItems.firstWhere(
+      (entry) => entry.foodSupplyId == foodSupplyId,
+    );
+    _replaceReviewItem(
+      foodSupplyId,
+      item.copyWith(catalogUpdatePriceQuantity: quantity),
+    );
+  }
+
   Future<void> _submit() async {
     if (!_canSubmit) return;
 
@@ -338,11 +381,19 @@ class _SmartPurchaseRequestPageState
           reviewItems: _reviewItems,
           onSupplierChanged: _updateSupplierForItem,
           onManualSupplierPick: _pickManualSupplier,
+          onLineActualAmountChanged: _updateLineActualAmount,
+          onCatalogUpdateEnabledChanged: _updateCatalogUpdateEnabled,
+          onCatalogUpdatePriceAmountChanged: _updateCatalogUpdatePriceAmount,
+          onCatalogUpdatePriceQuantityChanged: _updateCatalogUpdatePriceQuantity,
           l10n: l10n,
         ),
       _ => _ConfirmStep(
           groups: _groups,
           notesController: _notesController,
+          onLineActualAmountChanged: _updateLineActualAmount,
+          onCatalogUpdateEnabledChanged: _updateCatalogUpdateEnabled,
+          onCatalogUpdatePriceAmountChanged: _updateCatalogUpdatePriceAmount,
+          onCatalogUpdatePriceQuantityChanged: _updateCatalogUpdatePriceQuantity,
           l10n: l10n,
         ),
     };
@@ -506,6 +557,10 @@ class _ReviewStep extends StatelessWidget {
     required this.reviewItems,
     required this.onSupplierChanged,
     required this.onManualSupplierPick,
+    required this.onLineActualAmountChanged,
+    required this.onCatalogUpdateEnabledChanged,
+    required this.onCatalogUpdatePriceAmountChanged,
+    required this.onCatalogUpdatePriceQuantityChanged,
     required this.l10n,
   });
 
@@ -516,6 +571,13 @@ class _ReviewStep extends StatelessWidget {
     SmartPurchaseSupplierQuote quote,
   ) onSupplierChanged;
   final Future<void> Function(SmartPurchaseReviewItem item) onManualSupplierPick;
+  final void Function(String foodSupplyId, int? amount) onLineActualAmountChanged;
+  final void Function(String foodSupplyId, bool enabled)
+      onCatalogUpdateEnabledChanged;
+  final void Function(String foodSupplyId, int amount)
+      onCatalogUpdatePriceAmountChanged;
+  final void Function(String foodSupplyId, num quantity)
+      onCatalogUpdatePriceQuantityChanged;
   final AppLocalizations l10n;
 
   @override
@@ -564,6 +626,12 @@ class _ReviewStep extends StatelessWidget {
               child: _SupplierGroupCard(
                 group: group,
                 onSupplierChanged: onSupplierChanged,
+                onLineActualAmountChanged: onLineActualAmountChanged,
+                onCatalogUpdateEnabledChanged: onCatalogUpdateEnabledChanged,
+                onCatalogUpdatePriceAmountChanged:
+                    onCatalogUpdatePriceAmountChanged,
+                onCatalogUpdatePriceQuantityChanged:
+                    onCatalogUpdatePriceQuantityChanged,
                 l10n: l10n,
               ),
             ),
@@ -612,6 +680,10 @@ class _SupplierGroupCard extends StatelessWidget {
   const _SupplierGroupCard({
     required this.group,
     required this.onSupplierChanged,
+    required this.onLineActualAmountChanged,
+    required this.onCatalogUpdateEnabledChanged,
+    required this.onCatalogUpdatePriceAmountChanged,
+    required this.onCatalogUpdatePriceQuantityChanged,
     required this.l10n,
   });
 
@@ -620,6 +692,13 @@ class _SupplierGroupCard extends StatelessWidget {
     SmartPurchaseReviewItem item,
     SmartPurchaseSupplierQuote quote,
   ) onSupplierChanged;
+  final void Function(String foodSupplyId, int? amount) onLineActualAmountChanged;
+  final void Function(String foodSupplyId, bool enabled)
+      onCatalogUpdateEnabledChanged;
+  final void Function(String foodSupplyId, int amount)
+      onCatalogUpdatePriceAmountChanged;
+  final void Function(String foodSupplyId, num quantity)
+      onCatalogUpdatePriceQuantityChanged;
   final AppLocalizations l10n;
 
   @override
@@ -644,6 +723,12 @@ class _SupplierGroupCard extends StatelessWidget {
               child: _ReviewLineCard(
                 item: item,
                 onSupplierChanged: onSupplierChanged,
+                onLineActualAmountChanged: onLineActualAmountChanged,
+                onCatalogUpdateEnabledChanged: onCatalogUpdateEnabledChanged,
+                onCatalogUpdatePriceAmountChanged:
+                    onCatalogUpdatePriceAmountChanged,
+                onCatalogUpdatePriceQuantityChanged:
+                    onCatalogUpdatePriceQuantityChanged,
                 l10n: l10n,
               ),
             ),
@@ -658,6 +743,10 @@ class _ReviewLineCard extends StatelessWidget {
   const _ReviewLineCard({
     required this.item,
     required this.onSupplierChanged,
+    required this.onLineActualAmountChanged,
+    required this.onCatalogUpdateEnabledChanged,
+    required this.onCatalogUpdatePriceAmountChanged,
+    required this.onCatalogUpdatePriceQuantityChanged,
     required this.l10n,
   });
 
@@ -666,6 +755,13 @@ class _ReviewLineCard extends StatelessWidget {
     SmartPurchaseReviewItem item,
     SmartPurchaseSupplierQuote quote,
   ) onSupplierChanged;
+  final void Function(String foodSupplyId, int? amount) onLineActualAmountChanged;
+  final void Function(String foodSupplyId, bool enabled)
+      onCatalogUpdateEnabledChanged;
+  final void Function(String foodSupplyId, int amount)
+      onCatalogUpdatePriceAmountChanged;
+  final void Function(String foodSupplyId, num quantity)
+      onCatalogUpdatePriceQuantityChanged;
   final AppLocalizations l10n;
 
   @override
@@ -716,6 +812,14 @@ class _ReviewLineCard extends StatelessWidget {
             },
           ),
         ],
+        _SmartPurchaseLineInputs(
+          item: item,
+          onLineActualAmountChanged: onLineActualAmountChanged,
+          onCatalogUpdateEnabledChanged: onCatalogUpdateEnabledChanged,
+          onCatalogUpdatePriceAmountChanged: onCatalogUpdatePriceAmountChanged,
+          onCatalogUpdatePriceQuantityChanged: onCatalogUpdatePriceQuantityChanged,
+          l10n: l10n,
+        ),
       ],
     );
   }
@@ -725,11 +829,22 @@ class _ConfirmStep extends StatelessWidget {
   const _ConfirmStep({
     required this.groups,
     required this.notesController,
+    required this.onLineActualAmountChanged,
+    required this.onCatalogUpdateEnabledChanged,
+    required this.onCatalogUpdatePriceAmountChanged,
+    required this.onCatalogUpdatePriceQuantityChanged,
     required this.l10n,
   });
 
   final List<SmartPurchaseSupplierGroupView> groups;
   final TextEditingController notesController;
+  final void Function(String foodSupplyId, int? amount) onLineActualAmountChanged;
+  final void Function(String foodSupplyId, bool enabled)
+      onCatalogUpdateEnabledChanged;
+  final void Function(String foodSupplyId, int amount)
+      onCatalogUpdatePriceAmountChanged;
+  final void Function(String foodSupplyId, num quantity)
+      onCatalogUpdatePriceQuantityChanged;
   final AppLocalizations l10n;
 
   @override
@@ -757,11 +872,35 @@ class _ConfirmStep extends StatelessWidget {
                     const VGap(AppSpacing.sm),
                     ...group.items.map(
                       (item) => Padding(
-                        padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-                        child: Row(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Expanded(child: AppText.body(item.foodSupplyTitle)),
-                            AppText.body(formatRupiah(item.lineTotal)),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: AppText.body(item.foodSupplyTitle),
+                                ),
+                                AppText.body(formatRupiah(item.lineTotal)),
+                              ],
+                            ),
+                            const VGap(AppSpacing.xs),
+                            AppText.body(
+                              formatMeasurementQuantity(item.quantity, item.unit),
+                              muted: true,
+                            ),
+                            _SmartPurchaseLineInputs(
+                              item: item,
+                              onLineActualAmountChanged:
+                                  onLineActualAmountChanged,
+                              onCatalogUpdateEnabledChanged:
+                                  onCatalogUpdateEnabledChanged,
+                              onCatalogUpdatePriceAmountChanged:
+                                  onCatalogUpdatePriceAmountChanged,
+                              onCatalogUpdatePriceQuantityChanged:
+                                  onCatalogUpdatePriceQuantityChanged,
+                              l10n: l10n,
+                            ),
                           ],
                         ),
                       ),
@@ -784,6 +923,175 @@ class _ConfirmStep extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _SmartPurchaseLineInputs extends StatefulWidget {
+  const _SmartPurchaseLineInputs({
+    required this.item,
+    required this.onLineActualAmountChanged,
+    required this.onCatalogUpdateEnabledChanged,
+    required this.onCatalogUpdatePriceAmountChanged,
+    required this.onCatalogUpdatePriceQuantityChanged,
+    required this.l10n,
+  });
+
+  final SmartPurchaseReviewItem item;
+  final void Function(String foodSupplyId, int? amount) onLineActualAmountChanged;
+  final void Function(String foodSupplyId, bool enabled)
+      onCatalogUpdateEnabledChanged;
+  final void Function(String foodSupplyId, int amount)
+      onCatalogUpdatePriceAmountChanged;
+  final void Function(String foodSupplyId, num quantity)
+      onCatalogUpdatePriceQuantityChanged;
+  final AppLocalizations l10n;
+
+  @override
+  State<_SmartPurchaseLineInputs> createState() =>
+      _SmartPurchaseLineInputsState();
+}
+
+class _SmartPurchaseLineInputsState extends State<_SmartPurchaseLineInputs> {
+  late final TextEditingController _actualAmountController;
+  late final TextEditingController _catalogAmountController;
+  late final TextEditingController _catalogQuantityController;
+
+  @override
+  void initState() {
+    super.initState();
+    _actualAmountController = TextEditingController(
+      text: _formatAmount(widget.item.lineActualAmount),
+    );
+    _catalogAmountController = TextEditingController(
+      text: _formatAmount(widget.item.catalogUpdatePriceAmount),
+    );
+    _catalogQuantityController = TextEditingController(
+      text: _formatQuantity(widget.item.catalogUpdatePriceQuantity),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant _SmartPurchaseLineInputs oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.item.lineActualAmount != widget.item.lineActualAmount) {
+      _actualAmountController.text = _formatAmount(widget.item.lineActualAmount);
+    }
+    if (oldWidget.item.catalogUpdatePriceAmount !=
+            widget.item.catalogUpdatePriceAmount ||
+        oldWidget.item.selectedSupplierId != widget.item.selectedSupplierId) {
+      _catalogAmountController.text =
+          _formatAmount(widget.item.catalogUpdatePriceAmount);
+    }
+    if (oldWidget.item.catalogUpdatePriceQuantity !=
+            widget.item.catalogUpdatePriceQuantity ||
+        oldWidget.item.selectedSupplierId != widget.item.selectedSupplierId) {
+      _catalogQuantityController.text =
+          _formatQuantity(widget.item.catalogUpdatePriceQuantity);
+    }
+  }
+
+  @override
+  void dispose() {
+    _actualAmountController.dispose();
+    _catalogAmountController.dispose();
+    _catalogQuantityController.dispose();
+    super.dispose();
+  }
+
+  String _formatAmount(int? amount) => amount?.toString() ?? '';
+
+  String _formatQuantity(num? quantity) {
+    if (quantity == null) return '';
+    if (quantity == quantity.roundToDouble()) {
+      return quantity.round().toString();
+    }
+    return quantity.toString();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final item = widget.item;
+    final l10n = widget.l10n;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const VGap(AppSpacing.sm),
+        AppTextField(
+          fieldKey: Key('smart_purchase_actual_price_${item.foodSupplyId}'),
+          label: l10n.smartPurchaseActualPriceLabel,
+          controller: _actualAmountController,
+          keyboardType: TextInputType.number,
+          inputFormatters: [IdrWholeNumberInputFormatter()],
+          onChanged: (value) {
+            final trimmed = value.trim();
+            if (trimmed.isEmpty) {
+              widget.onLineActualAmountChanged(item.foodSupplyId, null);
+              return;
+            }
+            final parsed = parseIdrAmount(trimmed);
+            widget.onLineActualAmountChanged(
+              item.foodSupplyId,
+              parsed > 0 ? parsed : null,
+            );
+          },
+        ),
+        if (item.canOfferCatalogUpdate) ...[
+          const VGap(AppSpacing.sm),
+          SwitchListTile(
+            key: Key('smart_purchase_catalog_update_${item.foodSupplyId}'),
+            contentPadding: EdgeInsets.zero,
+            title: AppText.body(l10n.smartPurchaseCatalogUpdateLabel),
+            value: item.catalogUpdateEnabled,
+            onChanged: (enabled) =>
+                widget.onCatalogUpdateEnabledChanged(item.foodSupplyId, enabled),
+          ),
+          if (item.catalogUpdateEnabled) ...[
+            const VGap(AppSpacing.xs),
+            AppTextField(
+              fieldKey: Key(
+                'smart_purchase_catalog_amount_${item.foodSupplyId}',
+              ),
+              label: l10n.smartPurchaseCatalogPriceAmount,
+              controller: _catalogAmountController,
+              keyboardType: TextInputType.number,
+              inputFormatters: [IdrWholeNumberInputFormatter()],
+              onChanged: (value) {
+                final parsed = parseIdrAmount(value);
+                if (parsed > 0) {
+                  widget.onCatalogUpdatePriceAmountChanged(
+                    item.foodSupplyId,
+                    parsed,
+                  );
+                }
+              },
+            ),
+            const VGap(AppSpacing.xs),
+            AppTextField(
+              fieldKey: Key(
+                'smart_purchase_catalog_quantity_${item.foodSupplyId}',
+              ),
+              label: l10n.smartPurchaseCatalogPriceQuantity,
+              controller: _catalogQuantityController,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+              ],
+              onChanged: (value) {
+                final parsed = num.tryParse(value);
+                if (parsed != null && parsed > 0) {
+                  widget.onCatalogUpdatePriceQuantityChanged(
+                    item.foodSupplyId,
+                    parsed,
+                  );
+                }
+              },
+            ),
+          ],
+        ],
+      ],
     );
   }
 }

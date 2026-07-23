@@ -136,5 +136,59 @@ void main() {
     expect(payload.first.supplierId, 'sup-cheap');
     expect(payload.first.items.first.foodSupplyId, 'fs-1');
     expect(payload.first.items.first.quantity, 1000);
+    expect(payload.first.items.first.lineActualAmount, isNull);
+    expect(payload.first.items.first.supplierPriceUpdate, isNull);
+  });
+
+  test('buildBatchGroups includes optional actual and catalog update fields', () {
+    final item = reviewItem(
+      foodSupplyId: 'fs-1',
+      title: 'Flour',
+      quotes: const [cheapQuote],
+      selectedSupplierId: 'sup-cheap',
+    ).copyWith(
+      lineActualAmount: 95000,
+      catalogUpdateEnabled: true,
+      catalogUpdatePriceAmount: 95000,
+      catalogUpdatePriceQuantity: 1000,
+    );
+    final groups = regroupSmartPurchaseItems([item]);
+
+    final payload = buildBatchGroups(groups);
+
+    expect(payload.first.items.first.lineActualAmount, 95000);
+    expect(payload.first.items.first.supplierPriceUpdate?.priceAmount, 95000);
+    expect(payload.first.items.first.supplierPriceUpdate?.priceQuantity, 1000);
+  });
+
+  test('lineTotal uses actual amount when present', () {
+    final item = reviewItem(
+      foodSupplyId: 'fs-1',
+      title: 'Flour',
+      quotes: const [cheapQuote],
+      selectedSupplierId: 'sup-cheap',
+    ).copyWith(lineActualAmount: 88000);
+
+    expect(item.estimatedLineTotal, 100000);
+    expect(item.lineTotal, 88000);
+  });
+
+  test('supplier override resets catalog update defaults', () {
+    final item = reviewItem(
+      foodSupplyId: 'fs-1',
+      title: 'Flour',
+      quotes: const [cheapQuote, premiumQuote],
+      selectedSupplierId: 'sup-cheap',
+    ).copyWith(
+      catalogUpdateEnabled: true,
+      catalogUpdatePriceAmount: 90000,
+      catalogUpdatePriceQuantity: 1000,
+    );
+
+    final updated = item.withSupplierQuote(premiumQuote);
+
+    expect(updated.catalogUpdateEnabled, isFalse);
+    expect(updated.catalogUpdatePriceAmount, premiumQuote.priceAmount);
+    expect(updated.catalogUpdatePriceQuantity, premiumQuote.priceQuantity);
   });
 }

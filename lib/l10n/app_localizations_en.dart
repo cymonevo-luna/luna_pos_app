@@ -617,6 +617,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get smartPurchaseSubmitSuccess => 'Purchase requests created';
 
   @override
+  String get smartPurchaseActualPriceLabel => 'Actual price (optional)';
+
+  @override
+  String get smartPurchaseCatalogUpdateLabel => 'Update supplier catalog price';
+
+  @override
+  String get smartPurchaseCatalogPriceAmount => 'Catalog price amount';
+
+  @override
+  String get smartPurchaseCatalogPriceQuantity => 'Catalog price quantity';
+
+  @override
   String get searchStock => 'Search supplies';
 
   @override

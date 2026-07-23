@@ -497,6 +497,38 @@
   "@purchaseQuantityRequired": {
     "description": "Validation when line quantity is invalid"
   },
+  "purchaseActualPriceLabel": "Actual price (Rp)",
+  "@purchaseActualPriceLabel": {
+    "description": "Optional actual line total input on purchase create"
+  },
+  "purchaseUpdateCatalogPrice": "Update supplier catalog price",
+  "@purchaseUpdateCatalogPrice": {
+    "description": "Switch to update supplier catalog price on purchase create"
+  },
+  "purchaseCatalogPriceAmount": "Catalog price amount",
+  "@purchaseCatalogPriceAmount": {
+    "description": "Editable catalog price amount when updating supplier price"
+  },
+  "purchaseCatalogPriceQuantity": "Catalog price quantity",
+  "@purchaseCatalogPriceQuantity": {
+    "description": "Editable catalog price quantity when updating supplier price"
+  },
+  "purchaseActualTotal": "Actual total",
+  "@purchaseActualTotal": {
+    "description": "Sticky footer label for actual purchase total"
+  },
+  "purchaseActualPriceRequired": "Enter an actual price greater than 0",
+  "@purchaseActualPriceRequired": {
+    "description": "Validation when actual line price is invalid"
+  },
+  "purchaseCatalogPriceAmountRequired": "Enter a catalog price amount greater than 0",
+  "@purchaseCatalogPriceAmountRequired": {
+    "description": "Validation when catalog price amount is invalid"
+  },
+  "purchaseCatalogPriceQuantityRequired": "Enter a catalog price quantity greater than 0",
+  "@purchaseCatalogPriceQuantityRequired": {
+    "description": "Validation when catalog price quantity is invalid"
+  },
   "purchaseSelectCatalogItem": "Select catalog item",
   "@purchaseSelectCatalogItem": {
     "description": "Title for catalog item picker sheet"

@@ -171,6 +171,27 @@ void main() {
     );
   });
 
+  testWidgets('shows actual price field and catalog update switch per line',
+      (tester) async {
+    stubSupplierApis();
+
+    await tester.pumpWidget(buildApp());
+    await tester.pumpAndSettle();
+
+    await selectSupplier(tester);
+    await addCatalogItem(tester);
+
+    expect(
+      find.byKey(const Key('purchase_line_item_${foodSupplyId}_actual_price')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('purchase_line_item_${foodSupplyId}_update_catalog')),
+      findsOneWidget,
+    );
+    expect(find.text('Update supplier catalog price'), findsOneWidget);
+  });
+
   testWidgets('submit sends correct POST body', (tester) async {
     stubSupplierApis();
 
@@ -218,6 +239,113 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('detail:pr-created'), findsOneWidget);
+  });
+
+  testWidgets('submit with actual price sends line_actual_amount', (tester) async {
+    stubSupplierApis();
+
+    adapter.onPost(
+      PurchaseRequestRepository.listPath,
+      (server) => server.reply(201, {
+        'success': true,
+        'data': {
+          'id': 'pr-actual',
+          'supplier_id': supplierId,
+          'supplier_name': 'Toko Sembako Jaya',
+          'status': 'PENDING',
+          'total_estimated_amount': 140000,
+          'total_actual_amount': 135000,
+          'items': [
+            {
+              'food_supply_id': foodSupplyId,
+              'food_supply_title': 'Flour',
+              'quantity': '1000',
+              'unit': 'gr',
+              'line_actual_amount': 135000,
+            },
+          ],
+        },
+      }),
+      data: {
+        'supplier_id': supplierId,
+        'items': [
+          {
+            'food_supply_id': foodSupplyId,
+            'quantity': '1',
+            'line_actual_amount': 135000,
+          },
+        ],
+      },
+    );
+
+    await tester.pumpWidget(buildApp());
+    await tester.pumpAndSettle();
+
+    await selectSupplier(tester);
+    await addCatalogItem(tester);
+
+    await tester.enterText(
+      find.byKey(const Key('purchase_line_item_${foodSupplyId}_actual_price')),
+      '135000',
+    );
+    await tester.pump();
+
+    expect(find.text('Actual total'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('purchase_submit_button')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('detail:pr-actual'), findsOneWidget);
+  });
+
+  testWidgets('submit with catalog update sends supplier_price_update',
+      (tester) async {
+    stubSupplierApis();
+
+    adapter.onPost(
+      PurchaseRequestRepository.listPath,
+      (server) => server.reply(201, {
+        'success': true,
+        'data': {
+          'id': 'pr-catalog',
+          'supplier_id': supplierId,
+          'supplier_name': 'Toko Sembako Jaya',
+          'status': 'PENDING',
+          'items': [],
+        },
+      }),
+      data: {
+        'supplier_id': supplierId,
+        'items': [
+          {
+            'food_supply_id': foodSupplyId,
+            'quantity': '1',
+            'supplier_price_update': {
+              'price_amount': 140000,
+              'price_quantity': '1000',
+            },
+          },
+        ],
+      },
+    );
+
+    await tester.pumpWidget(buildApp());
+    await tester.pumpAndSettle();
+
+    await selectSupplier(tester);
+    await addCatalogItem(tester);
+
+    final catalogSwitch =
+        find.byKey(const Key('purchase_line_item_${foodSupplyId}_update_catalog'));
+    await tester.ensureVisible(catalogSwitch);
+    await tester.pumpAndSettle();
+    await tester.tap(catalogSwitch);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('purchase_submit_button')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('detail:pr-catalog'), findsOneWidget);
   });
 
   testWidgets('success navigates to detail', (tester) async {

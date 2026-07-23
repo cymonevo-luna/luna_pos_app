@@ -521,6 +521,33 @@ class AppLocalizationsId extends AppLocalizations {
   String get purchaseQuantityRequired => 'Masukkan jumlah lebih dari 0';
 
   @override
+  String get purchaseActualPriceLabel => 'Harga aktual (Rp)';
+
+  @override
+  String get purchaseUpdateCatalogPrice => 'Perbarui harga katalog pemasok';
+
+  @override
+  String get purchaseCatalogPriceAmount => 'Jumlah harga katalog';
+
+  @override
+  String get purchaseCatalogPriceQuantity => 'Kuantitas harga katalog';
+
+  @override
+  String get purchaseActualTotal => 'Total aktual';
+
+  @override
+  String get purchaseActualPriceRequired =>
+      'Masukkan harga aktual lebih dari 0';
+
+  @override
+  String get purchaseCatalogPriceAmountRequired =>
+      'Masukkan jumlah harga katalog lebih dari 0';
+
+  @override
+  String get purchaseCatalogPriceQuantityRequired =>
+      'Masukkan kuantitas harga katalog lebih dari 0';
+
+  @override
   String get purchaseSelectCatalogItem => 'Pilih item katalog';
 
   @override

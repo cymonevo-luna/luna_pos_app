@@ -214,6 +214,10 @@
   "@clearCart": {
     "description": "Clear all items from the cart"
   },
+  "clearBanknotes": "Clear all",
+  "@clearBanknotes": {
+    "description": "Reset all banknote denomination counts to zero"
+  },
   "remove": "Remove",
   "@remove": {
     "description": "Remove a line from the cart"

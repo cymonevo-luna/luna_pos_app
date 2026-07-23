@@ -303,6 +303,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clearCart => 'Clear cart';
 
   @override
+  String get clearBanknotes => 'Clear all';
+
+  @override
   String get remove => 'Remove';
 
   @override

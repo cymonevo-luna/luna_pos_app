@@ -680,6 +680,12 @@ abstract class AppLocalizations {
   /// **'Clear cart'**
   String get clearCart;
 
+  /// Reset all banknote denomination counts to zero
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get clearBanknotes;
+
   /// Remove a line from the cart
   ///
   /// In en, this message translates to:

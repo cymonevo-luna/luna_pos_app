@@ -1262,6 +1262,30 @@ abstract class AppLocalizations {
   /// **'Purchase requests created'**
   String get smartPurchaseSubmitSuccess;
 
+  /// Label for optional actual line amount on smart purchase review
+  ///
+  /// In en, this message translates to:
+  /// **'Actual price (optional)'**
+  String get smartPurchaseActualPriceLabel;
+
+  /// Switch label to submit supplier price update with batch
+  ///
+  /// In en, this message translates to:
+  /// **'Update supplier catalog price'**
+  String get smartPurchaseCatalogUpdateLabel;
+
+  /// Label for catalog update price amount field
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog price amount'**
+  String get smartPurchaseCatalogPriceAmount;
+
+  /// Label for catalog update price quantity field
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog price quantity'**
+  String get smartPurchaseCatalogPriceQuantity;
+
   /// Search field hint on stock list
   ///
   /// In en, this message translates to:

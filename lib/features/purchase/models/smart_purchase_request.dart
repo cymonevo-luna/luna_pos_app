@@ -120,10 +120,45 @@ abstract class SmartPurchaseSuggestResponse with _$SmartPurchaseSuggestResponse 
 }
 
 @freezed
+abstract class SmartPurchaseSupplierPriceUpdate
+    with _$SmartPurchaseSupplierPriceUpdate {
+  const factory SmartPurchaseSupplierPriceUpdate({
+    @JsonKey(name: 'price_amount') required int priceAmount,
+    @JsonKey(
+      name: 'price_quantity',
+      fromJson: _decimalFromJson,
+      toJson: _quantityToJson,
+    )
+    required num priceQuantity,
+  }) = _SmartPurchaseSupplierPriceUpdate;
+
+  factory SmartPurchaseSupplierPriceUpdate.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      _$SmartPurchaseSupplierPriceUpdateFromJson(json);
+}
+
+@freezed
+abstract class SmartPurchaseBatchItemInput with _$SmartPurchaseBatchItemInput {
+  const factory SmartPurchaseBatchItemInput({
+    @JsonKey(name: 'food_supply_id') required String foodSupplyId,
+    @JsonKey(fromJson: _quantityFromJson, toJson: _quantityToJson)
+    required num quantity,
+    @JsonKey(name: 'line_actual_amount', fromJson: _nullableIntFromJson)
+    int? lineActualAmount,
+    @JsonKey(name: 'supplier_price_update')
+    SmartPurchaseSupplierPriceUpdate? supplierPriceUpdate,
+  }) = _SmartPurchaseBatchItemInput;
+
+  factory SmartPurchaseBatchItemInput.fromJson(Map<String, dynamic> json) =>
+      _$SmartPurchaseBatchItemInputFromJson(json);
+}
+
+@freezed
 abstract class SmartPurchaseBatchGroupInput with _$SmartPurchaseBatchGroupInput {
   const factory SmartPurchaseBatchGroupInput({
     @JsonKey(name: 'supplier_id') required String supplierId,
-    required List<SmartPurchaseSuggestInput> items,
+    required List<SmartPurchaseBatchItemInput> items,
   }) = _SmartPurchaseBatchGroupInput;
 
   factory SmartPurchaseBatchGroupInput.fromJson(Map<String, dynamic> json) =>

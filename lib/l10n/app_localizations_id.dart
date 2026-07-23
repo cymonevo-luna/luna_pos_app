@@ -632,6 +632,19 @@ class AppLocalizationsId extends AppLocalizations {
   String get smartPurchaseSubmitSuccess => 'Permintaan pembelian dibuat';
 
   @override
+  String get smartPurchaseActualPriceLabel => 'Harga aktual (opsional)';
+
+  @override
+  String get smartPurchaseCatalogUpdateLabel =>
+      'Perbarui harga katalog pemasok';
+
+  @override
+  String get smartPurchaseCatalogPriceAmount => 'Jumlah harga katalog';
+
+  @override
+  String get smartPurchaseCatalogPriceQuantity => 'Kuantitas harga katalog';
+
+  @override
   String get searchStock => 'Cari persediaan';
 
   @override

@@ -299,6 +299,83 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Rp 100.000'), findsWidgets);
+    expect(
+      find.byKey(const Key('smart_purchase_actual_price_$foodSupplyId')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('smart_purchase_catalog_update_$foodSupplyId')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('actual amount updates totals and batch payload', (tester) async {
+    stubFoodSupplyList();
+
+    adapter.onPost(
+      PurchaseRequestRepository.suggestPath,
+      (server) => server.reply(
+        200,
+        suggestFixture(
+          selectedSupplierId: supplierCheap,
+          selectedSupplierName: 'Cheap Supplier',
+          cheapAmount: 100000,
+          premiumAmount: 150000,
+        ),
+      ),
+      data: {
+        'items': [
+          {'food_supply_id': foodSupplyId, 'quantity': '1000'},
+        ],
+      },
+    );
+
+    adapter.onPost(
+      PurchaseRequestRepository.batchPath,
+      (server) => server.reply(201, {
+        'success': true,
+        'data': {
+          'purchase_requests': [
+            {'id': 'pr-1', 'supplier_name': 'Cheap Supplier'},
+          ],
+        },
+      }),
+      data: {
+        'groups': [
+          {
+            'supplier_id': supplierCheap,
+            'items': [
+              {
+                'food_supply_id': foodSupplyId,
+                'quantity': '1000',
+                'line_actual_amount': 88000,
+              },
+            ],
+          },
+        ],
+      },
+    );
+
+    await tester.pumpWidget(buildSmartPurchaseApp());
+    await tester.pumpAndSettle();
+    await addIngredient(tester);
+    await tester.tap(find.byKey(const Key('smart_purchase_next_button')));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('smart_purchase_actual_price_$foodSupplyId')),
+      '88000',
+    );
+    await tester.pump();
+
+    expect(find.text('Rp 88.000'), findsWidgets);
+
+    await tester.tap(find.byKey(const Key('smart_purchase_next_button')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('smart_purchase_submit_button')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('purchases-list'), findsOneWidget);
   });
 
   testWidgets('supplier override updates grouping and total', (tester) async {
@@ -338,6 +415,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Rp 150.000'), findsWidgets);
+    final switchFinder =
+        find.byKey(const Key('smart_purchase_catalog_update_$foodSupplyId'));
+    expect(tester.widget<SwitchListTile>(switchFinder).value, isFalse);
   });
 
   testWidgets('confirm submits batch and returns to purchases list', (tester) async {

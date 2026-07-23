@@ -631,6 +631,22 @@
   "@smartPurchaseSubmitSuccess": {
     "description": "Snack bar after successful batch submit"
   },
+  "smartPurchaseActualPriceLabel": "Actual price (optional)",
+  "@smartPurchaseActualPriceLabel": {
+    "description": "Label for optional actual line amount on smart purchase review"
+  },
+  "smartPurchaseCatalogUpdateLabel": "Update supplier catalog price",
+  "@smartPurchaseCatalogUpdateLabel": {
+    "description": "Switch label to submit supplier price update with batch"
+  },
+  "smartPurchaseCatalogPriceAmount": "Catalog price amount",
+  "@smartPurchaseCatalogPriceAmount": {
+    "description": "Label for catalog update price amount field"
+  },
+  "smartPurchaseCatalogPriceQuantity": "Catalog price quantity",
+  "@smartPurchaseCatalogPriceQuantity": {
+    "description": "Label for catalog update price quantity field"
+  },
   "searchStock": "Search supplies",
   "@searchStock": {
     "description": "Search field hint on stock list"

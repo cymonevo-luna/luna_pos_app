@@ -137,7 +137,7 @@ void main() {
         SmartPurchaseBatchGroupInput(
           supplierId: 'sup-cheap',
           items: [
-            SmartPurchaseSuggestInput(foodSupplyId: 'fs-1', quantity: 1000),
+            SmartPurchaseBatchItemInput(foodSupplyId: 'fs-1', quantity: 1000),
           ],
         ),
       ],
@@ -146,6 +146,62 @@ void main() {
 
     expect(response.purchaseRequests, hasLength(1));
     expect(response.purchaseRequests.first.id, 'pr-1');
+  });
+
+  test('batchCreate posts optional actual and catalog update fields', () async {
+    adapter.onPost(
+      PurchaseRequestRepository.batchPath,
+      (server) => server.reply(201, {
+        'success': true,
+        'data': {
+          'purchase_requests': [
+            {
+              'id': 'pr-1',
+              'supplier_name': 'Cheap Supplier',
+            },
+          ],
+        },
+      }),
+      data: {
+        'groups': [
+          {
+            'supplier_id': 'sup-cheap',
+            'items': [
+              {
+                'food_supply_id': 'fs-1',
+                'quantity': '1000',
+                'line_actual_amount': 95000,
+                'supplier_price_update': {
+                  'price_amount': 95000,
+                  'price_quantity': '1000',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    );
+
+    final response = await locator<PurchaseRequestRepository>().batchCreate(
+      groups: const [
+        SmartPurchaseBatchGroupInput(
+          supplierId: 'sup-cheap',
+          items: [
+            SmartPurchaseBatchItemInput(
+              foodSupplyId: 'fs-1',
+              quantity: 1000,
+              lineActualAmount: 95000,
+              supplierPriceUpdate: SmartPurchaseSupplierPriceUpdate(
+                priceAmount: 95000,
+                priceQuantity: 1000,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+
+    expect(response.purchaseRequests, hasLength(1));
   });
 
   test('fetchSupplierPrices parses supplier price list', () async {

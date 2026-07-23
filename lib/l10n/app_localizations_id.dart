@@ -295,6 +295,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get clearCart => 'Kosongkan keranjang';
 
   @override
+  String get clearBanknotes => 'Hapus semua';
+
+  @override
   String get remove => 'Hapus';
 
   @override

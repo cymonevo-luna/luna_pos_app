@@ -296,6 +296,7 @@ class _PurchaseRequestRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final createdAt = item.createdAt;
+    final displayAmount = item.totalActualAmount ?? item.totalEstimatedAmount;
 
     return AppCard(
       onTap: onTap,
@@ -326,7 +327,7 @@ class _PurchaseRequestRow extends StatelessWidget {
                 ),
               ),
               AppText.title(
-                formatRupiah(item.totalEstimatedAmount),
+                formatRupiah(displayAmount),
                 color: context.colors.primary,
                 weight: FontWeight.w700,
               ),

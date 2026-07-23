@@ -210,53 +210,11 @@ class _PurchaseDetailContent extends StatelessWidget {
           ),
         ),
         const VGap(AppSpacing.md),
-        Row(
-          children: [
-            Expanded(
-              child: AppStatCard(
-                icon: Icons.payments_outlined,
-                color: context.colors.primary,
-                value: formatRupiah(detail.totalEstimatedAmount ?? 0),
-                label: l10n.purchaseEstimatedTotal,
-              ),
-            ),
-            if (detail.totalActualAmount != null) ...[
-              const HGap(AppSpacing.sm),
-              Expanded(
-                child: AppStatCard(
-                  icon: Icons.price_check_outlined,
-                  color: context.colors.tertiary,
-                  value: formatRupiah(detail.totalActualAmount!),
-                  label: l10n.purchaseActualTotal,
-                ),
-              ),
-            ],
-            if (detail.totalActualAmount == null) ...[
-              const HGap(AppSpacing.sm),
-              Expanded(
-                child: AppStatCard(
-                  icon: Icons.schedule_outlined,
-                  color: context.colors.secondary,
-                  value: createdAt != null
-                      ? dateFormat.format(createdAt.toLocal())
-                      : '—',
-                  label: l10n.purchaseCreatedAt,
-                ),
-              ),
-            ],
-          ],
+        _PurchaseTotalsSection(
+          detail: detail,
+          dateFormat: dateFormat,
+          createdAt: createdAt,
         ),
-        if (detail.totalActualAmount != null) ...[
-          const VGap(AppSpacing.sm),
-          AppStatCard(
-            icon: Icons.schedule_outlined,
-            color: context.colors.secondary,
-            value: createdAt != null
-                ? dateFormat.format(createdAt.toLocal())
-                : '—',
-            label: l10n.purchaseCreatedAt,
-          ),
-        ],
         if (detail.createdByUsername != null) ...[
           const VGap(AppSpacing.sm),
           AppText.body(
@@ -383,6 +341,74 @@ class _StatusDropdown extends StatelessWidget {
   }
 }
 
+class _PurchaseTotalsSection extends StatelessWidget {
+  const _PurchaseTotalsSection({
+    required this.detail,
+    required this.dateFormat,
+    required this.createdAt,
+  });
+
+  final PurchaseRequestDetail detail;
+  final DateFormat dateFormat;
+  final DateTime? createdAt;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final actualAmount = detail.totalActualAmount;
+    final estimatedAmount = detail.totalEstimatedAmount ?? 0;
+    final hasActual = actualAmount != null;
+    final showEstimatedSecondary = hasActual &&
+        estimatedAmount != 0 &&
+        estimatedAmount != actualAmount;
+    final displayAmount = actualAmount ?? estimatedAmount;
+    final at = createdAt;
+    final createdAtLabel =
+        at == null ? '—' : dateFormat.format(at.toLocal());
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: AppStatCard(
+                icon: hasActual
+                    ? Icons.price_check_outlined
+                    : Icons.payments_outlined,
+                color: hasActual
+                    ? context.colors.tertiary
+                    : context.colors.primary,
+                value: formatRupiah(displayAmount),
+                label: hasActual
+                    ? l10n.purchaseActualTotal
+                    : l10n.purchaseEstimatedTotal,
+              ),
+            ),
+            const HGap(AppSpacing.sm),
+            Expanded(
+              child: AppStatCard(
+                icon: Icons.schedule_outlined,
+                color: context.colors.secondary,
+                value: createdAtLabel,
+                label: l10n.purchaseCreatedAt,
+              ),
+            ),
+          ],
+        ),
+        if (showEstimatedSecondary) ...[
+          const VGap(AppSpacing.sm),
+          AppStatCard(
+            icon: Icons.payments_outlined,
+            color: context.colors.primary,
+            value: formatRupiah(estimatedAmount),
+            label: l10n.purchaseEstimatedTotal,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
 class _LineItemRow extends StatelessWidget {
   const _LineItemRow({required this.item});
 
@@ -410,10 +436,7 @@ class _LineItemRow extends StatelessWidget {
               Expanded(
                 child: AppText.title(item.foodSupplyTitle ?? item.foodSupplyId),
               ),
-              if (item.lineActualAmount != null)
-                AppText.title(formatRupiah(item.lineActualAmount!))
-              else if (item.lineEstimatedAmount != null)
-                AppText.title(formatRupiah(item.lineEstimatedAmount!)),
+              _LineItemAmounts(item: item),
             ],
           ),
           const VGap(AppSpacing.xxs),
@@ -424,6 +447,38 @@ class _LineItemRow extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _LineItemAmounts extends StatelessWidget {
+  const _LineItemAmounts({required this.item});
+
+  final PurchaseRequestItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final actualAmount = item.lineActualAmount;
+    final estimatedAmount = item.lineEstimatedAmount;
+
+    if (actualAmount != null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          AppText.title(formatRupiah(actualAmount)),
+          if (estimatedAmount != null && estimatedAmount != actualAmount)
+            AppText.caption(
+              '${l10n.purchaseEstimatedTotal}: ${formatRupiah(estimatedAmount)}',
+            ),
+        ],
+      );
+    }
+
+    if (estimatedAmount != null) {
+      return AppText.title(formatRupiah(estimatedAmount));
+    }
+
+    return const SizedBox.shrink();
   }
 }
 

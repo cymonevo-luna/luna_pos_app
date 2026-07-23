@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:luna_pos/core/formatting/currency_formatter.dart';
 import 'package:luna_pos/core/config/app_config.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
@@ -228,5 +229,25 @@ void main() {
     await pumpPurchaseList(tester);
 
     expect(find.byKey(const Key('smart_purchase_entry_button')), findsOneWidget);
+  });
+
+  testWidgets('list prefers actual total when available', (tester) async {
+    await pumpPurchaseList(
+      tester,
+      items: [
+        {
+          'id': 'pr-actual',
+          'supplier_name': 'Supplier Actual',
+          'status': 'REQUESTED',
+          'total_estimated_amount': 100000,
+          'total_actual_amount': 135000,
+          'item_count': 1,
+          'created_at': '2026-07-12T10:00:00Z',
+        },
+      ],
+    );
+
+    expect(find.text(formatRupiah(135000)), findsOneWidget);
+    expect(find.text(formatRupiah(100000)), findsNothing);
   });
 }

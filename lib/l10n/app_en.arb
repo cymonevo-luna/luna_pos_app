@@ -69,6 +69,12 @@
   "passwordTooShort": "Password must be at least 6 characters",
   "passwordsDoNotMatch": "Passwords do not match",
   "menu": "Menu",
+  "menuLayout": "Menu layout",
+  "@menuLayout": {
+    "description": "Tooltip for menu layout toggle in the app bar"
+  },
+  "menuLayoutGrid": "Grid",
+  "menuLayoutList": "List",
   "refreshMenu": "Refresh menu",
   "noMenuItemsAvailable": "No menu items available",
   "searchMenu": "Search menu",

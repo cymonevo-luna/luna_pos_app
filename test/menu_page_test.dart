@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Icons, Key, Offset, RenderBox, Size, TextField;
+import 'package:flutter/material.dart' show Icons, Key, Offset, PopupMenuItem, RenderBox, Size, TextField;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
@@ -11,6 +11,7 @@ import 'package:luna_pos/core/network/api_client.dart';
 import 'package:luna_pos/core/storage/preferences_service.dart';
 import 'package:luna_pos/features/auth/login_page.dart';
 import 'package:luna_pos/features/menu/data/menu_repository.dart';
+import 'package:luna_pos/features/menu/menu_layout_provider.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/features/menu/widgets/menu_item_card.dart';
 import 'package:luna_pos/features/order/order_controller.dart';
@@ -623,5 +624,45 @@ void main() {
     );
     expect(find.text('Nasi Goreng'), findsOneWidget);
     expect(find.text('Es Teh'), findsNothing);
+  });
+
+  testWidgets('menu page shows layout toggle', (WidgetTester tester) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: sampleMenusResponse(),
+    );
+
+    expect(find.byKey(const Key('menu_layout_toggle')), findsOneWidget);
+  });
+
+  testWidgets('selecting list updates selected state', (
+    WidgetTester tester,
+  ) async {
+    await pumpAuthenticatedMenuPage(
+      tester,
+      menusResponse: sampleMenusResponse(),
+    );
+
+    await tester.tap(find.byKey(const Key('menu_layout_toggle')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('List'));
+    await tester.pumpAndSettle();
+
+    final menuPage = tester.element(find.byType(MenuPage));
+    final container = ProviderScope.containerOf(menuPage);
+    expect(container.read(menuLayoutProvider), MenuLayout.list);
+
+    await tester.tap(find.byKey(const Key('menu_layout_toggle')));
+    await tester.pumpAndSettle();
+
+    final listItem = find.ancestor(
+      of: find.text('List'),
+      matching: find.byType(PopupMenuItem<MenuLayout>),
+    );
+    expect(
+      find.descendant(of: listItem, matching: find.byIcon(Icons.check)),
+      findsOneWidget,
+    );
   });
 }

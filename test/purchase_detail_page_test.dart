@@ -6,6 +6,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
+import 'package:luna_pos/core/formatting/currency_formatter.dart';
 import 'package:luna_pos/core/config/app_config.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
@@ -219,6 +220,74 @@ void main() {
     expect(find.text('Sugar'), findsOneWidget);
     expect(find.textContaining('2 kg'), findsOneWidget);
     expect(find.textContaining('3 kg'), findsOneWidget);
+  });
+
+  testWidgets('detail shows actual total and per-line actual amounts',
+      (tester) async {
+    await pumpDetail(
+      tester,
+      detail: detailPayload(
+        items: [
+          {
+            'food_supply_id': 'fs-1',
+            'food_supply_title': 'Flour',
+            'quantity': '2',
+            'unit': 'kg',
+            'unit_price': '50000',
+            'line_estimated_amount': 100000,
+            'line_actual_amount': 95000,
+          },
+        ],
+      )..['total_actual_amount'] = 95000,
+    );
+
+    expect(find.text(l10n.purchaseActualTotal), findsOneWidget);
+    expect(find.text(formatRupiah(95000)), findsWidgets);
+
+    await tester.scrollUntilVisible(
+      find.text('Flour'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    expect(
+      find.text('${l10n.purchaseEstimatedTotal}: ${formatRupiah(100000)}'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('detail legacy purchase shows estimated total only', (tester) async {
+    await pumpDetail(tester);
+
+    expect(find.text(l10n.purchaseEstimatedTotal), findsOneWidget);
+    expect(find.text(l10n.purchaseActualTotal), findsNothing);
+    expect(find.text(formatRupiah(250000)), findsOneWidget);
+  });
+
+  testWidgets('detail parses string unit_price without error', (tester) async {
+    await pumpDetail(
+      tester,
+      detail: detailPayload(
+        items: [
+          {
+            'food_supply_id': 'fs-1',
+            'food_supply_title': 'Flour',
+            'quantity': '2',
+            'unit': 'kg',
+            'unit_price': '50000.5',
+            'line_estimated_amount': 100000,
+          },
+        ],
+      ),
+    );
+
+    await tester.scrollUntilVisible(
+      find.text('Flour'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    expect(find.textContaining('50.001'), findsOneWidget);
   });
 
   testWidgets('PAID status prompts photo', (tester) async {

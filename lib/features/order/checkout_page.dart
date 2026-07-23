@@ -16,7 +16,6 @@ import 'models/payment_method.dart';
 import 'order_controller.dart';
 import 'order_options_controller.dart';
 import 'widgets/banknote_keyboard_panel.dart';
-import 'widgets/cash_payment_summary.dart';
 
 class CheckoutPage extends ConsumerStatefulWidget {
   const CheckoutPage({super.key});
@@ -161,6 +160,10 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
           cashReceived: _cashTendered,
           grandTotal: totalAmount,
         );
+    final changeAmount = calculatePaymentChange(
+      cashReceived: _cashTendered,
+      grandTotal: totalAmount,
+    );
     final canConfirm = order.lines.isNotEmpty &&
         discountValid &&
         sufficient &&
@@ -251,11 +254,28 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                     onCountsChanged: (counts) =>
                         setState(() => _banknoteCounts = counts),
                   ),
+                  if (_cashTendered > 0) ...[
+                    const VGap(AppSpacing.sm),
+                    AppText.body(
+                      formatRupiah(_cashTendered),
+                      muted: true,
+                      align: TextAlign.end,
+                    ),
+                  ],
                   const VGap(AppSpacing.md),
-                  CashPaymentSummary(
-                    totalAmount: totalAmount,
-                    cashReceived: _cashTendered,
-                  ),
+                  if (_cashTendered > 0 && !sufficient)
+                    AppText.body(
+                      l10n.insufficientPayment,
+                      color: context.colors.error,
+                      align: TextAlign.center,
+                    )
+                  else if (_cashTendered >= totalAmount && totalAmount > 0)
+                    _SummaryRow(
+                      label: l10n.change,
+                      value: '-${formatRupiah(changeAmount)}',
+                      color: context.colors.error,
+                      emphasized: true,
+                    ),
                 ],
               ],
             ),
@@ -476,21 +496,24 @@ class _SummaryRow extends StatelessWidget {
     required this.label,
     required this.value,
     this.emphasized = false,
+    this.color,
   });
 
   final String label;
   final String value;
   final bool emphasized;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
-    final valueColor = emphasized ? context.colors.primary : null;
+    final valueColor = color ?? (emphasized ? context.colors.primary : null);
 
     return Row(
       children: [
         Expanded(
           child: AppText.title(
             label,
+            color: color,
             weight: emphasized ? FontWeight.w700 : null,
           ),
         ),

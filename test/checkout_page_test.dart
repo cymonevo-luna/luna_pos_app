@@ -148,18 +148,8 @@ void main() {
     await tester.pump();
   }
 
-  Future<void> scrollToCashSummary(WidgetTester tester) async {
-    await tester.scrollUntilVisible(
-      find.byKey(const Key('cash_payment_summary')),
-      200,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.pump();
-  }
-
   Future<void> scrollToCashFields(WidgetTester tester) async {
     await scrollToBanknoteSection(tester);
-    await scrollToCashSummary(tester);
   }
 
   Future<void> tapBanknoteIncrement(
@@ -201,7 +191,7 @@ void main() {
 
   Future<void> pumpCheckoutPage(WidgetTester tester) async {
     await tester.pumpWidget(buildLocalizedApp(child: const CheckoutPage()));
-    await tester.pump();
+    await tester.pumpAndSettle();
   }
 
   Future<void> scrollToOrderOptions(WidgetTester tester) async {
@@ -234,8 +224,16 @@ void main() {
     expect(find.text('Rp 8.000'), findsOneWidget);
     expect(find.text('Rp 70.000'), findsOneWidget);
 
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('discount_field')),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('discount_field')), findsOneWidget);
+
     await scrollToCashFields(tester);
-    expect(find.text('Rp 78.000'), findsWidgets);
+    expect(find.byKey(const Key('banknote_row_1000')), findsOneWidget);
   });
 
   testWidgets('payment method dropdown appears above proceed button',
@@ -271,14 +269,13 @@ void main() {
 
     expect(find.byKey(const Key('cash_tendered_field')), findsNothing);
     expectBanknoteRowsVisible();
-    expect(find.byKey(const Key('cash_payment_summary')), findsOneWidget);
 
     await tapBanknoteIncrement(tester, 50000, times: 2);
     await tapBanknoteIncrement(tester, 20000);
 
-    expect(find.byKey(const Key('change_amount_display')), findsOneWidget);
-    expect(find.text(formatRupiah(42000)), findsOneWidget);
-    expect(find.byKey(const Key('insufficient_payment_message')), findsNothing);
+    expect(find.text('Change'), findsOneWidget);
+    expect(find.text('-${formatRupiah(42000)}'), findsOneWidget);
+    expect(find.text('Insufficient payment'), findsNothing);
   });
 
   testWidgets('qris hides banknote keyboard and cash summary',
@@ -295,8 +292,7 @@ void main() {
 
     expect(find.byKey(const Key('cash_tendered_field')), findsNothing);
     expectBanknoteRowsHidden();
-    expect(find.byKey(const Key('cash_payment_summary')), findsNothing);
-    expect(find.byKey(const Key('change_amount_display')), findsNothing);
+    expect(find.text('Change'), findsNothing);
   });
 
   testWidgets('switching payment methods toggles banknote keyboard visibility',
@@ -347,7 +343,6 @@ void main() {
 
     expect(find.byKey(const Key('cash_tendered_field')), findsNothing);
     expect(find.byKey(const Key('banknote_row_1000')), findsOneWidget);
-    expect(find.byKey(const Key('cash_payment_summary')), findsOneWidget);
   });
 
   testWidgets('qris enables proceed without cash input when option selected',
@@ -463,17 +458,27 @@ void main() {
 
   testWidgets('proceed button disabled when banknote total is insufficient',
       (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(800, 2000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
     seedTwoLineCart();
 
     await pumpCheckoutPage(tester);
-    await selectTakeAwayOption(tester);
-
-    await scrollToFooter(tester);
     await scrollToCashFields(tester);
-
     await tapBanknoteIncrement(tester, 50000);
 
-    expect(find.byKey(const Key('insufficient_payment_message')), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('banknote_qty_50000')),
+        matching: find.text('1'),
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Insufficient payment'), findsOneWidget);
+
+    await selectTakeAwayOption(tester);
+    await scrollToFooter(tester);
     expect(
       tester.widget<AppButton>(find.widgetWithText(AppButton, 'Proceed')).onPressed,
       isNull,
@@ -497,8 +502,8 @@ void main() {
     await tapBanknoteIncrement(tester, 50000, times: 2);
     await tapBanknoteIncrement(tester, 20000);
 
-    expect(find.byKey(const Key('change_amount_display')), findsOneWidget);
-    expect(find.text(formatRupiah(42000)), findsOneWidget);
+    expect(find.text('Change'), findsOneWidget);
+    expect(find.text('-${formatRupiah(42000)}'), findsOneWidget);
 
     await scrollToFooter(tester);
     expect(

@@ -1777,6 +1777,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You do not have access to cashier balance.'**
   String get cashierBalanceAccessDenied;
+
+  /// Screen title and tooltip for today's per-menu sales summary
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Menu Summary'**
+  String get dailyMenuSummaryTitle;
+
+  /// Total quantity sold today on the daily menu summary card
+  ///
+  /// In en, this message translates to:
+  /// **'Items sold'**
+  String get dailyMenuSummaryTotalItems;
+
+  /// Total revenue today on the daily menu summary card
+  ///
+  /// In en, this message translates to:
+  /// **'Total revenue'**
+  String get dailyMenuSummaryTotalRevenue;
+
+  /// Empty state when no menus were sold today
+  ///
+  /// In en, this message translates to:
+  /// **'No menu sales today'**
+  String get dailyMenuSummaryNoSales;
 }
 
 class _AppLocalizationsDelegate

@@ -910,4 +910,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get cashierBalanceAccessDenied =>
       'You do not have access to cashier balance.';
+
+  @override
+  String get dailyMenuSummaryTitle => 'Daily Menu Summary';
+
+  @override
+  String get dailyMenuSummaryTotalItems => 'Items sold';
+
+  @override
+  String get dailyMenuSummaryTotalRevenue => 'Total revenue';
+
+  @override
+  String get dailyMenuSummaryNoSales => 'No menu sales today';
 }

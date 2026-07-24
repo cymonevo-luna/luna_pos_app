@@ -279,5 +279,9 @@
   "cashierBalanceNoEntries": "Belum ada entri saldo",
   "cashierBalanceRequestedBy": "Diminta oleh",
   "cashierBalanceTransaction": "Transaksi",
-  "cashierBalanceAccessDenied": "Anda tidak memiliki akses ke saldo kasir."
+  "cashierBalanceAccessDenied": "Anda tidak memiliki akses ke saldo kasir.",
+  "dailyMenuSummaryTitle": "Ringkasan Menu Harian",
+  "dailyMenuSummaryTotalItems": "Item terjual",
+  "dailyMenuSummaryTotalRevenue": "Total pendapatan",
+  "dailyMenuSummaryNoSales": "Belum ada penjualan menu hari ini"
 }

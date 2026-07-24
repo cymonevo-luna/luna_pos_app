@@ -912,4 +912,16 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get cashierBalanceAccessDenied =>
       'Anda tidak memiliki akses ke saldo kasir.';
+
+  @override
+  String get dailyMenuSummaryTitle => 'Ringkasan Menu Harian';
+
+  @override
+  String get dailyMenuSummaryTotalItems => 'Item terjual';
+
+  @override
+  String get dailyMenuSummaryTotalRevenue => 'Total pendapatan';
+
+  @override
+  String get dailyMenuSummaryNoSales => 'Belum ada penjualan menu hari ini';
 }

@@ -22,6 +22,7 @@ import '../../features/recurring_expense/recurring_expense_form_sheet.dart';
 import '../../features/recurring_expense/recurring_expense_list_page.dart';
 import '../../features/stock/stock_form_sheet.dart';
 import '../../features/stock/stock_list_page.dart';
+import '../../features/daily_menu_summary/daily_menu_summary_page.dart';
 import '../../features/transaction/transaction_detail_page.dart';
 import '../../features/transaction/transaction_history_page.dart';
 import '../../features/profile/profile_page.dart';
@@ -56,6 +57,7 @@ enum AppRoute {
   cart('/cart'),
   checkout('/checkout'),
   transactionDetail('/transactions/:id'),
+  dailyMenuSummary('/transactions/daily-menu-summary'),
   productionRequestDetail('/production-requests/:id');
 
   const AppRoute(this.path);
@@ -348,6 +350,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => TransactionDetailPage(
           transactionId: state.pathParameters['id']!,
         ),
+      ),
+      GoRoute(
+        path: AppRoute.dailyMenuSummary.path,
+        name: AppRoute.dailyMenuSummary.name,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const DailyMenuSummaryPage(),
       ),
       GoRoute(
         path: AppRoute.productionRequestDetail.path,

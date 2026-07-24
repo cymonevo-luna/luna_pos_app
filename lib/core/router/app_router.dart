@@ -19,6 +19,8 @@ import '../../features/purchase/purchase_list_page.dart';
 import '../../features/cashier_balance/cashier_balance_page.dart';
 import '../../features/menu_disposal/dispose_food_page.dart';
 import '../../features/purchase/smart_purchase_request_page.dart';
+import '../../features/expense/expense_form_sheet.dart';
+import '../../features/expense/expense_list_page.dart';
 import '../../features/recurring_expense/recurring_expense_form_sheet.dart';
 import '../../features/recurring_expense/recurring_expense_list_page.dart';
 import '../../features/menu_management/menu_management_form_page.dart';
@@ -50,6 +52,9 @@ enum AppRoute {
   purchasesNew('/purchases/new'),
   purchasesSmartRequest('/purchases/smart-request'),
   purchaseDetail('/purchases/:id'),
+  expenses('/expenses'),
+  expensesNew('/expenses/new'),
+  expensesEdit('/expenses/:id/edit'),
   recurringExpenses('/recurring-expenses'),
   recurringExpensesNew('/recurring-expenses/new'),
   recurringExpensesEdit('/recurring-expenses/:id/edit'),
@@ -274,6 +279,31 @@ final routerProvider = Provider<GoRouter>((ref) {
                     parentNavigatorKey: _rootNavigatorKey,
                     builder: (context, state) => PurchaseDetailPage(
                       purchaseId: state.pathParameters['id']!,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoute.expenses.path,
+                name: AppRoute.expenses.name,
+                builder: (context, state) => const ExpenseListPage(),
+                routes: [
+                  GoRoute(
+                    path: 'new',
+                    name: AppRoute.expensesNew.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => const ExpenseFormPage(),
+                  ),
+                  GoRoute(
+                    path: ':id/edit',
+                    name: AppRoute.expensesEdit.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => ExpenseEditPage(
+                      id: state.pathParameters['id']!,
                     ),
                   ),
                 ],

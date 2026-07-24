@@ -16,6 +16,7 @@ import '../../features/purchase/data/purchase_request_repository.dart';
 import '../../features/purchase/data/supplier_repository.dart';
 import '../../features/cashier_balance/data/cashier_balance_repository.dart';
 import '../../features/daily_menu_summary/data/daily_menu_summary_repository.dart';
+import '../../features/expense/data/expense_repository.dart';
 import '../../features/recurring_expense/data/recurring_expense_repository.dart';
 import '../../features/stock/data/food_supply_repository.dart';
 import '../../features/store_settings/data/store_settings_repository.dart';
@@ -98,6 +99,10 @@ Future<void> setupLocator() async {
 
   locator.registerLazySingleton<FoodSupplyRepository>(
     () => FoodSupplyRepository(locator<ApiClient>()),
+  );
+
+  locator.registerLazySingleton<ExpenseRepository>(
+    () => ExpenseRepository(locator<ApiClient>()),
   );
 
   locator.registerLazySingleton<RecurringExpenseRepository>(

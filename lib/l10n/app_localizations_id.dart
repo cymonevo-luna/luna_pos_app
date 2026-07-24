@@ -936,6 +936,45 @@ class AppLocalizationsId extends AppLocalizations {
       'Pengeluaran berulang ini dikelola oleh gaji staf.';
 
   @override
+  String get expensesTitle => 'Pengeluaran';
+
+  @override
+  String get createExpense => 'Pengeluaran baru';
+
+  @override
+  String get editExpense => 'Ubah pengeluaran';
+
+  @override
+  String get searchExpenses => 'Cari pengeluaran';
+
+  @override
+  String get noExpenses => 'Belum ada pengeluaran';
+
+  @override
+  String get expenseAmountLabel => 'Jumlah';
+
+  @override
+  String get expenseTitleTooShort => 'Judul minimal 2 karakter';
+
+  @override
+  String get expenseAmountInvalid => 'Masukkan jumlah lebih dari 0';
+
+  @override
+  String get expenseSourceOfFundLabel => 'Sumber dana';
+
+  @override
+  String get expenseSourceCashier => 'Kasir';
+
+  @override
+  String get expenseSourcePersonalMoney => 'Uang pribadi';
+
+  @override
+  String get expenseReportingDateLabel => 'Tanggal pelaporan';
+
+  @override
+  String get expenseSaveFailed => 'Gagal menyimpan pengeluaran';
+
+  @override
   String get cancel => 'Batal';
 
   @override

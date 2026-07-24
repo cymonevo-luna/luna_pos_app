@@ -934,6 +934,45 @@ class AppLocalizationsEn extends AppLocalizations {
       'This recurring expense is managed by staff salary.';
 
   @override
+  String get expensesTitle => 'Expenses';
+
+  @override
+  String get createExpense => 'New expense';
+
+  @override
+  String get editExpense => 'Edit expense';
+
+  @override
+  String get searchExpenses => 'Search expenses';
+
+  @override
+  String get noExpenses => 'No expenses yet';
+
+  @override
+  String get expenseAmountLabel => 'Amount';
+
+  @override
+  String get expenseTitleTooShort => 'Title must be at least 2 characters';
+
+  @override
+  String get expenseAmountInvalid => 'Enter an amount greater than 0';
+
+  @override
+  String get expenseSourceOfFundLabel => 'Source of fund';
+
+  @override
+  String get expenseSourceCashier => 'Cashier';
+
+  @override
+  String get expenseSourcePersonalMoney => 'Personal money';
+
+  @override
+  String get expenseReportingDateLabel => 'Reporting date';
+
+  @override
+  String get expenseSaveFailed => 'Failed to save expense';
+
+  @override
   String get cancel => 'Cancel';
 
   @override

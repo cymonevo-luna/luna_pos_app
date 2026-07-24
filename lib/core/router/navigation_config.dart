@@ -12,7 +12,8 @@ enum ShellBranch {
   recurringExpenses(5),
   cashierBalance(6),
   disposeFood(7),
-  profile(8);
+  manageMenus(8),
+  profile(9);
 
   const ShellBranch(this.branchIndex);
   final int branchIndex;
@@ -39,6 +40,7 @@ final _defaultRoutePriority = <({String feature, String route})>[
     feature: PosFeatures.menuDisposals,
     route: AppRoute.disposeFood.path,
   ),
+  (feature: PosFeatures.menusManage, route: AppRoute.manageMenus.path),
 ];
 
 /// Returns the post-login landing route for an authenticated user.
@@ -69,7 +71,8 @@ bool isCashierRoute(String location) {
         AppRoute.productionRequestDetail.path.split(':').first,
       ) ||
       _matchesPrefix(location, AppRoute.cashierBalance.path) ||
-      _matchesPrefix(location, AppRoute.disposeFood.path);
+      _matchesPrefix(location, AppRoute.disposeFood.path) ||
+      _matchesPrefix(location, AppRoute.manageMenus.path);
 }
 
 bool isOperationalRoute(String location) {
@@ -113,6 +116,9 @@ String? requiredFeatureForLocation(String location) {
   if (_matchesPrefix(location, AppRoute.disposeFood.path)) {
     return PosFeatures.menuDisposals;
   }
+  if (_matchesPrefix(location, AppRoute.manageMenus.path)) {
+    return PosFeatures.menusManage;
+  }
   if (location == AppRoute.cart.path || location == AppRoute.checkout.path) {
     return PosFeatures.menu;
   }
@@ -147,6 +153,9 @@ List<int> visibleShellBranches(User? user) {
   }
   if (user.hasFeature(PosFeatures.menuDisposals)) {
     branches.add(ShellBranch.disposeFood.branchIndex);
+  }
+  if (user.hasFeature(PosFeatures.menusManage)) {
+    branches.add(ShellBranch.manageMenus.branchIndex);
   }
   branches.add(ShellBranch.profile.branchIndex);
   return branches;

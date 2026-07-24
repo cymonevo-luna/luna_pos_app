@@ -1820,6 +1820,84 @@ abstract class AppLocalizations {
   /// **'This recurring expense is managed by staff salary.'**
   String get recurringExpenseManagedByStaffSalary;
 
+  /// Expenses tab and screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get expensesTitle;
+
+  /// Create expense screen title and FAB label
+  ///
+  /// In en, this message translates to:
+  /// **'New expense'**
+  String get createExpense;
+
+  /// Edit expense screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit expense'**
+  String get editExpense;
+
+  /// Search field hint on expense list
+  ///
+  /// In en, this message translates to:
+  /// **'Search expenses'**
+  String get searchExpenses;
+
+  /// Empty state on expense list
+  ///
+  /// In en, this message translates to:
+  /// **'No expenses yet'**
+  String get noExpenses;
+
+  /// Amount field label on expense form
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get expenseAmountLabel;
+
+  /// Validation when expense title is too short
+  ///
+  /// In en, this message translates to:
+  /// **'Title must be at least 2 characters'**
+  String get expenseTitleTooShort;
+
+  /// Validation when expense amount is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount greater than 0'**
+  String get expenseAmountInvalid;
+
+  /// Source of fund dropdown label on expense form
+  ///
+  /// In en, this message translates to:
+  /// **'Source of fund'**
+  String get expenseSourceOfFundLabel;
+
+  /// Cashier source of fund option
+  ///
+  /// In en, this message translates to:
+  /// **'Cashier'**
+  String get expenseSourceCashier;
+
+  /// Personal money source of fund option
+  ///
+  /// In en, this message translates to:
+  /// **'Personal money'**
+  String get expenseSourcePersonalMoney;
+
+  /// Admin-only reporting date field label on expense edit form
+  ///
+  /// In en, this message translates to:
+  /// **'Reporting date'**
+  String get expenseReportingDateLabel;
+
+  /// Generic error when expense save fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save expense'**
+  String get expenseSaveFailed;
+
   /// Cancel button label
   ///
   /// In en, this message translates to:

@@ -30,12 +30,12 @@ void main() {
       await harness.expectAuthenticatedHome(tester);
     });
 
-    testWidgets('manager-only login succeeds and lands on recurring expenses',
+    testWidgets('manager-only login succeeds and lands on expenses',
         (tester) async {
       harness
         ..stubLoginForRole(TestAccountRole.manager)
         ..adapter.onGet(
-          '/api/admin/recurring-expenses',
+          '/api/admin/expenses',
           (server) => server.reply(200, {
             'success': true,
             'data': [],
@@ -48,7 +48,7 @@ void main() {
       await harness.loginViaUi(tester, TestAccountRole.manager);
 
       final router = harness.readRouter();
-      expect(router.state.matchedLocation, AppRoute.recurringExpenses.path);
+      expect(router.state.matchedLocation, AppRoute.expenses.path);
     });
 
     testWidgets('operational-only login succeeds', (tester) async {

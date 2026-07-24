@@ -30,6 +30,7 @@ extension UserRoleAccess on User {
   static const cashierRole = 'cashier';
   static const operationalRole = 'operational';
   static const managerRole = 'manager';
+  static const cookRole = 'cook';
 
   bool hasFeature(String key) => _effectiveFeatures.contains(key);
 
@@ -66,6 +67,9 @@ extension UserRoleAccess on User {
     }
     if (roles.contains(managerRole)) {
       granted.add(PosFeatures.recurringExpenses);
+    }
+    if (roles.contains(cookRole)) {
+      // No default features — privileges come from API features[].
     }
     return granted.toList();
   }

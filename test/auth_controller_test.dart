@@ -8,6 +8,7 @@ import 'package:luna_pos/core/auth/session_guard.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/storage/secure_storage_service.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
+import 'package:luna_pos/features/user/models/user.dart';
 import 'package:luna_pos/testing/test_accounts.dart';
 
 import 'helpers/auth_harness.dart';
@@ -341,5 +342,91 @@ void main() {
     expect(secure.store[SecureKeys.authToken], isNull);
     expect(secure.store[SecureKeys.refreshToken], isNull);
     expect(secure.store[SecureKeys.refreshExpiresAt], isNull);
+  });
+
+  group('cook role', () {
+    test('User model parses cook role from JSON', () {
+      final user = User.fromJson({
+        'id': 'cook-1',
+        'name': 'Cook Test',
+        'email': TestAccounts.cookEmail,
+        'merchant_id': TestAccounts.testMerchantId,
+        'roles': ['cook'],
+        'features': <String>[],
+      });
+
+      expect(user.roles, contains('cook'));
+      expect(user.features, isEmpty);
+    });
+
+    test('cook-only user blocked from POS without features', () async {
+      adapter.onPost(
+        '/api/v1/auth/login',
+        (server) => server.reply(200, {
+          'success': true,
+          'data': {
+            'tokens': {
+              'access_token': 'acc',
+              'refresh_token': 'ref',
+              'expires_in': 900,
+              'refresh_expires_in': 604800,
+            },
+            'user': {
+              'id': 'cook-1',
+              'email': TestAccounts.cookEmail,
+              'name': 'Cook Test',
+              'merchant_id': TestAccounts.testMerchantId,
+              'roles': ['cook'],
+              'features': <String>[],
+            },
+            'merchant': {
+              'id': TestAccounts.testMerchantId,
+              'name': TestAccounts.testMerchantName,
+            },
+          },
+        }),
+        data: {
+          'email': TestAccounts.cookEmail,
+          'password': TestAccounts.password,
+        },
+      );
+
+      final user = User.fromJson({
+        'id': 'cook-1',
+        'name': 'Cook Test',
+        'email': TestAccounts.cookEmail,
+        'merchant_id': TestAccounts.testMerchantId,
+        'roles': ['cook'],
+        'features': <String>[],
+      });
+      expect(user.canAccessPosApp, isFalse);
+
+      final ok = await container.read(authProvider.notifier).login(
+            email: TestAccounts.cookEmail,
+            password: TestAccounts.password,
+          );
+
+      expect(ok, isFalse);
+      final state = container.read(authProvider);
+      expect(state.status, isNot(AuthStatus.authenticated));
+      expect(state.error, kPosAccessDeniedMessage);
+      expect(state.user, isNull);
+      expect(secure.store[SecureKeys.authToken], isNull);
+      expect(secure.store[SecureKeys.userJson], isNull);
+    });
+
+    test('cook user uses API features when granted', () {
+      final user = User.fromJson({
+        'id': 'cook-2',
+        'name': 'Cook Test',
+        'email': TestAccounts.cookEmail,
+        'merchant_id': TestAccounts.testMerchantId,
+        'roles': ['cook'],
+        'features': ['pos.production_requests'],
+      });
+
+      expect(user.hasFeature('pos.production_requests'), isTrue);
+      expect(user.canAccessPosApp, isTrue);
+    });
   });
 }

@@ -8,6 +8,7 @@ void main() {
       expect(TestAccounts.managerEmail, 'manager-test@cymonevo.com');
       expect(TestAccounts.cashierEmail, 'cashier-test@cymonevo.com');
       expect(TestAccounts.operationalEmail, 'operation-test@cymonevo.com');
+      expect(TestAccounts.cookEmail, 'cook-test@cymonevo.com');
       expect(TestAccounts.password, 'LunaTesting123!');
     });
 
@@ -28,6 +29,10 @@ void main() {
         TestAccounts.emailFor(TestAccountRole.operational),
         TestAccounts.operationalEmail,
       );
+      expect(
+        TestAccounts.emailFor(TestAccountRole.cook),
+        TestAccounts.cookEmail,
+      );
     });
 
     test('apiRoleFor maps to backend role strings', () {
@@ -38,6 +43,7 @@ void main() {
         TestAccounts.apiRoleFor(TestAccountRole.operational),
         'operational',
       );
+      expect(TestAccounts.apiRoleFor(TestAccountRole.cook), 'cook');
     });
 
     test('apiRolesFor supports multi-role accounts', () {

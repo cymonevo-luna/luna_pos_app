@@ -18,6 +18,7 @@ import 'package:luna_pos/features/auth/auth_controller.dart';
 import 'package:luna_pos/features/auth/login_page.dart';
 import 'package:luna_pos/features/cashier_balance/data/cashier_balance_repository.dart';
 import 'package:luna_pos/features/menu/data/menu_repository.dart';
+import 'package:luna_pos/features/menu_disposal/data/menu_disposal_repository.dart';
 import 'package:luna_pos/features/menu/menu_page.dart';
 import 'package:luna_pos/features/production_request/data/production_request_repository.dart';
 import 'package:luna_pos/features/production_request/production_request_list_page.dart';
@@ -174,6 +175,9 @@ Future<IntegrationTestHarness> setUpIntegrationHarness() async {
     )
     ..registerLazySingleton<CashierBalanceRepository>(
       () => CashierBalanceRepository(locator<ApiClient>(), locator<ResourceCache>()),
+    )
+    ..registerLazySingleton<MenuDisposalRepository>(
+      () => MenuDisposalRepository(locator<ApiClient>(), locator<ResourceCache>()),
     );
 
   return IntegrationTestHarness(
@@ -271,30 +275,55 @@ class IntegrationTestHarness {
     );
   }
 
-  void stubSampleMenu() {
+  int _sampleMenuAvailableStock = 3;
+
+  void stubSampleMenu({int availableStock = 3}) {
+    _sampleMenuAvailableStock = availableStock;
     adapter.onGet(
       '/api/v1/pos/menus',
-      (server) => server.reply(200, {
-        'success': true,
-        'data': {
-          'categories': [
-            {
-              'id': 'c1',
-              'name': 'Mains',
-              'menus': [
+      (server) => server.replyCallback(200, (_) => {
+            'success': true,
+            'data': {
+              'categories': [
                 {
-                  'id': 'm1',
-                  'title': 'Nasi Goreng',
-                  'description': '',
-                  'photo_url': '/static/default-food.png',
-                  'available_stock': 3,
-                  'sell_price': 35000,
+                  'id': 'c1',
+                  'name': 'Mains',
+                  'menus': [
+                    {
+                      'id': 'm1',
+                      'title': 'Nasi Goreng',
+                      'description': '',
+                      'photo_url': '/static/default-food.png',
+                      'available_stock': _sampleMenuAvailableStock,
+                      'sell_price': 35000,
+                    },
+                  ],
                 },
               ],
             },
-          ],
+          }),
+    );
+  }
+
+  void stubCreateMenuDisposal({
+    int lossAmount = 70000,
+    int quantity = 2,
+  }) {
+    _sampleMenuAvailableStock =
+        (_sampleMenuAvailableStock - quantity).clamp(0, 999999);
+    adapter.onPost(
+      MenuDisposalRepository.listPath,
+      (server) => server.reply(201, {
+        'success': true,
+        'data': {
+          'id': 'disposal-1',
+          'menu_title': 'Nasi Goreng',
+          'quantity': quantity,
+          'loss_amount': lossAmount,
+          'disposed_at': '2026-07-24T10:00:00Z',
         },
       }),
+      data: {'menu_id': 'm1', 'quantity': quantity},
     );
   }
 

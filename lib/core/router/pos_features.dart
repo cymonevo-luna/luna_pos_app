@@ -9,5 +9,6 @@ abstract final class PosFeatures {
   static const purchases = 'pos.purchases';
   static const recurringExpenses = 'pos.recurring_expenses';
   static const cashierBalance = 'pos.cashier_balance';
+  static const menuDisposals = 'pos.menu_disposals';
   static const menusManage = 'pos.menus.manage';
 }

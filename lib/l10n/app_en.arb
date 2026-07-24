@@ -1001,5 +1001,60 @@
   "dailyMenuSummaryNoSales": "No menu sales today",
   "@dailyMenuSummaryNoSales": {
     "description": "Empty state when no menus were sold today"
+  },
+  "disposeFoodTitle": "Dispose Food",
+  "@disposeFoodTitle": {
+    "description": "Title for dispose food screen and navigation tab"
+  },
+  "disposeFoodSelectMenu": "Select a menu item to dispose",
+  "@disposeFoodSelectMenu": {
+    "description": "Instruction shown on dispose food menu selection step"
+  },
+  "disposeFoodChangeMenu": "Change menu",
+  "@disposeFoodChangeMenu": {
+    "description": "Action to clear selected menu on dispose food screen"
+  },
+  "disposeFoodQuantity": "Quantity",
+  "@disposeFoodQuantity": {
+    "description": "Quantity field label on dispose food form"
+  },
+  "disposeFoodNoteHint": "Optional reason for disposal (max 500 characters)",
+  "@disposeFoodNoteHint": {
+    "description": "Hint for optional dispose food note field"
+  },
+  "disposeFoodSummary": "Summary",
+  "@disposeFoodSummary": {
+    "description": "Summary card title on dispose food form"
+  },
+  "disposeFoodEstimatedLoss": "Estimated loss",
+  "@disposeFoodEstimatedLoss": {
+    "description": "Label for pre-submit estimated loss amount"
+  },
+  "disposeFoodLossCalculatedOnSubmit": "Final loss is calculated when you submit",
+  "@disposeFoodLossCalculatedOnSubmit": {
+    "description": "Subtitle explaining loss is finalized on submit"
+  },
+  "disposeFoodConfirm": "Confirm disposal",
+  "@disposeFoodConfirm": {
+    "description": "Submit button on dispose food form"
+  },
+  "disposeFoodSuccess": "Disposed {menuTitle} x{quantity}. Loss: {lossAmount}",
+  "@disposeFoodSuccess": {
+    "description": "SnackBar after successful menu disposal",
+    "placeholders": {
+      "menuTitle": {
+        "type": "String"
+      },
+      "quantity": {
+        "type": "int"
+      },
+      "lossAmount": {
+        "type": "String"
+      }
+    }
+  },
+  "availableStock": "Available stock",
+  "@availableStock": {
+    "description": "Label for menu item available stock count"
   }
 }

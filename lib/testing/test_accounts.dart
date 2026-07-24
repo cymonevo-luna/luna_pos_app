@@ -25,6 +25,11 @@ abstract final class TestAccounts {
     defaultValue: 'operation-test@cymonevo.com',
   );
 
+  static const cookEmail = String.fromEnvironment(
+    'TEST_COOK_EMAIL',
+    defaultValue: 'cook-test@cymonevo.com',
+  );
+
   static const password = String.fromEnvironment(
     'TEST_ACCOUNT_PASSWORD',
     defaultValue: 'LunaTesting123!',
@@ -39,6 +44,7 @@ abstract final class TestAccounts {
         TestAccountRole.manager => managerEmail,
         TestAccountRole.cashier => cashierEmail,
         TestAccountRole.operational => operationalEmail,
+        TestAccountRole.cook => cookEmail,
       };
 
   /// Backend role string returned by the login API for each dedicated account.
@@ -47,6 +53,7 @@ abstract final class TestAccounts {
         TestAccountRole.manager => 'manager',
         TestAccountRole.cashier => 'cashier',
         TestAccountRole.operational => 'operational',
+        TestAccountRole.cook => 'cook',
       };
 
   /// Role list for API stubs. Pass [additionalRoles] for multi-role accounts.
@@ -87,6 +94,7 @@ abstract final class TestAccounts {
             'pos.cashier_balance',
           ],
         'manager' => const ['pos.recurring_expenses', 'pos.cashier_balance'],
+        'cook' => const <String>[],
         _ => const <String>[],
       };
 
@@ -96,6 +104,7 @@ abstract final class TestAccounts {
         TestAccountRole.manager => managerUserId,
         TestAccountRole.cashier => cashierUserId,
         TestAccountRole.operational => operationalUserId,
+        TestAccountRole.cook => cookUserId,
       };
 
   static const adminUserId = '11111111-1111-4111-8111-111111111101';
@@ -105,6 +114,8 @@ abstract final class TestAccounts {
   static const cashierUserId = '11111111-1111-4111-8111-111111111103';
 
   static const operationalUserId = '11111111-1111-4111-8111-111111111104';
+
+  static const cookUserId = '11111111-1111-4111-8111-111111111105';
 }
 
 /// Role-specific dedicated test accounts from `luna_pos_service` seed data.
@@ -113,4 +124,5 @@ enum TestAccountRole {
   manager,
   cashier,
   operational,
+  cook,
 }

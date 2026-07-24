@@ -583,4 +583,5 @@ String _displayNameFor(TestAccountRole role) => switch (role) {
       TestAccountRole.manager => 'Manager Test',
       TestAccountRole.cashier => 'Cashier Test',
       TestAccountRole.operational => 'Operational Test',
+      TestAccountRole.cook => 'Cook Test',
     };

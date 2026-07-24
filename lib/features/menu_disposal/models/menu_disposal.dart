@@ -70,6 +70,7 @@ class MenuDisposalListItem {
     required this.quantity,
     required this.lossAmount,
     required this.disposedAt,
+    this.disposedByUsername,
     this.note,
   });
 
@@ -78,6 +79,7 @@ class MenuDisposalListItem {
   final int quantity;
   final int lossAmount;
   final DateTime disposedAt;
+  final String? disposedByUsername;
   final String? note;
 
   factory MenuDisposalListItem.fromJson(Map<String, dynamic> json) {
@@ -87,6 +89,7 @@ class MenuDisposalListItem {
       quantity: (json['quantity'] as num).toInt(),
       lossAmount: _amountFromJson(json['loss_amount']),
       disposedAt: DateTime.parse(json['disposed_at'] as String),
+      disposedByUsername: json['disposed_by_username'] as String?,
       note: json['note'] as String?,
     );
   }
@@ -97,6 +100,7 @@ class MenuDisposalListItem {
         'quantity': quantity,
         'loss_amount': lossAmount,
         'disposed_at': disposedAt.toIso8601String(),
+        'disposed_by_username': disposedByUsername,
         'note': note,
       };
 }

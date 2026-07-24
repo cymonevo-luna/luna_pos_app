@@ -2000,6 +2000,48 @@ abstract class AppLocalizations {
   /// **'Disposed {menuTitle} x{quantity}. Loss: {lossAmount}'**
   String disposeFoodSuccess(String menuTitle, int quantity, String lossAmount);
 
+  /// App bar action to open disposal history
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get disposeFoodHistory;
+
+  /// Title for disposal history screen
+  ///
+  /// In en, this message translates to:
+  /// **'Disposal History'**
+  String get disposalHistoryTitle;
+
+  /// Empty state when no disposal records exist
+  ///
+  /// In en, this message translates to:
+  /// **'No disposals yet'**
+  String get disposalHistoryEmpty;
+
+  /// Label for disposal timestamp
+  ///
+  /// In en, this message translates to:
+  /// **'Disposed at'**
+  String get disposalDisposedAt;
+
+  /// Label for user who performed the disposal
+  ///
+  /// In en, this message translates to:
+  /// **'Disposed by'**
+  String get disposalDisposedBy;
+
+  /// Label for disposal loss amount on detail screen
+  ///
+  /// In en, this message translates to:
+  /// **'Loss amount'**
+  String get disposalLossAmount;
+
+  /// Title for disposal detail screen
+  ///
+  /// In en, this message translates to:
+  /// **'Disposal details'**
+  String get disposalDetailTitle;
+
   /// Label for menu item available stock count
   ///
   /// In en, this message translates to:

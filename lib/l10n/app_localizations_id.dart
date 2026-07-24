@@ -1031,5 +1031,26 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String get disposeFoodHistory => 'Riwayat';
+
+  @override
+  String get disposalHistoryTitle => 'Riwayat Pembuangan';
+
+  @override
+  String get disposalHistoryEmpty => 'Belum ada pembuangan';
+
+  @override
+  String get disposalDisposedAt => 'Dibuang pada';
+
+  @override
+  String get disposalDisposedBy => 'Dibuang oleh';
+
+  @override
+  String get disposalLossAmount => 'Jumlah kerugian';
+
+  @override
+  String get disposalDetailTitle => 'Detail pembuangan';
+
+  @override
   String get availableStock => 'Stok tersedia';
 }

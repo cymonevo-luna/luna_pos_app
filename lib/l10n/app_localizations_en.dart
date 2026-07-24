@@ -1029,5 +1029,26 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get disposeFoodHistory => 'History';
+
+  @override
+  String get disposalHistoryTitle => 'Disposal History';
+
+  @override
+  String get disposalHistoryEmpty => 'No disposals yet';
+
+  @override
+  String get disposalDisposedAt => 'Disposed at';
+
+  @override
+  String get disposalDisposedBy => 'Disposed by';
+
+  @override
+  String get disposalLossAmount => 'Loss amount';
+
+  @override
+  String get disposalDetailTitle => 'Disposal details';
+
+  @override
   String get availableStock => 'Available stock';
 }

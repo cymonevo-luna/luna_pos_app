@@ -1166,6 +1166,34 @@
       }
     }
   },
+  "disposeFoodHistory": "History",
+  "@disposeFoodHistory": {
+    "description": "App bar action to open disposal history"
+  },
+  "disposalHistoryTitle": "Disposal History",
+  "@disposalHistoryTitle": {
+    "description": "Title for disposal history screen"
+  },
+  "disposalHistoryEmpty": "No disposals yet",
+  "@disposalHistoryEmpty": {
+    "description": "Empty state when no disposal records exist"
+  },
+  "disposalDisposedAt": "Disposed at",
+  "@disposalDisposedAt": {
+    "description": "Label for disposal timestamp"
+  },
+  "disposalDisposedBy": "Disposed by",
+  "@disposalDisposedBy": {
+    "description": "Label for user who performed the disposal"
+  },
+  "disposalLossAmount": "Loss amount",
+  "@disposalLossAmount": {
+    "description": "Label for disposal loss amount on detail screen"
+  },
+  "disposalDetailTitle": "Disposal details",
+  "@disposalDetailTitle": {
+    "description": "Title for disposal detail screen"
+  },
   "availableStock": "Available stock",
   "@availableStock": {
     "description": "Label for menu item available stock count"

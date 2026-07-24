@@ -121,4 +121,29 @@ void main() {
     expect(response.items.first.menuTitle, 'Nasi Goreng');
     expect(response.total, 1);
   });
+
+  test('getMenuDisposal fetches single disposal', () async {
+    adapter.onGet(
+      '${MenuDisposalRepository.listPath}/disposal-1',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'id': 'disposal-1',
+          'menu_title': 'Nasi Goreng',
+          'quantity': 2,
+          'loss_amount': 15000,
+          'disposed_at': '2026-07-24T10:00:00Z',
+          'disposed_by_username': 'Cashier Test',
+          'note': 'Expired',
+        },
+      }),
+    );
+
+    final repository = locator<MenuDisposalRepository>();
+    final response = await repository.getMenuDisposal('disposal-1');
+
+    expect(response.id, 'disposal-1');
+    expect(response.disposedByUsername, 'Cashier Test');
+    expect(response.note, 'Expired');
+  });
 }

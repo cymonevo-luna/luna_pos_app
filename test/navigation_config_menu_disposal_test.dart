@@ -47,5 +47,9 @@ void main() {
       requiredFeatureForLocation('/dispose-food'),
       PosFeatures.menuDisposals,
     );
+    expect(
+      requiredFeatureForLocation('/dispose-food/history'),
+      PosFeatures.menuDisposals,
+    );
   });
 }

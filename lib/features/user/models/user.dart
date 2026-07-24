@@ -54,6 +54,7 @@ extension UserRoleAccess on User {
         PosFeatures.menu,
         PosFeatures.transactions,
         PosFeatures.productionRequests,
+        PosFeatures.menusManage,
       ]);
     }
     if (roles.contains(operationalRole)) {

@@ -20,6 +20,9 @@ import '../../features/recurring_expense/data/recurring_expense_repository.dart'
 import '../../features/stock/data/food_supply_repository.dart';
 import '../../features/store_settings/data/store_settings_repository.dart';
 import '../../features/production_request/data/production_request_repository.dart';
+import '../../features/menu_management/data/admin_category_repository.dart';
+import '../../features/menu_management/data/admin_menu_repository.dart';
+import '../../features/menu_management/data/menu_photo_upload.dart';
 import '../../features/receipt/receipt_print_service.dart';
 import '../../features/transaction/data/transaction_repository.dart';
 
@@ -110,6 +113,18 @@ Future<void> setupLocator() async {
 
   locator.registerLazySingleton<ProductionRequestRepository>(
     () => ProductionRequestRepository(locator<ApiClient>(), locator<ResourceCache>()),
+  );
+
+  locator.registerLazySingleton<AdminMenuRepository>(
+    () => AdminMenuRepository(locator<ApiClient>()),
+  );
+
+  locator.registerLazySingleton<AdminCategoryRepository>(
+    () => AdminCategoryRepository(locator<ApiClient>()),
+  );
+
+  locator.registerLazySingleton<MenuPhotoUpload>(
+    () => MenuPhotoUpload(locator<ApiClient>()),
   );
 
   locator.registerSingleton<BluetoothPrinterService>(

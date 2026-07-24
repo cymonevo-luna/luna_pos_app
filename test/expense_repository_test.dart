@@ -51,7 +51,8 @@ void main() {
   });
 
   test('patchExpenseRecordDate sends ISO8601 UTC body', () async {
-    final recordDate = DateTime.utc(2026, 7, 15, 10);
+    final recordDate = DateTime(2026, 7, 15);
+    final expectedUtc = DateTime.utc(2026, 7, 15);
 
     adapter.onPatch(
       '${ExpenseRepository.listPath}/exp-1/record-date',
@@ -63,12 +64,12 @@ void main() {
           'description': 'Electric bill',
           'amount': 150000,
           'source_of_fund': 'PERSONAL_MONEY',
-          'created_at': recordDate.toIso8601String(),
+          'created_at': expectedUtc.toIso8601String(),
           'updated_at': '2026-07-24T10:00:00Z',
         },
       }),
       data: {
-        'record_date': recordDate.toIso8601String(),
+        'record_date': expectedUtc.toIso8601String(),
       },
     );
 
@@ -76,6 +77,6 @@ void main() {
         .patchExpenseRecordDate('exp-1', recordDate);
 
     expect(updated.id, 'exp-1');
-    expect(updated.createdAt, recordDate);
+    expect(updated.createdAt, expectedUtc);
   });
 }

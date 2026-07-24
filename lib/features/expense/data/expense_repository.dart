@@ -62,7 +62,7 @@ class ExpenseRepository {
     return _api.patch<Expense>(
       '$listPath/$expenseId/record-date',
       body: {
-        'record_date': recordDate.toUtc().toIso8601String(),
+        'record_date': _recordDateToUtc(recordDate).toIso8601String(),
       },
       decoder: (raw) => Expense.fromJson(unwrapApiEnvelope(raw)),
     );
@@ -89,4 +89,8 @@ class ExpenseRepository {
         ExpenseSourceOfFund.cashier => 'CASHIER',
         ExpenseSourceOfFund.personalMoney => 'PERSONAL_MONEY',
       };
+
+  /// Sends the selected calendar day as UTC midnight (reporting date semantics).
+  DateTime _recordDateToUtc(DateTime date) =>
+      DateTime.utc(date.year, date.month, date.day);
 }

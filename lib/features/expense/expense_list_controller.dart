@@ -302,9 +302,5 @@ final expenseListProvider =
 
 bool isSameReportingDate(DateTime? a, DateTime? b) {
   if (a == null || b == null) return a == b;
-  final aUtc = a.toUtc();
-  final bUtc = b.toUtc();
-  return aUtc.year == bUtc.year &&
-      aUtc.month == bUtc.month &&
-      aUtc.day == bUtc.day;
+  return a.year == b.year && a.month == b.month && a.day == b.day;
 }

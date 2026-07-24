@@ -72,16 +72,24 @@ class AdminMenuRepository {
   }
 
   Map<String, dynamic> _requestBody(AdminMenuRequest request) {
-    return {
+    final body = <String, dynamic>{
       'title': request.title,
       'description': request.description ?? '',
       'category_id': request.categoryId,
       if (request.photoUrl != null) 'photo_url': request.photoUrl,
+      'available_stock': request.availableStock,
       'sell_price': request.sellPrice,
-      'recipe_yield': request.recipeYield,
-      'margin_percent': request.marginPercent,
-      'vat_percent': request.vatPercent,
     };
+    if (request.recipeYield != null) {
+      body['recipe_yield'] = request.recipeYield;
+    }
+    if (request.marginPercent != null) {
+      body['margin_percent'] = request.marginPercent;
+    }
+    if (request.vatPercent != null) {
+      body['vat_percent'] = request.vatPercent;
+    }
+    return body;
   }
 
   String _sortByToApi(AdminMenuSortBy sortBy) => switch (sortBy) {

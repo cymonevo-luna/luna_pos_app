@@ -446,6 +446,138 @@ abstract class AppLocalizations {
   /// **'Manage Menu'**
   String get manageMenus;
 
+  /// Create menu form title and FAB label
+  ///
+  /// In en, this message translates to:
+  /// **'New menu'**
+  String get manageMenusNew;
+
+  /// Edit menu form title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit menu'**
+  String get manageMenusEdit;
+
+  /// Search field hint on manage menu list
+  ///
+  /// In en, this message translates to:
+  /// **'Search menus'**
+  String get manageMenusSearch;
+
+  /// Empty state on manage menu list
+  ///
+  /// In en, this message translates to:
+  /// **'No menus yet'**
+  String get noManageMenus;
+
+  /// Category dropdown label on menu form
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get manageMenusCategoryLabel;
+
+  /// Validation when category is not selected
+  ///
+  /// In en, this message translates to:
+  /// **'Select a category'**
+  String get manageMenusCategoryRequired;
+
+  /// Stock field label on menu form
+  ///
+  /// In en, this message translates to:
+  /// **'Available stock'**
+  String get manageMenusStockLabel;
+
+  /// Validation when stock is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a stock amount of 0 or more'**
+  String get manageMenusStockInvalid;
+
+  /// Sell price field label on menu form
+  ///
+  /// In en, this message translates to:
+  /// **'Sell price'**
+  String get manageMenusSellPriceLabel;
+
+  /// Validation when sell price is invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a price greater than 0'**
+  String get manageMenusSellPriceInvalid;
+
+  /// Button to pick a menu photo from gallery
+  ///
+  /// In en, this message translates to:
+  /// **'Choose photo'**
+  String get manageMenusPickPhoto;
+
+  /// Shown when menu photo upload fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload photo'**
+  String get manageMenusPhotoUploadFailed;
+
+  /// SnackBar after successful menu save
+  ///
+  /// In en, this message translates to:
+  /// **'Menu saved'**
+  String get manageMenusSaved;
+
+  /// SnackBar after successful menu delete
+  ///
+  /// In en, this message translates to:
+  /// **'Menu deleted'**
+  String get manageMenusDeleted;
+
+  /// Title for delete menu confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Delete menu'**
+  String get deleteManageMenu;
+
+  /// Message for delete menu confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{title}\"? This cannot be undone.'**
+  String deleteManageMenuConfirm(String title);
+
+  /// SnackBar when menu delete fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete menu'**
+  String get deleteManageMenuFailed;
+
+  /// Sort dropdown label on manage menu list
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get manageMenusSortLabel;
+
+  /// Sort menus by title
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get manageMenusSortTitle;
+
+  /// Sort menus by stock
+  ///
+  /// In en, this message translates to:
+  /// **'Stock'**
+  String get manageMenusSortStock;
+
+  /// Ascending sort order tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Ascending'**
+  String get manageMenusSortAscending;
+
+  /// Descending sort order tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Descending'**
+  String get manageMenusSortDescending;
+
   /// Tooltip for menu layout toggle in the app bar
   ///
   /// In en, this message translates to:

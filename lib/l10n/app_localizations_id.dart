@@ -185,6 +185,74 @@ class AppLocalizationsId extends AppLocalizations {
   String get manageMenus => 'Kelola Menu';
 
   @override
+  String get manageMenusNew => 'Menu baru';
+
+  @override
+  String get manageMenusEdit => 'Ubah menu';
+
+  @override
+  String get manageMenusSearch => 'Cari menu';
+
+  @override
+  String get noManageMenus => 'Belum ada menu';
+
+  @override
+  String get manageMenusCategoryLabel => 'Kategori';
+
+  @override
+  String get manageMenusCategoryRequired => 'Pilih kategori';
+
+  @override
+  String get manageMenusStockLabel => 'Stok tersedia';
+
+  @override
+  String get manageMenusStockInvalid => 'Masukkan stok 0 atau lebih';
+
+  @override
+  String get manageMenusSellPriceLabel => 'Harga jual';
+
+  @override
+  String get manageMenusSellPriceInvalid => 'Masukkan harga lebih dari 0';
+
+  @override
+  String get manageMenusPickPhoto => 'Pilih foto';
+
+  @override
+  String get manageMenusPhotoUploadFailed => 'Gagal mengunggah foto';
+
+  @override
+  String get manageMenusSaved => 'Menu disimpan';
+
+  @override
+  String get manageMenusDeleted => 'Menu dihapus';
+
+  @override
+  String get deleteManageMenu => 'Hapus menu';
+
+  @override
+  String deleteManageMenuConfirm(String title) {
+    return 'Hapus \"$title\"? Tindakan ini tidak dapat dibatalkan.';
+  }
+
+  @override
+  String get deleteManageMenuFailed => 'Gagal menghapus menu';
+
+  @override
+  String get manageMenusSortLabel => 'Urutkan';
+
+  @override
+  String get manageMenusSortTitle => 'Judul';
+
+  @override
+  String get manageMenusSortStock => 'Stok';
+
+  @override
+  String get manageMenusSortAscending => 'Naik';
+
+  @override
+  String get manageMenusSortDescending => 'Turun';
+
+  @override
   String get menuLayout => 'Tata letak menu';
 
   @override

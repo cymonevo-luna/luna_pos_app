@@ -454,4 +454,95 @@ void main() {
     expect(find.text(l10n.purchasePaidDate), findsOneWidget);
     expect(find.byKey(const Key('purchase_paid_date_edit')), findsNothing);
   });
+
+  testWidgets('admin saving paid date patches record-date and reloads detail',
+      (tester) async {
+    const updatedPaidAt = '2026-07-05T03:30:00.000Z';
+    var patched = false;
+
+    adapter.reset();
+
+    adapter.onGet(
+      '/api/admin/purchase-requests/pr-detail',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': detailPayload(
+          status: PurchaseRequestStatus.paid,
+          statusHistory: patched
+              ? [
+                  {
+                    'status': 'REQUESTED',
+                    'created_at': '2026-07-10T08:00:00Z',
+                  },
+                  {
+                    'status': 'PAID',
+                    'created_at': updatedPaidAt,
+                  },
+                ]
+              : [
+                  {
+                    'status': 'REQUESTED',
+                    'created_at': '2026-07-10T08:00:00Z',
+                  },
+                  {
+                    'status': 'PAID',
+                    'created_at': '2026-07-12T10:00:00Z',
+                  },
+                ],
+        ),
+      }),
+    );
+
+    adapter.onPatch(
+      '/api/admin/purchase-requests/pr-detail/record-date',
+      (server) {
+        patched = true;
+        return server.reply(200, {'success': true});
+      },
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith(
+            () => _PurchaseAuthController(TestAccountRole.admin),
+          ),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const PurchaseDetailPage(purchaseId: 'pr-detail'),
+        ),
+      ),
+    );
+    for (var i = 0; i < 30; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+
+    final editButton = find.byKey(const Key('purchase_paid_date_edit'));
+    await tester.scrollUntilVisible(
+      editButton,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(editButton);
+    await tester.pumpAndSettle();
+
+    await tester.tap(editButton);
+    await tester.pumpAndSettle();
+
+    expect(find.text(l10n.purchaseEditPaidDate), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('purchase_paid_date_save')));
+    for (var i = 0; i < 30; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    await tester.pumpAndSettle();
+
+    expect(patched, isTrue);
+    expect(
+      find.byKey(const Key('purchase_paid_date_value')),
+      findsOneWidget,
+    );
+  });
 }

@@ -57,6 +57,7 @@
   "passwordTooShort": "Kata sandi minimal 6 karakter",
   "passwordsDoNotMatch": "Kata sandi tidak cocok",
   "menu": "Menu",
+  "manageMenus": "Kelola Menu",
   "menuLayout": "Tata letak menu",
   "menuLayoutGrid": "Grid",
   "menuLayoutList": "Daftar",

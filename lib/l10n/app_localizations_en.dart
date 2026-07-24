@@ -182,6 +182,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get menu => 'Menu';
 
   @override
+  String get manageMenus => 'Manage Menu';
+
+  @override
   String get menuLayout => 'Menu layout';
 
   @override

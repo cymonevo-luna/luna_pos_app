@@ -182,6 +182,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get menu => 'Menu';
 
   @override
+  String get manageMenus => 'Kelola Menu';
+
+  @override
   String get menuLayout => 'Tata letak menu';
 
   @override

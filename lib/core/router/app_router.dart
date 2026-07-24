@@ -344,18 +344,18 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const CheckoutPage(),
       ),
       GoRoute(
+        path: AppRoute.dailyMenuSummary.path,
+        name: AppRoute.dailyMenuSummary.name,
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const DailyMenuSummaryPage(),
+      ),
+      GoRoute(
         path: AppRoute.transactionDetail.path,
         name: AppRoute.transactionDetail.name,
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => TransactionDetailPage(
           transactionId: state.pathParameters['id']!,
         ),
-      ),
-      GoRoute(
-        path: AppRoute.dailyMenuSummary.path,
-        name: AppRoute.dailyMenuSummary.name,
-        parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const DailyMenuSummaryPage(),
       ),
       GoRoute(
         path: AppRoute.productionRequestDetail.path,

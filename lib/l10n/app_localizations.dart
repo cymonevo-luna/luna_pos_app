@@ -440,6 +440,12 @@ abstract class AppLocalizations {
   /// **'Menu'**
   String get menu;
 
+  /// Manage menu tab and screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Menu'**
+  String get manageMenus;
+
   /// Tooltip for menu layout toggle in the app bar
   ///
   /// In en, this message translates to:

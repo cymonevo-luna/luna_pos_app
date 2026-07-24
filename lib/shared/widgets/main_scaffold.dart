@@ -105,6 +105,11 @@ class MainScaffold extends ConsumerWidget {
           label: l10n.cashierBalanceTitle,
         ),
       7 => NavigationDestination(
+          icon: const Icon(Icons.edit_note_outlined),
+          selectedIcon: const Icon(Icons.edit_note),
+          label: l10n.manageMenus,
+        ),
+      8 => NavigationDestination(
           icon: const Icon(Icons.person_outline),
           selectedIcon: const Icon(Icons.person),
           label: l10n.profile,

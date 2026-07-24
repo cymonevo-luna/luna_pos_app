@@ -20,6 +20,8 @@ import '../../features/cashier_balance/cashier_balance_page.dart';
 import '../../features/purchase/smart_purchase_request_page.dart';
 import '../../features/recurring_expense/recurring_expense_form_sheet.dart';
 import '../../features/recurring_expense/recurring_expense_list_page.dart';
+import '../../features/menu_management/menu_management_form_page.dart';
+import '../../features/menu_management/menu_management_list_page.dart';
 import '../../features/stock/stock_form_sheet.dart';
 import '../../features/stock/stock_list_page.dart';
 import '../../features/daily_menu_summary/daily_menu_summary_page.dart';
@@ -51,6 +53,9 @@ enum AppRoute {
   recurringExpensesNew('/recurring-expenses/new'),
   recurringExpensesEdit('/recurring-expenses/:id/edit'),
   cashierBalance('/cashier-balance'),
+  manageMenus('/manage-menus'),
+  manageMenusNew('/manage-menus/new'),
+  manageMenusEdit('/manage-menus/:id/edit'),
   profile('/profile'),
   settings('/settings'),
   details('/details'),
@@ -305,6 +310,31 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: AppRoute.cashierBalance.path,
                 name: AppRoute.cashierBalance.name,
                 builder: (context, state) => const CashierBalancePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoute.manageMenus.path,
+                name: AppRoute.manageMenus.name,
+                builder: (context, state) => const MenuManagementListPage(),
+                routes: [
+                  GoRoute(
+                    path: 'new',
+                    name: AppRoute.manageMenusNew.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => const MenuManagementFormPage(),
+                  ),
+                  GoRoute(
+                    path: ':id/edit',
+                    name: AppRoute.manageMenusEdit.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => MenuManagementEditPage(
+                      id: state.pathParameters['id']!,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

@@ -69,6 +69,10 @@
   "passwordTooShort": "Password must be at least 6 characters",
   "passwordsDoNotMatch": "Passwords do not match",
   "menu": "Menu",
+  "manageMenus": "Manage Menu",
+  "@manageMenus": {
+    "description": "Manage menu tab and screen title"
+  },
   "menuLayout": "Menu layout",
   "@menuLayout": {
     "description": "Tooltip for menu layout toggle in the app bar"

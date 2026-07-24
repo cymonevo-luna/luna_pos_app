@@ -18,6 +18,8 @@ import '../../features/purchase/purchase_detail_page.dart';
 import '../../features/purchase/purchase_list_page.dart';
 import '../../features/cashier_balance/cashier_balance_page.dart';
 import '../../features/menu_disposal/dispose_food_page.dart';
+import '../../features/menu_disposal/disposal_detail_page.dart';
+import '../../features/menu_disposal/disposal_history_page.dart';
 import '../../features/purchase/smart_purchase_request_page.dart';
 import '../../features/recurring_expense/recurring_expense_form_sheet.dart';
 import '../../features/recurring_expense/recurring_expense_list_page.dart';
@@ -55,6 +57,8 @@ enum AppRoute {
   recurringExpensesEdit('/recurring-expenses/:id/edit'),
   cashierBalance('/cashier-balance'),
   disposeFood('/dispose-food'),
+  disposeFoodHistory('/dispose-food/history'),
+  disposeFoodDetail('/dispose-food/history/:id'),
   manageMenus('/manage-menus'),
   manageMenusNew('/manage-menus/new'),
   manageMenusEdit('/manage-menus/:id/edit'),
@@ -321,6 +325,24 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: AppRoute.disposeFood.path,
                 name: AppRoute.disposeFood.name,
                 builder: (context, state) => const DisposeFoodPage(),
+                routes: [
+                  GoRoute(
+                    path: 'history',
+                    name: AppRoute.disposeFoodHistory.name,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (context, state) => const DisposalHistoryPage(),
+                    routes: [
+                      GoRoute(
+                        path: ':id',
+                        name: AppRoute.disposeFoodDetail.name,
+                        parentNavigatorKey: _rootNavigatorKey,
+                        builder: (context, state) => DisposalDetailPage(
+                          disposalId: state.pathParameters['id']!,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),

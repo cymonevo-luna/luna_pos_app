@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/formatting/currency_formatter.dart';
+import '../../core/router/app_router.dart';
 import '../../core/router/navigation_config.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_tokens.dart';
@@ -81,6 +83,12 @@ class _DisposeFoodPageState extends ConsumerState<DisposeFoodPage> {
         appBar: AppBar(
           title: Text(l10n.disposeFoodTitle),
           actions: [
+            IconButton(
+              key: const Key('dispose_food_history_button'),
+              tooltip: l10n.disposeFoodHistory,
+              onPressed: () => context.pushNamed(AppRoute.disposeFoodHistory.name),
+              icon: const Icon(Icons.history),
+            ),
             if (disposeState.selectedMenu != null)
               IconButton(
                 key: const Key('dispose_food_clear_selection'),

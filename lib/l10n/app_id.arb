@@ -317,5 +317,12 @@
   "disposeFoodLossCalculatedOnSubmit": "Kerugian akhir dihitung saat Anda mengirim",
   "disposeFoodConfirm": "Konfirmasi pembuangan",
   "disposeFoodSuccess": "Membuang {menuTitle} x{quantity}. Kerugian: {lossAmount}",
+  "disposeFoodHistory": "Riwayat",
+  "disposalHistoryTitle": "Riwayat Pembuangan",
+  "disposalHistoryEmpty": "Belum ada pembuangan",
+  "disposalDisposedAt": "Dibuang pada",
+  "disposalDisposedBy": "Dibuang oleh",
+  "disposalLossAmount": "Jumlah kerugian",
+  "disposalDetailTitle": "Detail pembuangan",
   "availableStock": "Stok tersedia"
 }

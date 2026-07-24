@@ -73,6 +73,24 @@ class MenuDisposalRepository {
     );
   }
 
+  Future<MenuDisposalListItem> getMenuDisposal(
+    String id, {
+    bool forceRefresh = false,
+  }) {
+    final path = '$listPath/$id';
+    final cacheKey = resourceCacheKey('GET', path, const {});
+
+    return _cache.get(
+      cacheKey,
+      () => _api.get<MenuDisposalListItem>(
+        path,
+        decoder: (raw) =>
+            MenuDisposalListItem.fromJson(unwrapApiEnvelope(raw)),
+      ),
+      forceRefresh: forceRefresh,
+    );
+  }
+
   void invalidateList() => _cache.invalidatePrefix(listCachePrefix);
 
   static String _formatQueryDate(DateTime date) {

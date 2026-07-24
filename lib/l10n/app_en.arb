@@ -73,6 +73,99 @@
   "@manageMenus": {
     "description": "Manage menu tab and screen title"
   },
+  "manageMenusNew": "New menu",
+  "@manageMenusNew": {
+    "description": "Create menu form title and FAB label"
+  },
+  "manageMenusEdit": "Edit menu",
+  "@manageMenusEdit": {
+    "description": "Edit menu form title"
+  },
+  "manageMenusSearch": "Search menus",
+  "@manageMenusSearch": {
+    "description": "Search field hint on manage menu list"
+  },
+  "noManageMenus": "No menus yet",
+  "@noManageMenus": {
+    "description": "Empty state on manage menu list"
+  },
+  "manageMenusCategoryLabel": "Category",
+  "@manageMenusCategoryLabel": {
+    "description": "Category dropdown label on menu form"
+  },
+  "manageMenusCategoryRequired": "Select a category",
+  "@manageMenusCategoryRequired": {
+    "description": "Validation when category is not selected"
+  },
+  "manageMenusStockLabel": "Available stock",
+  "@manageMenusStockLabel": {
+    "description": "Stock field label on menu form"
+  },
+  "manageMenusStockInvalid": "Enter a stock amount of 0 or more",
+  "@manageMenusStockInvalid": {
+    "description": "Validation when stock is invalid"
+  },
+  "manageMenusSellPriceLabel": "Sell price",
+  "@manageMenusSellPriceLabel": {
+    "description": "Sell price field label on menu form"
+  },
+  "manageMenusSellPriceInvalid": "Enter a price greater than 0",
+  "@manageMenusSellPriceInvalid": {
+    "description": "Validation when sell price is invalid"
+  },
+  "manageMenusPickPhoto": "Choose photo",
+  "@manageMenusPickPhoto": {
+    "description": "Button to pick a menu photo from gallery"
+  },
+  "manageMenusPhotoUploadFailed": "Failed to upload photo",
+  "@manageMenusPhotoUploadFailed": {
+    "description": "Shown when menu photo upload fails"
+  },
+  "manageMenusSaved": "Menu saved",
+  "@manageMenusSaved": {
+    "description": "SnackBar after successful menu save"
+  },
+  "manageMenusDeleted": "Menu deleted",
+  "@manageMenusDeleted": {
+    "description": "SnackBar after successful menu delete"
+  },
+  "deleteManageMenu": "Delete menu",
+  "@deleteManageMenu": {
+    "description": "Title for delete menu confirmation dialog"
+  },
+  "deleteManageMenuConfirm": "Delete \"{title}\"? This cannot be undone.",
+  "@deleteManageMenuConfirm": {
+    "description": "Message for delete menu confirmation dialog",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteManageMenuFailed": "Failed to delete menu",
+  "@deleteManageMenuFailed": {
+    "description": "SnackBar when menu delete fails"
+  },
+  "manageMenusSortLabel": "Sort by",
+  "@manageMenusSortLabel": {
+    "description": "Sort dropdown label on manage menu list"
+  },
+  "manageMenusSortTitle": "Title",
+  "@manageMenusSortTitle": {
+    "description": "Sort menus by title"
+  },
+  "manageMenusSortStock": "Stock",
+  "@manageMenusSortStock": {
+    "description": "Sort menus by stock"
+  },
+  "manageMenusSortAscending": "Ascending",
+  "@manageMenusSortAscending": {
+    "description": "Ascending sort order tooltip"
+  },
+  "manageMenusSortDescending": "Descending",
+  "@manageMenusSortDescending": {
+    "description": "Descending sort order tooltip"
+  },
   "menuLayout": "Menu layout",
   "@menuLayout": {
     "description": "Tooltip for menu layout toggle in the app bar"

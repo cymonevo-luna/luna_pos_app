@@ -138,10 +138,8 @@ void main() {
         'description': 'Iced tea',
         'category_id': 'cat-2',
         'photo_url': '/uploads/es-teh.jpg',
+        'available_stock': 0,
         'sell_price': 8000,
-        'recipe_yield': 1,
-        'margin_percent': 40,
-        'vat_percent': 11,
       },
     );
 
@@ -151,10 +149,8 @@ void main() {
         description: 'Iced tea',
         categoryId: 'cat-2',
         photoUrl: '/uploads/es-teh.jpg',
+        availableStock: 0,
         sellPrice: 8000,
-        recipeYield: 1,
-        marginPercent: 40,
-        vatPercent: 11,
       ),
     );
 
@@ -185,6 +181,7 @@ void main() {
         'title': 'Nasi Goreng Special',
         'description': 'Extra spicy',
         'category_id': 'cat-1',
+        'available_stock': 10,
         'sell_price': 30000,
         'recipe_yield': 1,
         'margin_percent': 38,
@@ -198,6 +195,7 @@ void main() {
         title: 'Nasi Goreng Special',
         description: 'Extra spicy',
         categoryId: 'cat-1',
+        availableStock: 10,
         sellPrice: 30000,
         recipeYield: 1,
         marginPercent: 38,

@@ -185,6 +185,74 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageMenus => 'Manage Menu';
 
   @override
+  String get manageMenusNew => 'New menu';
+
+  @override
+  String get manageMenusEdit => 'Edit menu';
+
+  @override
+  String get manageMenusSearch => 'Search menus';
+
+  @override
+  String get noManageMenus => 'No menus yet';
+
+  @override
+  String get manageMenusCategoryLabel => 'Category';
+
+  @override
+  String get manageMenusCategoryRequired => 'Select a category';
+
+  @override
+  String get manageMenusStockLabel => 'Available stock';
+
+  @override
+  String get manageMenusStockInvalid => 'Enter a stock amount of 0 or more';
+
+  @override
+  String get manageMenusSellPriceLabel => 'Sell price';
+
+  @override
+  String get manageMenusSellPriceInvalid => 'Enter a price greater than 0';
+
+  @override
+  String get manageMenusPickPhoto => 'Choose photo';
+
+  @override
+  String get manageMenusPhotoUploadFailed => 'Failed to upload photo';
+
+  @override
+  String get manageMenusSaved => 'Menu saved';
+
+  @override
+  String get manageMenusDeleted => 'Menu deleted';
+
+  @override
+  String get deleteManageMenu => 'Delete menu';
+
+  @override
+  String deleteManageMenuConfirm(String title) {
+    return 'Delete \"$title\"? This cannot be undone.';
+  }
+
+  @override
+  String get deleteManageMenuFailed => 'Failed to delete menu';
+
+  @override
+  String get manageMenusSortLabel => 'Sort by';
+
+  @override
+  String get manageMenusSortTitle => 'Title';
+
+  @override
+  String get manageMenusSortStock => 'Stock';
+
+  @override
+  String get manageMenusSortAscending => 'Ascending';
+
+  @override
+  String get manageMenusSortDescending => 'Descending';
+
+  @override
   String get menuLayout => 'Menu layout';
 
   @override

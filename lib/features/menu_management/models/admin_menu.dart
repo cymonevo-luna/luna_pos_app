@@ -19,6 +19,20 @@ int _intFromJson(dynamic value) {
 
 dynamic _intToJson(int value) => value;
 
+int? _nullableIntFromJson(dynamic value) {
+  if (value == null) return null;
+  return _intFromJson(value);
+}
+
+dynamic _nullableIntToJson(int? value) => value;
+
+num? _nullableDecimalFromJson(dynamic value) {
+  if (value == null) return null;
+  return _decimalFromJson(value);
+}
+
+dynamic _nullableDecimalToJson(num? value) => value;
+
 DateTime? _nullableDateTimeFromJson(Object? value) {
   if (value == null) return null;
   if (value is String && value.isEmpty) return null;
@@ -83,22 +97,28 @@ abstract class AdminMenuRequest with _$AdminMenuRequest {
     String? description,
     @JsonKey(name: 'category_id') required String categoryId,
     @JsonKey(name: 'photo_url') String? photoUrl,
+    @JsonKey(
+      name: 'available_stock',
+      fromJson: _intFromJson,
+      toJson: _intToJson,
+    )
+    required int availableStock,
     @JsonKey(name: 'sell_price', fromJson: _intFromJson, toJson: _intToJson)
     required int sellPrice,
-    @JsonKey(name: 'recipe_yield', fromJson: _intFromJson, toJson: _intToJson)
-    required int recipeYield,
+    @JsonKey(name: 'recipe_yield', fromJson: _nullableIntFromJson, toJson: _nullableIntToJson)
+    int? recipeYield,
     @JsonKey(
       name: 'margin_percent',
-      fromJson: _decimalFromJson,
-      toJson: _decimalToJson,
+      fromJson: _nullableDecimalFromJson,
+      toJson: _nullableDecimalToJson,
     )
-    required num marginPercent,
+    num? marginPercent,
     @JsonKey(
       name: 'vat_percent',
-      fromJson: _decimalFromJson,
-      toJson: _decimalToJson,
+      fromJson: _nullableDecimalFromJson,
+      toJson: _nullableDecimalToJson,
     )
-    required num vatPercent,
+    num? vatPercent,
   }) = _AdminMenuRequest;
 
   factory AdminMenuRequest.fromJson(Map<String, dynamic> json) =>

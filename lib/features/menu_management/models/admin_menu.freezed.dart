@@ -314,7 +314,7 @@ as DateTime?,
 /// @nodoc
 mixin _$AdminMenuRequest {
 
- String get title; String? get description;@JsonKey(name: 'category_id') String get categoryId;@JsonKey(name: 'photo_url') String? get photoUrl;@JsonKey(name: 'sell_price', fromJson: _intFromJson, toJson: _intToJson) int get sellPrice;@JsonKey(name: 'recipe_yield', fromJson: _intFromJson, toJson: _intToJson) int get recipeYield;@JsonKey(name: 'margin_percent', fromJson: _decimalFromJson, toJson: _decimalToJson) num get marginPercent;@JsonKey(name: 'vat_percent', fromJson: _decimalFromJson, toJson: _decimalToJson) num get vatPercent;
+ String get title; String? get description;@JsonKey(name: 'category_id') String get categoryId;@JsonKey(name: 'photo_url') String? get photoUrl;@JsonKey(name: 'available_stock', fromJson: _intFromJson, toJson: _intToJson) int get availableStock;@JsonKey(name: 'sell_price', fromJson: _intFromJson, toJson: _intToJson) int get sellPrice;@JsonKey(name: 'recipe_yield', fromJson: _nullableIntFromJson, toJson: _nullableIntToJson) int? get recipeYield;@JsonKey(name: 'margin_percent', fromJson: _nullableDecimalFromJson, toJson: _nullableDecimalToJson) num? get marginPercent;@JsonKey(name: 'vat_percent', fromJson: _nullableDecimalFromJson, toJson: _nullableDecimalToJson) num? get vatPercent;
 /// Create a copy of AdminMenuRequest
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -327,16 +327,16 @@ $AdminMenuRequestCopyWith<AdminMenuRequest> get copyWith => _$AdminMenuRequestCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AdminMenuRequest&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.sellPrice, sellPrice) || other.sellPrice == sellPrice)&&(identical(other.recipeYield, recipeYield) || other.recipeYield == recipeYield)&&(identical(other.marginPercent, marginPercent) || other.marginPercent == marginPercent)&&(identical(other.vatPercent, vatPercent) || other.vatPercent == vatPercent));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AdminMenuRequest&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.availableStock, availableStock) || other.availableStock == availableStock)&&(identical(other.sellPrice, sellPrice) || other.sellPrice == sellPrice)&&(identical(other.recipeYield, recipeYield) || other.recipeYield == recipeYield)&&(identical(other.marginPercent, marginPercent) || other.marginPercent == marginPercent)&&(identical(other.vatPercent, vatPercent) || other.vatPercent == vatPercent));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,title,description,categoryId,photoUrl,sellPrice,recipeYield,marginPercent,vatPercent);
+int get hashCode => Object.hash(runtimeType,title,description,categoryId,photoUrl,availableStock,sellPrice,recipeYield,marginPercent,vatPercent);
 
 @override
 String toString() {
-  return 'AdminMenuRequest(title: $title, description: $description, categoryId: $categoryId, photoUrl: $photoUrl, sellPrice: $sellPrice, recipeYield: $recipeYield, marginPercent: $marginPercent, vatPercent: $vatPercent)';
+  return 'AdminMenuRequest(title: $title, description: $description, categoryId: $categoryId, photoUrl: $photoUrl, availableStock: $availableStock, sellPrice: $sellPrice, recipeYield: $recipeYield, marginPercent: $marginPercent, vatPercent: $vatPercent)';
 }
 
 
@@ -347,7 +347,7 @@ abstract mixin class $AdminMenuRequestCopyWith<$Res>  {
   factory $AdminMenuRequestCopyWith(AdminMenuRequest value, $Res Function(AdminMenuRequest) _then) = _$AdminMenuRequestCopyWithImpl;
 @useResult
 $Res call({
- String title, String? description,@JsonKey(name: 'category_id') String categoryId,@JsonKey(name: 'photo_url') String? photoUrl,@JsonKey(name: 'sell_price', fromJson: _intFromJson, toJson: _intToJson) int sellPrice,@JsonKey(name: 'recipe_yield', fromJson: _intFromJson, toJson: _intToJson) int recipeYield,@JsonKey(name: 'margin_percent', fromJson: _decimalFromJson, toJson: _decimalToJson) num marginPercent,@JsonKey(name: 'vat_percent', fromJson: _decimalFromJson, toJson: _decimalToJson) num vatPercent
+ String title, String? description,@JsonKey(name: 'category_id') String categoryId,@JsonKey(name: 'photo_url') String? photoUrl,@JsonKey(name: 'available_stock', fromJson: _intFromJson, toJson: _intToJson) int availableStock,@JsonKey(name: 'sell_price', fromJson: _intFromJson, toJson: _intToJson) int sellPrice,@JsonKey(name: 'recipe_yield', fromJson: _nullableIntFromJson, toJson: _nullableIntToJson) int? recipeYield,@JsonKey(name: 'margin_percent', fromJson: _nullableDecimalFromJson, toJson: _nullableDecimalToJson) num? marginPercent,@JsonKey(name: 'vat_percent', fromJson: _nullableDecimalFromJson, toJson: _nullableDecimalToJson) num? vatPercent
 });
 
 
@@ -364,17 +364,18 @@ class _$AdminMenuRequestCopyWithImpl<$Res>
 
 /// Create a copy of AdminMenuRequest
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? description = freezed,Object? categoryId = null,Object? photoUrl = freezed,Object? sellPrice = null,Object? recipeYield = null,Object? marginPercent = null,Object? vatPercent = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? title = null,Object? description = freezed,Object? categoryId = null,Object? photoUrl = freezed,Object? availableStock = null,Object? sellPrice = null,Object? recipeYield = freezed,Object? marginPercent = freezed,Object? vatPercent = freezed,}) {
   return _then(_self.copyWith(
 title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,categoryId: null == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
 as String,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
-as String?,sellPrice: null == sellPrice ? _self.sellPrice : sellPrice // ignore: cast_nullable_to_non_nullable
-as int,recipeYield: null == recipeYield ? _self.recipeYield : recipeYield // ignore: cast_nullable_to_non_nullable
-as int,marginPercent: null == marginPercent ? _self.marginPercent : marginPercent // ignore: cast_nullable_to_non_nullable
-as num,vatPercent: null == vatPercent ? _self.vatPercent : vatPercent // ignore: cast_nullable_to_non_nullable
-as num,
+as String?,availableStock: null == availableStock ? _self.availableStock : availableStock // ignore: cast_nullable_to_non_nullable
+as int,sellPrice: null == sellPrice ? _self.sellPrice : sellPrice // ignore: cast_nullable_to_non_nullable
+as int,recipeYield: freezed == recipeYield ? _self.recipeYield : recipeYield // ignore: cast_nullable_to_non_nullable
+as int?,marginPercent: freezed == marginPercent ? _self.marginPercent : marginPercent // ignore: cast_nullable_to_non_nullable
+as num?,vatPercent: freezed == vatPercent ? _self.vatPercent : vatPercent // ignore: cast_nullable_to_non_nullable
+as num?,
   ));
 }
 
@@ -459,10 +460,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String title,  String? description, @JsonKey(name: 'category_id')  String categoryId, @JsonKey(name: 'photo_url')  String? photoUrl, @JsonKey(name: 'sell_price', fromJson: _intFromJson, toJson: _intToJson)  int sellPrice, @JsonKey(name: 'recipe_yield', fromJson: _intFromJson, toJson: _intToJson)  int recipeYield, @JsonKey(name: 'margin_percent', fromJson: _decimalFromJson, toJson: _decimalToJson)  num marginPercent, @JsonKey(name: 'vat_percent', fromJson: _decimalFromJson, toJson: _decimalToJson)  num vatPercent)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String title,  String? description, @JsonKey(name: 'category_id')  String categoryId, @JsonKey(name: 'photo_url')  String? photoUrl, @JsonKey(name: 'available_stock', fromJson: _intFromJson, toJson: _intToJson)  int availableStock, @JsonKey(name: 'sell_price', fromJson: _intFromJson, toJson: _intToJson)  int sellPrice, @JsonKey(name: 'recipe_yield', fromJson: _nullableIntFromJson, toJson: _nullableIntToJson)  int? recipeYield, @JsonKey(name: 'margin_percent', fromJson: _nullableDecimalFromJson, toJson: _nullableDecimalToJson)  num? marginPercent, @JsonKey(name: 'vat_percent', fromJson: _nullableDecimalFromJson, toJson: _nullableDecimalToJson)  num? vatPercent)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AdminMenuRequest() when $default != null:
-return $default(_that.title,_that.description,_that.categoryId,_that.photoUrl,_that.sellPrice,_that.recipeYield,_that.marginPercent,_that.vatPercent);case _:
+return $default(_that.title,_that.description,_that.categoryId,_that.photoUrl,_that.availableStock,_that.sellPrice,_that.recipeYield,_that.marginPercent,_that.vatPercent);case _:
   return orElse();
 
 }
@@ -480,10 +481,10 @@ return $default(_that.title,_that.description,_that.categoryId,_that.photoUrl,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String title,  String? description, @JsonKey(name: 'category_id')  String categoryId, @JsonKey(name: 'photo_url')  String? photoUrl, @JsonKey(name: 'sell_price', fromJson: _intFromJson, toJson: _intToJson)  int sellPrice, @JsonKey(name: 'recipe_yield', fromJson: _intFromJson, toJson: _intToJson)  int recipeYield, @JsonKey(name: 'margin_percent', fromJson: _decimalFromJson, toJson: _decimalToJson)  num marginPercent, @JsonKey(name: 'vat_percent', fromJson: _decimalFromJson, toJson: _decimalToJson)  num vatPercent)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String title,  String? description, @JsonKey(name: 'category_id')  String categoryId, @JsonKey(name: 'photo_url')  String? photoUrl, @JsonKey(name: 'available_stock', fromJson: _intFromJson, toJson: _intToJson)  int availableStock, @JsonKey(name: 'sell_price', fromJson: _intFromJson, toJson: _intToJson)  int sellPrice, @JsonKey(name: 'recipe_yield', fromJson: _nullableIntFromJson, toJson: _nullableIntToJson)  int? recipeYield, @JsonKey(name: 'margin_percent', fromJson: _nullableDecimalFromJson, toJson: _nullableDecimalToJson)  num? marginPercent, @JsonKey(name: 'vat_percent', fromJson: _nullableDecimalFromJson, toJson: _nullableDecimalToJson)  num? vatPercent)  $default,) {final _that = this;
 switch (_that) {
 case _AdminMenuRequest():
-return $default(_that.title,_that.description,_that.categoryId,_that.photoUrl,_that.sellPrice,_that.recipeYield,_that.marginPercent,_that.vatPercent);case _:
+return $default(_that.title,_that.description,_that.categoryId,_that.photoUrl,_that.availableStock,_that.sellPrice,_that.recipeYield,_that.marginPercent,_that.vatPercent);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -500,10 +501,10 @@ return $default(_that.title,_that.description,_that.categoryId,_that.photoUrl,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String title,  String? description, @JsonKey(name: 'category_id')  String categoryId, @JsonKey(name: 'photo_url')  String? photoUrl, @JsonKey(name: 'sell_price', fromJson: _intFromJson, toJson: _intToJson)  int sellPrice, @JsonKey(name: 'recipe_yield', fromJson: _intFromJson, toJson: _intToJson)  int recipeYield, @JsonKey(name: 'margin_percent', fromJson: _decimalFromJson, toJson: _decimalToJson)  num marginPercent, @JsonKey(name: 'vat_percent', fromJson: _decimalFromJson, toJson: _decimalToJson)  num vatPercent)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String title,  String? description, @JsonKey(name: 'category_id')  String categoryId, @JsonKey(name: 'photo_url')  String? photoUrl, @JsonKey(name: 'available_stock', fromJson: _intFromJson, toJson: _intToJson)  int availableStock, @JsonKey(name: 'sell_price', fromJson: _intFromJson, toJson: _intToJson)  int sellPrice, @JsonKey(name: 'recipe_yield', fromJson: _nullableIntFromJson, toJson: _nullableIntToJson)  int? recipeYield, @JsonKey(name: 'margin_percent', fromJson: _nullableDecimalFromJson, toJson: _nullableDecimalToJson)  num? marginPercent, @JsonKey(name: 'vat_percent', fromJson: _nullableDecimalFromJson, toJson: _nullableDecimalToJson)  num? vatPercent)?  $default,) {final _that = this;
 switch (_that) {
 case _AdminMenuRequest() when $default != null:
-return $default(_that.title,_that.description,_that.categoryId,_that.photoUrl,_that.sellPrice,_that.recipeYield,_that.marginPercent,_that.vatPercent);case _:
+return $default(_that.title,_that.description,_that.categoryId,_that.photoUrl,_that.availableStock,_that.sellPrice,_that.recipeYield,_that.marginPercent,_that.vatPercent);case _:
   return null;
 
 }
@@ -515,17 +516,18 @@ return $default(_that.title,_that.description,_that.categoryId,_that.photoUrl,_t
 @JsonSerializable()
 
 class _AdminMenuRequest implements AdminMenuRequest {
-  const _AdminMenuRequest({required this.title, this.description, @JsonKey(name: 'category_id') required this.categoryId, @JsonKey(name: 'photo_url') this.photoUrl, @JsonKey(name: 'sell_price', fromJson: _intFromJson, toJson: _intToJson) required this.sellPrice, @JsonKey(name: 'recipe_yield', fromJson: _intFromJson, toJson: _intToJson) required this.recipeYield, @JsonKey(name: 'margin_percent', fromJson: _decimalFromJson, toJson: _decimalToJson) required this.marginPercent, @JsonKey(name: 'vat_percent', fromJson: _decimalFromJson, toJson: _decimalToJson) required this.vatPercent});
+  const _AdminMenuRequest({required this.title, this.description, @JsonKey(name: 'category_id') required this.categoryId, @JsonKey(name: 'photo_url') this.photoUrl, @JsonKey(name: 'available_stock', fromJson: _intFromJson, toJson: _intToJson) required this.availableStock, @JsonKey(name: 'sell_price', fromJson: _intFromJson, toJson: _intToJson) required this.sellPrice, @JsonKey(name: 'recipe_yield', fromJson: _nullableIntFromJson, toJson: _nullableIntToJson) this.recipeYield, @JsonKey(name: 'margin_percent', fromJson: _nullableDecimalFromJson, toJson: _nullableDecimalToJson) this.marginPercent, @JsonKey(name: 'vat_percent', fromJson: _nullableDecimalFromJson, toJson: _nullableDecimalToJson) this.vatPercent});
   factory _AdminMenuRequest.fromJson(Map<String, dynamic> json) => _$AdminMenuRequestFromJson(json);
 
 @override final  String title;
 @override final  String? description;
 @override@JsonKey(name: 'category_id') final  String categoryId;
 @override@JsonKey(name: 'photo_url') final  String? photoUrl;
+@override@JsonKey(name: 'available_stock', fromJson: _intFromJson, toJson: _intToJson) final  int availableStock;
 @override@JsonKey(name: 'sell_price', fromJson: _intFromJson, toJson: _intToJson) final  int sellPrice;
-@override@JsonKey(name: 'recipe_yield', fromJson: _intFromJson, toJson: _intToJson) final  int recipeYield;
-@override@JsonKey(name: 'margin_percent', fromJson: _decimalFromJson, toJson: _decimalToJson) final  num marginPercent;
-@override@JsonKey(name: 'vat_percent', fromJson: _decimalFromJson, toJson: _decimalToJson) final  num vatPercent;
+@override@JsonKey(name: 'recipe_yield', fromJson: _nullableIntFromJson, toJson: _nullableIntToJson) final  int? recipeYield;
+@override@JsonKey(name: 'margin_percent', fromJson: _nullableDecimalFromJson, toJson: _nullableDecimalToJson) final  num? marginPercent;
+@override@JsonKey(name: 'vat_percent', fromJson: _nullableDecimalFromJson, toJson: _nullableDecimalToJson) final  num? vatPercent;
 
 /// Create a copy of AdminMenuRequest
 /// with the given fields replaced by the non-null parameter values.
@@ -540,16 +542,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AdminMenuRequest&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.sellPrice, sellPrice) || other.sellPrice == sellPrice)&&(identical(other.recipeYield, recipeYield) || other.recipeYield == recipeYield)&&(identical(other.marginPercent, marginPercent) || other.marginPercent == marginPercent)&&(identical(other.vatPercent, vatPercent) || other.vatPercent == vatPercent));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AdminMenuRequest&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.availableStock, availableStock) || other.availableStock == availableStock)&&(identical(other.sellPrice, sellPrice) || other.sellPrice == sellPrice)&&(identical(other.recipeYield, recipeYield) || other.recipeYield == recipeYield)&&(identical(other.marginPercent, marginPercent) || other.marginPercent == marginPercent)&&(identical(other.vatPercent, vatPercent) || other.vatPercent == vatPercent));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,title,description,categoryId,photoUrl,sellPrice,recipeYield,marginPercent,vatPercent);
+int get hashCode => Object.hash(runtimeType,title,description,categoryId,photoUrl,availableStock,sellPrice,recipeYield,marginPercent,vatPercent);
 
 @override
 String toString() {
-  return 'AdminMenuRequest(title: $title, description: $description, categoryId: $categoryId, photoUrl: $photoUrl, sellPrice: $sellPrice, recipeYield: $recipeYield, marginPercent: $marginPercent, vatPercent: $vatPercent)';
+  return 'AdminMenuRequest(title: $title, description: $description, categoryId: $categoryId, photoUrl: $photoUrl, availableStock: $availableStock, sellPrice: $sellPrice, recipeYield: $recipeYield, marginPercent: $marginPercent, vatPercent: $vatPercent)';
 }
 
 
@@ -560,7 +562,7 @@ abstract mixin class _$AdminMenuRequestCopyWith<$Res> implements $AdminMenuReque
   factory _$AdminMenuRequestCopyWith(_AdminMenuRequest value, $Res Function(_AdminMenuRequest) _then) = __$AdminMenuRequestCopyWithImpl;
 @override @useResult
 $Res call({
- String title, String? description,@JsonKey(name: 'category_id') String categoryId,@JsonKey(name: 'photo_url') String? photoUrl,@JsonKey(name: 'sell_price', fromJson: _intFromJson, toJson: _intToJson) int sellPrice,@JsonKey(name: 'recipe_yield', fromJson: _intFromJson, toJson: _intToJson) int recipeYield,@JsonKey(name: 'margin_percent', fromJson: _decimalFromJson, toJson: _decimalToJson) num marginPercent,@JsonKey(name: 'vat_percent', fromJson: _decimalFromJson, toJson: _decimalToJson) num vatPercent
+ String title, String? description,@JsonKey(name: 'category_id') String categoryId,@JsonKey(name: 'photo_url') String? photoUrl,@JsonKey(name: 'available_stock', fromJson: _intFromJson, toJson: _intToJson) int availableStock,@JsonKey(name: 'sell_price', fromJson: _intFromJson, toJson: _intToJson) int sellPrice,@JsonKey(name: 'recipe_yield', fromJson: _nullableIntFromJson, toJson: _nullableIntToJson) int? recipeYield,@JsonKey(name: 'margin_percent', fromJson: _nullableDecimalFromJson, toJson: _nullableDecimalToJson) num? marginPercent,@JsonKey(name: 'vat_percent', fromJson: _nullableDecimalFromJson, toJson: _nullableDecimalToJson) num? vatPercent
 });
 
 
@@ -577,17 +579,18 @@ class __$AdminMenuRequestCopyWithImpl<$Res>
 
 /// Create a copy of AdminMenuRequest
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? description = freezed,Object? categoryId = null,Object? photoUrl = freezed,Object? sellPrice = null,Object? recipeYield = null,Object? marginPercent = null,Object? vatPercent = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? title = null,Object? description = freezed,Object? categoryId = null,Object? photoUrl = freezed,Object? availableStock = null,Object? sellPrice = null,Object? recipeYield = freezed,Object? marginPercent = freezed,Object? vatPercent = freezed,}) {
   return _then(_AdminMenuRequest(
 title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,categoryId: null == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
 as String,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
-as String?,sellPrice: null == sellPrice ? _self.sellPrice : sellPrice // ignore: cast_nullable_to_non_nullable
-as int,recipeYield: null == recipeYield ? _self.recipeYield : recipeYield // ignore: cast_nullable_to_non_nullable
-as int,marginPercent: null == marginPercent ? _self.marginPercent : marginPercent // ignore: cast_nullable_to_non_nullable
-as num,vatPercent: null == vatPercent ? _self.vatPercent : vatPercent // ignore: cast_nullable_to_non_nullable
-as num,
+as String?,availableStock: null == availableStock ? _self.availableStock : availableStock // ignore: cast_nullable_to_non_nullable
+as int,sellPrice: null == sellPrice ? _self.sellPrice : sellPrice // ignore: cast_nullable_to_non_nullable
+as int,recipeYield: freezed == recipeYield ? _self.recipeYield : recipeYield // ignore: cast_nullable_to_non_nullable
+as int?,marginPercent: freezed == marginPercent ? _self.marginPercent : marginPercent // ignore: cast_nullable_to_non_nullable
+as num?,vatPercent: freezed == vatPercent ? _self.vatPercent : vatPercent // ignore: cast_nullable_to_non_nullable
+as num?,
   ));
 }
 

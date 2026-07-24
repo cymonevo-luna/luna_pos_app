@@ -54,6 +54,7 @@ bool _matchesPrefix(String location, String prefix) {
 bool isCashierRoute(String location) {
   return location == AppRoute.home.path ||
       location == AppRoute.transactionHistory.path ||
+      location == AppRoute.dailyMenuSummary.path ||
       location == AppRoute.calendar.path ||
       location == AppRoute.cart.path ||
       location == AppRoute.checkout.path ||
@@ -82,6 +83,7 @@ bool hasRecurringExpenseAccess(User user) {
 String? requiredFeatureForLocation(String location) {
   if (location == AppRoute.home.path) return PosFeatures.menu;
   if (location == AppRoute.transactionHistory.path ||
+      location == AppRoute.dailyMenuSummary.path ||
       _matchesPrefix(location, AppRoute.transactionDetail.path.split(':').first)) {
     return PosFeatures.transactions;
   }

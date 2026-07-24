@@ -6,9 +6,11 @@ import 'package:intl/intl.dart';
 import '../../core/formatting/currency_formatter.dart';
 import '../../core/router/app_router.dart';
 import '../../core/router/navigation_config.dart';
+import '../../core/router/pos_features.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_tokens.dart';
 import '../../features/auth/auth_controller.dart';
+import '../../features/user/models/user.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/lazy_shell_tab_loader.dart';
 import '../../shared/widgets/widgets.dart';
@@ -86,6 +88,7 @@ class _TransactionHistoryPageState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final state = ref.watch(transactionHistoryProvider);
+    final user = ref.watch(authProvider).user;
     final locale = Localizations.localeOf(context);
     final dateFormat = DateFormat.yMMMd(locale.toString()).add_jm();
 
@@ -97,6 +100,14 @@ class _TransactionHistoryPageState
       appBar: AppBar(
         title: Text(l10n.transactionHistory),
         actions: [
+          if (user?.hasFeature(PosFeatures.transactions) ?? false)
+            IconButton(
+              key: const Key('transaction_history_daily_menu_summary_button'),
+              tooltip: l10n.dailyMenuSummaryTitle,
+              onPressed: () =>
+                  context.pushNamed(AppRoute.dailyMenuSummary.name),
+              icon: const Icon(Icons.summarize_outlined),
+            ),
           if (state.filter.hasDateRange)
             IconButton(
               tooltip: l10n.clearDateFilter,

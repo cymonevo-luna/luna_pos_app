@@ -985,5 +985,21 @@
   "cashierBalanceAccessDenied": "You do not have access to cashier balance.",
   "@cashierBalanceAccessDenied": {
     "description": "Forbidden message when user lacks cashier balance feature"
+  },
+  "dailyMenuSummaryTitle": "Daily Menu Summary",
+  "@dailyMenuSummaryTitle": {
+    "description": "Screen title and tooltip for today's per-menu sales summary"
+  },
+  "dailyMenuSummaryTotalItems": "Items sold",
+  "@dailyMenuSummaryTotalItems": {
+    "description": "Total quantity sold today on the daily menu summary card"
+  },
+  "dailyMenuSummaryTotalRevenue": "Total revenue",
+  "@dailyMenuSummaryTotalRevenue": {
+    "description": "Total revenue today on the daily menu summary card"
+  },
+  "dailyMenuSummaryNoSales": "No menu sales today",
+  "@dailyMenuSummaryNoSales": {
+    "description": "Empty state when no menus were sold today"
   }
 }

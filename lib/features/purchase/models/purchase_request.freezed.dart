@@ -297,6 +297,272 @@ as DateTime?,
 
 
 /// @nodoc
+mixin _$PurchaseStatusHistoryEntry {
+
+ PurchaseRequestStatus get status;@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? get createdAt;
+/// Create a copy of PurchaseStatusHistoryEntry
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PurchaseStatusHistoryEntryCopyWith<PurchaseStatusHistoryEntry> get copyWith => _$PurchaseStatusHistoryEntryCopyWithImpl<PurchaseStatusHistoryEntry>(this as PurchaseStatusHistoryEntry, _$identity);
+
+  /// Serializes this PurchaseStatusHistoryEntry to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PurchaseStatusHistoryEntry&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,status,createdAt);
+
+@override
+String toString() {
+  return 'PurchaseStatusHistoryEntry(status: $status, createdAt: $createdAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PurchaseStatusHistoryEntryCopyWith<$Res>  {
+  factory $PurchaseStatusHistoryEntryCopyWith(PurchaseStatusHistoryEntry value, $Res Function(PurchaseStatusHistoryEntry) _then) = _$PurchaseStatusHistoryEntryCopyWithImpl;
+@useResult
+$Res call({
+ PurchaseRequestStatus status,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt
+});
+
+
+
+
+}
+/// @nodoc
+class _$PurchaseStatusHistoryEntryCopyWithImpl<$Res>
+    implements $PurchaseStatusHistoryEntryCopyWith<$Res> {
+  _$PurchaseStatusHistoryEntryCopyWithImpl(this._self, this._then);
+
+  final PurchaseStatusHistoryEntry _self;
+  final $Res Function(PurchaseStatusHistoryEntry) _then;
+
+/// Create a copy of PurchaseStatusHistoryEntry
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? status = null,Object? createdAt = freezed,}) {
+  return _then(_self.copyWith(
+status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as PurchaseRequestStatus,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [PurchaseStatusHistoryEntry].
+extension PurchaseStatusHistoryEntryPatterns on PurchaseStatusHistoryEntry {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _PurchaseStatusHistoryEntry value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _PurchaseStatusHistoryEntry() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _PurchaseStatusHistoryEntry value)  $default,){
+final _that = this;
+switch (_that) {
+case _PurchaseStatusHistoryEntry():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _PurchaseStatusHistoryEntry value)?  $default,){
+final _that = this;
+switch (_that) {
+case _PurchaseStatusHistoryEntry() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( PurchaseRequestStatus status, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _PurchaseStatusHistoryEntry() when $default != null:
+return $default(_that.status,_that.createdAt);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( PurchaseRequestStatus status, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt)  $default,) {final _that = this;
+switch (_that) {
+case _PurchaseStatusHistoryEntry():
+return $default(_that.status,_that.createdAt);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( PurchaseRequestStatus status, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt)?  $default,) {final _that = this;
+switch (_that) {
+case _PurchaseStatusHistoryEntry() when $default != null:
+return $default(_that.status,_that.createdAt);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _PurchaseStatusHistoryEntry implements PurchaseStatusHistoryEntry {
+  const _PurchaseStatusHistoryEntry({required this.status, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) this.createdAt});
+  factory _PurchaseStatusHistoryEntry.fromJson(Map<String, dynamic> json) => _$PurchaseStatusHistoryEntryFromJson(json);
+
+@override final  PurchaseRequestStatus status;
+@override@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) final  DateTime? createdAt;
+
+/// Create a copy of PurchaseStatusHistoryEntry
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$PurchaseStatusHistoryEntryCopyWith<_PurchaseStatusHistoryEntry> get copyWith => __$PurchaseStatusHistoryEntryCopyWithImpl<_PurchaseStatusHistoryEntry>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$PurchaseStatusHistoryEntryToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PurchaseStatusHistoryEntry&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,status,createdAt);
+
+@override
+String toString() {
+  return 'PurchaseStatusHistoryEntry(status: $status, createdAt: $createdAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$PurchaseStatusHistoryEntryCopyWith<$Res> implements $PurchaseStatusHistoryEntryCopyWith<$Res> {
+  factory _$PurchaseStatusHistoryEntryCopyWith(_PurchaseStatusHistoryEntry value, $Res Function(_PurchaseStatusHistoryEntry) _then) = __$PurchaseStatusHistoryEntryCopyWithImpl;
+@override @useResult
+$Res call({
+ PurchaseRequestStatus status,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt
+});
+
+
+
+
+}
+/// @nodoc
+class __$PurchaseStatusHistoryEntryCopyWithImpl<$Res>
+    implements _$PurchaseStatusHistoryEntryCopyWith<$Res> {
+  __$PurchaseStatusHistoryEntryCopyWithImpl(this._self, this._then);
+
+  final _PurchaseStatusHistoryEntry _self;
+  final $Res Function(_PurchaseStatusHistoryEntry) _then;
+
+/// Create a copy of PurchaseStatusHistoryEntry
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? status = null,Object? createdAt = freezed,}) {
+  return _then(_PurchaseStatusHistoryEntry(
+status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as PurchaseRequestStatus,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$PurchaseRequestItem {
 
 @JsonKey(name: 'food_supply_id') String get foodSupplyId;@JsonKey(name: 'food_supply_title') String? get foodSupplyTitle;@JsonKey(fromJson: _quantityFromJson) num get quantity; String? get unit;@JsonKey(name: 'unit_price', fromJson: _nullableNumFromJson) num? get unitPrice;@JsonKey(name: 'line_estimated_amount', fromJson: _nullableIntFromJson) int? get lineEstimatedAmount;@JsonKey(name: 'line_actual_amount', fromJson: _nullableIntFromJson) int? get lineActualAmount;
@@ -580,7 +846,7 @@ as int?,
 /// @nodoc
 mixin _$PurchaseRequestDetail {
 
- String get id;@JsonKey(name: 'supplier_id') String get supplierId;@JsonKey(name: 'supplier_name') String get supplierName;@JsonKey(name: 'supplier_contact_info') String? get supplierContactInfo; PurchaseRequestStatus get status;@JsonKey(name: 'total_estimated_amount') int? get totalEstimatedAmount;@JsonKey(name: 'total_actual_amount', fromJson: _nullableIntFromJson) int? get totalActualAmount; List<PurchaseRequestItem> get items; String? get notes;@JsonKey(name: 'paid_proof_url') String? get paidProofUrl;@JsonKey(name: 'delivered_proof_url') String? get deliveredProofUrl;@JsonKey(name: 'created_by_username') String? get createdByUsername;@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? get createdAt;
+ String get id;@JsonKey(name: 'supplier_id') String get supplierId;@JsonKey(name: 'supplier_name') String get supplierName;@JsonKey(name: 'supplier_contact_info') String? get supplierContactInfo; PurchaseRequestStatus get status;@JsonKey(name: 'total_estimated_amount') int? get totalEstimatedAmount;@JsonKey(name: 'total_actual_amount', fromJson: _nullableIntFromJson) int? get totalActualAmount; List<PurchaseRequestItem> get items; String? get notes;@JsonKey(name: 'paid_proof_url') String? get paidProofUrl;@JsonKey(name: 'delivered_proof_url') String? get deliveredProofUrl;@JsonKey(name: 'created_by_username') String? get createdByUsername;@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? get createdAt;@JsonKey(name: 'status_history', defaultValue: []) List<PurchaseStatusHistoryEntry> get statusHistory;
 /// Create a copy of PurchaseRequestDetail
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -593,16 +859,16 @@ $PurchaseRequestDetailCopyWith<PurchaseRequestDetail> get copyWith => _$Purchase
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PurchaseRequestDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.supplierId, supplierId) || other.supplierId == supplierId)&&(identical(other.supplierName, supplierName) || other.supplierName == supplierName)&&(identical(other.supplierContactInfo, supplierContactInfo) || other.supplierContactInfo == supplierContactInfo)&&(identical(other.status, status) || other.status == status)&&(identical(other.totalEstimatedAmount, totalEstimatedAmount) || other.totalEstimatedAmount == totalEstimatedAmount)&&(identical(other.totalActualAmount, totalActualAmount) || other.totalActualAmount == totalActualAmount)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.paidProofUrl, paidProofUrl) || other.paidProofUrl == paidProofUrl)&&(identical(other.deliveredProofUrl, deliveredProofUrl) || other.deliveredProofUrl == deliveredProofUrl)&&(identical(other.createdByUsername, createdByUsername) || other.createdByUsername == createdByUsername)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PurchaseRequestDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.supplierId, supplierId) || other.supplierId == supplierId)&&(identical(other.supplierName, supplierName) || other.supplierName == supplierName)&&(identical(other.supplierContactInfo, supplierContactInfo) || other.supplierContactInfo == supplierContactInfo)&&(identical(other.status, status) || other.status == status)&&(identical(other.totalEstimatedAmount, totalEstimatedAmount) || other.totalEstimatedAmount == totalEstimatedAmount)&&(identical(other.totalActualAmount, totalActualAmount) || other.totalActualAmount == totalActualAmount)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.paidProofUrl, paidProofUrl) || other.paidProofUrl == paidProofUrl)&&(identical(other.deliveredProofUrl, deliveredProofUrl) || other.deliveredProofUrl == deliveredProofUrl)&&(identical(other.createdByUsername, createdByUsername) || other.createdByUsername == createdByUsername)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.statusHistory, statusHistory));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,supplierId,supplierName,supplierContactInfo,status,totalEstimatedAmount,totalActualAmount,const DeepCollectionEquality().hash(items),notes,paidProofUrl,deliveredProofUrl,createdByUsername,createdAt);
+int get hashCode => Object.hash(runtimeType,id,supplierId,supplierName,supplierContactInfo,status,totalEstimatedAmount,totalActualAmount,const DeepCollectionEquality().hash(items),notes,paidProofUrl,deliveredProofUrl,createdByUsername,createdAt,const DeepCollectionEquality().hash(statusHistory));
 
 @override
 String toString() {
-  return 'PurchaseRequestDetail(id: $id, supplierId: $supplierId, supplierName: $supplierName, supplierContactInfo: $supplierContactInfo, status: $status, totalEstimatedAmount: $totalEstimatedAmount, totalActualAmount: $totalActualAmount, items: $items, notes: $notes, paidProofUrl: $paidProofUrl, deliveredProofUrl: $deliveredProofUrl, createdByUsername: $createdByUsername, createdAt: $createdAt)';
+  return 'PurchaseRequestDetail(id: $id, supplierId: $supplierId, supplierName: $supplierName, supplierContactInfo: $supplierContactInfo, status: $status, totalEstimatedAmount: $totalEstimatedAmount, totalActualAmount: $totalActualAmount, items: $items, notes: $notes, paidProofUrl: $paidProofUrl, deliveredProofUrl: $deliveredProofUrl, createdByUsername: $createdByUsername, createdAt: $createdAt, statusHistory: $statusHistory)';
 }
 
 
@@ -613,7 +879,7 @@ abstract mixin class $PurchaseRequestDetailCopyWith<$Res>  {
   factory $PurchaseRequestDetailCopyWith(PurchaseRequestDetail value, $Res Function(PurchaseRequestDetail) _then) = _$PurchaseRequestDetailCopyWithImpl;
 @useResult
 $Res call({
- String id,@JsonKey(name: 'supplier_id') String supplierId,@JsonKey(name: 'supplier_name') String supplierName,@JsonKey(name: 'supplier_contact_info') String? supplierContactInfo, PurchaseRequestStatus status,@JsonKey(name: 'total_estimated_amount') int? totalEstimatedAmount,@JsonKey(name: 'total_actual_amount', fromJson: _nullableIntFromJson) int? totalActualAmount, List<PurchaseRequestItem> items, String? notes,@JsonKey(name: 'paid_proof_url') String? paidProofUrl,@JsonKey(name: 'delivered_proof_url') String? deliveredProofUrl,@JsonKey(name: 'created_by_username') String? createdByUsername,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt
+ String id,@JsonKey(name: 'supplier_id') String supplierId,@JsonKey(name: 'supplier_name') String supplierName,@JsonKey(name: 'supplier_contact_info') String? supplierContactInfo, PurchaseRequestStatus status,@JsonKey(name: 'total_estimated_amount') int? totalEstimatedAmount,@JsonKey(name: 'total_actual_amount', fromJson: _nullableIntFromJson) int? totalActualAmount, List<PurchaseRequestItem> items, String? notes,@JsonKey(name: 'paid_proof_url') String? paidProofUrl,@JsonKey(name: 'delivered_proof_url') String? deliveredProofUrl,@JsonKey(name: 'created_by_username') String? createdByUsername,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt,@JsonKey(name: 'status_history', defaultValue: []) List<PurchaseStatusHistoryEntry> statusHistory
 });
 
 
@@ -630,7 +896,7 @@ class _$PurchaseRequestDetailCopyWithImpl<$Res>
 
 /// Create a copy of PurchaseRequestDetail
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? supplierId = null,Object? supplierName = null,Object? supplierContactInfo = freezed,Object? status = null,Object? totalEstimatedAmount = freezed,Object? totalActualAmount = freezed,Object? items = null,Object? notes = freezed,Object? paidProofUrl = freezed,Object? deliveredProofUrl = freezed,Object? createdByUsername = freezed,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? supplierId = null,Object? supplierName = null,Object? supplierContactInfo = freezed,Object? status = null,Object? totalEstimatedAmount = freezed,Object? totalActualAmount = freezed,Object? items = null,Object? notes = freezed,Object? paidProofUrl = freezed,Object? deliveredProofUrl = freezed,Object? createdByUsername = freezed,Object? createdAt = freezed,Object? statusHistory = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,supplierId: null == supplierId ? _self.supplierId : supplierId // ignore: cast_nullable_to_non_nullable
@@ -645,7 +911,8 @@ as String?,paidProofUrl: freezed == paidProofUrl ? _self.paidProofUrl : paidProo
 as String?,deliveredProofUrl: freezed == deliveredProofUrl ? _self.deliveredProofUrl : deliveredProofUrl // ignore: cast_nullable_to_non_nullable
 as String?,createdByUsername: freezed == createdByUsername ? _self.createdByUsername : createdByUsername // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,statusHistory: null == statusHistory ? _self.statusHistory : statusHistory // ignore: cast_nullable_to_non_nullable
+as List<PurchaseStatusHistoryEntry>,
   ));
 }
 
@@ -730,10 +997,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'supplier_id')  String supplierId, @JsonKey(name: 'supplier_name')  String supplierName, @JsonKey(name: 'supplier_contact_info')  String? supplierContactInfo,  PurchaseRequestStatus status, @JsonKey(name: 'total_estimated_amount')  int? totalEstimatedAmount, @JsonKey(name: 'total_actual_amount', fromJson: _nullableIntFromJson)  int? totalActualAmount,  List<PurchaseRequestItem> items,  String? notes, @JsonKey(name: 'paid_proof_url')  String? paidProofUrl, @JsonKey(name: 'delivered_proof_url')  String? deliveredProofUrl, @JsonKey(name: 'created_by_username')  String? createdByUsername, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'supplier_id')  String supplierId, @JsonKey(name: 'supplier_name')  String supplierName, @JsonKey(name: 'supplier_contact_info')  String? supplierContactInfo,  PurchaseRequestStatus status, @JsonKey(name: 'total_estimated_amount')  int? totalEstimatedAmount, @JsonKey(name: 'total_actual_amount', fromJson: _nullableIntFromJson)  int? totalActualAmount,  List<PurchaseRequestItem> items,  String? notes, @JsonKey(name: 'paid_proof_url')  String? paidProofUrl, @JsonKey(name: 'delivered_proof_url')  String? deliveredProofUrl, @JsonKey(name: 'created_by_username')  String? createdByUsername, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'status_history', defaultValue: [])  List<PurchaseStatusHistoryEntry> statusHistory)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PurchaseRequestDetail() when $default != null:
-return $default(_that.id,_that.supplierId,_that.supplierName,_that.supplierContactInfo,_that.status,_that.totalEstimatedAmount,_that.totalActualAmount,_that.items,_that.notes,_that.paidProofUrl,_that.deliveredProofUrl,_that.createdByUsername,_that.createdAt);case _:
+return $default(_that.id,_that.supplierId,_that.supplierName,_that.supplierContactInfo,_that.status,_that.totalEstimatedAmount,_that.totalActualAmount,_that.items,_that.notes,_that.paidProofUrl,_that.deliveredProofUrl,_that.createdByUsername,_that.createdAt,_that.statusHistory);case _:
   return orElse();
 
 }
@@ -751,10 +1018,10 @@ return $default(_that.id,_that.supplierId,_that.supplierName,_that.supplierConta
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'supplier_id')  String supplierId, @JsonKey(name: 'supplier_name')  String supplierName, @JsonKey(name: 'supplier_contact_info')  String? supplierContactInfo,  PurchaseRequestStatus status, @JsonKey(name: 'total_estimated_amount')  int? totalEstimatedAmount, @JsonKey(name: 'total_actual_amount', fromJson: _nullableIntFromJson)  int? totalActualAmount,  List<PurchaseRequestItem> items,  String? notes, @JsonKey(name: 'paid_proof_url')  String? paidProofUrl, @JsonKey(name: 'delivered_proof_url')  String? deliveredProofUrl, @JsonKey(name: 'created_by_username')  String? createdByUsername, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'supplier_id')  String supplierId, @JsonKey(name: 'supplier_name')  String supplierName, @JsonKey(name: 'supplier_contact_info')  String? supplierContactInfo,  PurchaseRequestStatus status, @JsonKey(name: 'total_estimated_amount')  int? totalEstimatedAmount, @JsonKey(name: 'total_actual_amount', fromJson: _nullableIntFromJson)  int? totalActualAmount,  List<PurchaseRequestItem> items,  String? notes, @JsonKey(name: 'paid_proof_url')  String? paidProofUrl, @JsonKey(name: 'delivered_proof_url')  String? deliveredProofUrl, @JsonKey(name: 'created_by_username')  String? createdByUsername, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'status_history', defaultValue: [])  List<PurchaseStatusHistoryEntry> statusHistory)  $default,) {final _that = this;
 switch (_that) {
 case _PurchaseRequestDetail():
-return $default(_that.id,_that.supplierId,_that.supplierName,_that.supplierContactInfo,_that.status,_that.totalEstimatedAmount,_that.totalActualAmount,_that.items,_that.notes,_that.paidProofUrl,_that.deliveredProofUrl,_that.createdByUsername,_that.createdAt);case _:
+return $default(_that.id,_that.supplierId,_that.supplierName,_that.supplierContactInfo,_that.status,_that.totalEstimatedAmount,_that.totalActualAmount,_that.items,_that.notes,_that.paidProofUrl,_that.deliveredProofUrl,_that.createdByUsername,_that.createdAt,_that.statusHistory);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -771,10 +1038,10 @@ return $default(_that.id,_that.supplierId,_that.supplierName,_that.supplierConta
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'supplier_id')  String supplierId, @JsonKey(name: 'supplier_name')  String supplierName, @JsonKey(name: 'supplier_contact_info')  String? supplierContactInfo,  PurchaseRequestStatus status, @JsonKey(name: 'total_estimated_amount')  int? totalEstimatedAmount, @JsonKey(name: 'total_actual_amount', fromJson: _nullableIntFromJson)  int? totalActualAmount,  List<PurchaseRequestItem> items,  String? notes, @JsonKey(name: 'paid_proof_url')  String? paidProofUrl, @JsonKey(name: 'delivered_proof_url')  String? deliveredProofUrl, @JsonKey(name: 'created_by_username')  String? createdByUsername, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'supplier_id')  String supplierId, @JsonKey(name: 'supplier_name')  String supplierName, @JsonKey(name: 'supplier_contact_info')  String? supplierContactInfo,  PurchaseRequestStatus status, @JsonKey(name: 'total_estimated_amount')  int? totalEstimatedAmount, @JsonKey(name: 'total_actual_amount', fromJson: _nullableIntFromJson)  int? totalActualAmount,  List<PurchaseRequestItem> items,  String? notes, @JsonKey(name: 'paid_proof_url')  String? paidProofUrl, @JsonKey(name: 'delivered_proof_url')  String? deliveredProofUrl, @JsonKey(name: 'created_by_username')  String? createdByUsername, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson)  DateTime? createdAt, @JsonKey(name: 'status_history', defaultValue: [])  List<PurchaseStatusHistoryEntry> statusHistory)?  $default,) {final _that = this;
 switch (_that) {
 case _PurchaseRequestDetail() when $default != null:
-return $default(_that.id,_that.supplierId,_that.supplierName,_that.supplierContactInfo,_that.status,_that.totalEstimatedAmount,_that.totalActualAmount,_that.items,_that.notes,_that.paidProofUrl,_that.deliveredProofUrl,_that.createdByUsername,_that.createdAt);case _:
+return $default(_that.id,_that.supplierId,_that.supplierName,_that.supplierContactInfo,_that.status,_that.totalEstimatedAmount,_that.totalActualAmount,_that.items,_that.notes,_that.paidProofUrl,_that.deliveredProofUrl,_that.createdByUsername,_that.createdAt,_that.statusHistory);case _:
   return null;
 
 }
@@ -786,7 +1053,7 @@ return $default(_that.id,_that.supplierId,_that.supplierName,_that.supplierConta
 @JsonSerializable()
 
 class _PurchaseRequestDetail implements PurchaseRequestDetail {
-  const _PurchaseRequestDetail({required this.id, @JsonKey(name: 'supplier_id') required this.supplierId, @JsonKey(name: 'supplier_name') required this.supplierName, @JsonKey(name: 'supplier_contact_info') this.supplierContactInfo, required this.status, @JsonKey(name: 'total_estimated_amount') this.totalEstimatedAmount, @JsonKey(name: 'total_actual_amount', fromJson: _nullableIntFromJson) this.totalActualAmount, final  List<PurchaseRequestItem> items = const [], this.notes, @JsonKey(name: 'paid_proof_url') this.paidProofUrl, @JsonKey(name: 'delivered_proof_url') this.deliveredProofUrl, @JsonKey(name: 'created_by_username') this.createdByUsername, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) this.createdAt}): _items = items;
+  const _PurchaseRequestDetail({required this.id, @JsonKey(name: 'supplier_id') required this.supplierId, @JsonKey(name: 'supplier_name') required this.supplierName, @JsonKey(name: 'supplier_contact_info') this.supplierContactInfo, required this.status, @JsonKey(name: 'total_estimated_amount') this.totalEstimatedAmount, @JsonKey(name: 'total_actual_amount', fromJson: _nullableIntFromJson) this.totalActualAmount, final  List<PurchaseRequestItem> items = const [], this.notes, @JsonKey(name: 'paid_proof_url') this.paidProofUrl, @JsonKey(name: 'delivered_proof_url') this.deliveredProofUrl, @JsonKey(name: 'created_by_username') this.createdByUsername, @JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) this.createdAt, @JsonKey(name: 'status_history', defaultValue: []) final  List<PurchaseStatusHistoryEntry> statusHistory = const []}): _items = items,_statusHistory = statusHistory;
   factory _PurchaseRequestDetail.fromJson(Map<String, dynamic> json) => _$PurchaseRequestDetailFromJson(json);
 
 @override final  String id;
@@ -808,6 +1075,13 @@ class _PurchaseRequestDetail implements PurchaseRequestDetail {
 @override@JsonKey(name: 'delivered_proof_url') final  String? deliveredProofUrl;
 @override@JsonKey(name: 'created_by_username') final  String? createdByUsername;
 @override@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) final  DateTime? createdAt;
+ final  List<PurchaseStatusHistoryEntry> _statusHistory;
+@override@JsonKey(name: 'status_history', defaultValue: []) List<PurchaseStatusHistoryEntry> get statusHistory {
+  if (_statusHistory is EqualUnmodifiableListView) return _statusHistory;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_statusHistory);
+}
+
 
 /// Create a copy of PurchaseRequestDetail
 /// with the given fields replaced by the non-null parameter values.
@@ -822,16 +1096,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PurchaseRequestDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.supplierId, supplierId) || other.supplierId == supplierId)&&(identical(other.supplierName, supplierName) || other.supplierName == supplierName)&&(identical(other.supplierContactInfo, supplierContactInfo) || other.supplierContactInfo == supplierContactInfo)&&(identical(other.status, status) || other.status == status)&&(identical(other.totalEstimatedAmount, totalEstimatedAmount) || other.totalEstimatedAmount == totalEstimatedAmount)&&(identical(other.totalActualAmount, totalActualAmount) || other.totalActualAmount == totalActualAmount)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.paidProofUrl, paidProofUrl) || other.paidProofUrl == paidProofUrl)&&(identical(other.deliveredProofUrl, deliveredProofUrl) || other.deliveredProofUrl == deliveredProofUrl)&&(identical(other.createdByUsername, createdByUsername) || other.createdByUsername == createdByUsername)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PurchaseRequestDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.supplierId, supplierId) || other.supplierId == supplierId)&&(identical(other.supplierName, supplierName) || other.supplierName == supplierName)&&(identical(other.supplierContactInfo, supplierContactInfo) || other.supplierContactInfo == supplierContactInfo)&&(identical(other.status, status) || other.status == status)&&(identical(other.totalEstimatedAmount, totalEstimatedAmount) || other.totalEstimatedAmount == totalEstimatedAmount)&&(identical(other.totalActualAmount, totalActualAmount) || other.totalActualAmount == totalActualAmount)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.paidProofUrl, paidProofUrl) || other.paidProofUrl == paidProofUrl)&&(identical(other.deliveredProofUrl, deliveredProofUrl) || other.deliveredProofUrl == deliveredProofUrl)&&(identical(other.createdByUsername, createdByUsername) || other.createdByUsername == createdByUsername)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._statusHistory, _statusHistory));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,supplierId,supplierName,supplierContactInfo,status,totalEstimatedAmount,totalActualAmount,const DeepCollectionEquality().hash(_items),notes,paidProofUrl,deliveredProofUrl,createdByUsername,createdAt);
+int get hashCode => Object.hash(runtimeType,id,supplierId,supplierName,supplierContactInfo,status,totalEstimatedAmount,totalActualAmount,const DeepCollectionEquality().hash(_items),notes,paidProofUrl,deliveredProofUrl,createdByUsername,createdAt,const DeepCollectionEquality().hash(_statusHistory));
 
 @override
 String toString() {
-  return 'PurchaseRequestDetail(id: $id, supplierId: $supplierId, supplierName: $supplierName, supplierContactInfo: $supplierContactInfo, status: $status, totalEstimatedAmount: $totalEstimatedAmount, totalActualAmount: $totalActualAmount, items: $items, notes: $notes, paidProofUrl: $paidProofUrl, deliveredProofUrl: $deliveredProofUrl, createdByUsername: $createdByUsername, createdAt: $createdAt)';
+  return 'PurchaseRequestDetail(id: $id, supplierId: $supplierId, supplierName: $supplierName, supplierContactInfo: $supplierContactInfo, status: $status, totalEstimatedAmount: $totalEstimatedAmount, totalActualAmount: $totalActualAmount, items: $items, notes: $notes, paidProofUrl: $paidProofUrl, deliveredProofUrl: $deliveredProofUrl, createdByUsername: $createdByUsername, createdAt: $createdAt, statusHistory: $statusHistory)';
 }
 
 
@@ -842,7 +1116,7 @@ abstract mixin class _$PurchaseRequestDetailCopyWith<$Res> implements $PurchaseR
   factory _$PurchaseRequestDetailCopyWith(_PurchaseRequestDetail value, $Res Function(_PurchaseRequestDetail) _then) = __$PurchaseRequestDetailCopyWithImpl;
 @override @useResult
 $Res call({
- String id,@JsonKey(name: 'supplier_id') String supplierId,@JsonKey(name: 'supplier_name') String supplierName,@JsonKey(name: 'supplier_contact_info') String? supplierContactInfo, PurchaseRequestStatus status,@JsonKey(name: 'total_estimated_amount') int? totalEstimatedAmount,@JsonKey(name: 'total_actual_amount', fromJson: _nullableIntFromJson) int? totalActualAmount, List<PurchaseRequestItem> items, String? notes,@JsonKey(name: 'paid_proof_url') String? paidProofUrl,@JsonKey(name: 'delivered_proof_url') String? deliveredProofUrl,@JsonKey(name: 'created_by_username') String? createdByUsername,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt
+ String id,@JsonKey(name: 'supplier_id') String supplierId,@JsonKey(name: 'supplier_name') String supplierName,@JsonKey(name: 'supplier_contact_info') String? supplierContactInfo, PurchaseRequestStatus status,@JsonKey(name: 'total_estimated_amount') int? totalEstimatedAmount,@JsonKey(name: 'total_actual_amount', fromJson: _nullableIntFromJson) int? totalActualAmount, List<PurchaseRequestItem> items, String? notes,@JsonKey(name: 'paid_proof_url') String? paidProofUrl,@JsonKey(name: 'delivered_proof_url') String? deliveredProofUrl,@JsonKey(name: 'created_by_username') String? createdByUsername,@JsonKey(name: 'created_at', fromJson: _nullableDateTimeFromJson) DateTime? createdAt,@JsonKey(name: 'status_history', defaultValue: []) List<PurchaseStatusHistoryEntry> statusHistory
 });
 
 
@@ -859,7 +1133,7 @@ class __$PurchaseRequestDetailCopyWithImpl<$Res>
 
 /// Create a copy of PurchaseRequestDetail
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? supplierId = null,Object? supplierName = null,Object? supplierContactInfo = freezed,Object? status = null,Object? totalEstimatedAmount = freezed,Object? totalActualAmount = freezed,Object? items = null,Object? notes = freezed,Object? paidProofUrl = freezed,Object? deliveredProofUrl = freezed,Object? createdByUsername = freezed,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? supplierId = null,Object? supplierName = null,Object? supplierContactInfo = freezed,Object? status = null,Object? totalEstimatedAmount = freezed,Object? totalActualAmount = freezed,Object? items = null,Object? notes = freezed,Object? paidProofUrl = freezed,Object? deliveredProofUrl = freezed,Object? createdByUsername = freezed,Object? createdAt = freezed,Object? statusHistory = null,}) {
   return _then(_PurchaseRequestDetail(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,supplierId: null == supplierId ? _self.supplierId : supplierId // ignore: cast_nullable_to_non_nullable
@@ -874,7 +1148,8 @@ as String?,paidProofUrl: freezed == paidProofUrl ? _self.paidProofUrl : paidProo
 as String?,deliveredProofUrl: freezed == deliveredProofUrl ? _self.deliveredProofUrl : deliveredProofUrl // ignore: cast_nullable_to_non_nullable
 as String?,createdByUsername: freezed == createdByUsername ? _self.createdByUsername : createdByUsername // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,statusHistory: null == statusHistory ? _self._statusHistory : statusHistory // ignore: cast_nullable_to_non_nullable
+as List<PurchaseStatusHistoryEntry>,
   ));
 }
 

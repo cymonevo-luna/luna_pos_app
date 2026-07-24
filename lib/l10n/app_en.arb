@@ -672,6 +672,22 @@
   "@purchaseCreatedAt": {
     "description": "Label for purchase request creation timestamp"
   },
+  "purchaseStatusHistory": "Status history",
+  "@purchaseStatusHistory": {
+    "description": "Section title for purchase status history on detail screen"
+  },
+  "purchasePaidDate": "Paid date",
+  "@purchasePaidDate": {
+    "description": "Label for when a purchase was marked paid"
+  },
+  "purchaseEditPaidDate": "Edit paid date",
+  "@purchaseEditPaidDate": {
+    "description": "Title for paid date picker sheet and edit button tooltip"
+  },
+  "purchasePaidDateTime": "Time",
+  "@purchasePaidDateTime": {
+    "description": "Label for paid date time picker row"
+  },
   "smartPurchaseTitle": "Smart Request",
   "@smartPurchaseTitle": {
     "description": "Title for smart supplier purchase request flow"

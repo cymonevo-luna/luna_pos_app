@@ -41,6 +41,14 @@ class PurchaseRequestRepository {
             PurchaseRequestDetail.fromJson(unwrapApiEnvelope(raw)),
       );
 
+  Future<void> patchPurchasePaidDate(String id, DateTime paidAt) {
+    return _api.patch<void>(
+      '$listPath/$id/record-date',
+      body: {'paid_at': paidAt.toUtc().toIso8601String()},
+      decoder: (_) {},
+    );
+  }
+
   Future<PurchaseRequestDetail> updateStatus(
     String id,
     PurchaseRequestStatus status, {

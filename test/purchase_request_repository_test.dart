@@ -197,6 +197,16 @@ void main() {
           'status': 'PAID',
           'total_estimated_amount': 140000,
           'paid_proof_url': '/uploads/paid.jpg',
+          'status_history': [
+            {
+              'status': 'REQUESTED',
+              'created_at': '2026-07-10T08:00:00Z',
+            },
+            {
+              'status': 'PAID',
+              'created_at': '2026-07-12T10:00:00Z',
+            },
+          ],
           'items': [
             {
               'food_supply_id': 'fs-1',
@@ -216,6 +226,21 @@ void main() {
     expect(detail.status, PurchaseRequestStatus.paid);
     expect(detail.paidProofUrl, '/uploads/paid.jpg');
     expect(detail.items.first.lineEstimatedAmount, 140000);
+    expect(detail.statusHistory, hasLength(2));
+    expect(detail.paidDateFromHistory, DateTime.parse('2026-07-12T10:00:00Z'));
+  });
+
+  test('patchPurchasePaidDate sends UTC paid_at', () async {
+    adapter.onPatch(
+      '/api/admin/purchase-requests/pr-1/record-date',
+      (server) => server.reply(200, {'success': true}),
+      data: {'paid_at': '2026-07-05T03:30:00.000Z'},
+    );
+
+    await locator<PurchaseRequestRepository>().patchPurchasePaidDate(
+      'pr-1',
+      DateTime.utc(2026, 7, 5, 3, 30),
+    );
   });
 
   test('updateStatus patches status with optional proof url', () async {

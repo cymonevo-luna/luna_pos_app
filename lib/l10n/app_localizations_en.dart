@@ -655,6 +655,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get purchaseCreatedAt => 'Created at';
 
   @override
+  String get purchaseStatusHistory => 'Status history';
+
+  @override
+  String get purchasePaidDate => 'Paid date';
+
+  @override
+  String get purchaseEditPaidDate => 'Edit paid date';
+
+  @override
+  String get purchasePaidDateTime => 'Time';
+
+  @override
   String get smartPurchaseTitle => 'Smart Request';
 
   @override

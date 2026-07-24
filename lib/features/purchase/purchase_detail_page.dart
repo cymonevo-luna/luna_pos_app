@@ -8,12 +8,15 @@ import '../../core/formatting/currency_formatter.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_tokens.dart';
+import '../../core/router/records_features.dart';
 import '../../features/auth/auth_controller.dart';
+import '../../features/user/models/user.dart';
 import '../../l10n/app_localizations.dart';
 import '../../shared/widgets/widgets.dart';
 import 'models/purchase_request.dart';
 import 'purchase_detail_controller.dart';
 import 'utils/whatsapp_contact.dart';
+import 'widgets/purchase_paid_date_sheet.dart';
 import 'widgets/purchase_proof_ui.dart';
 import 'widgets/purchase_status_badge.dart';
 
@@ -50,6 +53,7 @@ class _PurchaseDetailPageState extends ConsumerState<PurchaseDetailPage> {
           _PurchaseDetailBody(
             state: state,
             dateFormat: dateFormat,
+            purchaseId: widget.purchaseId,
             onRetry: () => ref
                 .read(purchaseDetailProvider(widget.purchaseId).notifier)
                 .retry(),
@@ -98,6 +102,7 @@ class _PurchaseDetailBody extends StatelessWidget {
   const _PurchaseDetailBody({
     required this.state,
     required this.dateFormat,
+    required this.purchaseId,
     required this.onRetry,
     required this.onLogout,
     required this.onStatusSelected,
@@ -109,6 +114,7 @@ class _PurchaseDetailBody extends StatelessWidget {
 
   final PurchaseDetailState state;
   final DateFormat dateFormat;
+  final String purchaseId;
   final VoidCallback onRetry;
   final Future<void> Function() onLogout;
   final ValueChanged<PurchaseRequestStatus> onStatusSelected;
@@ -156,27 +162,46 @@ class _PurchaseDetailBody extends StatelessWidget {
     return _PurchaseDetailContent(
       detail: detail,
       dateFormat: dateFormat,
+      purchaseId: purchaseId,
       onStatusSelected: onStatusSelected,
     );
   }
 }
 
-class _PurchaseDetailContent extends StatelessWidget {
+class _PurchaseDetailContent extends ConsumerWidget {
   const _PurchaseDetailContent({
     required this.detail,
     required this.dateFormat,
+    required this.purchaseId,
     required this.onStatusSelected,
   });
 
   final PurchaseRequestDetail detail;
   final DateFormat dateFormat;
+  final String purchaseId;
   final ValueChanged<PurchaseRequestStatus> onStatusSelected;
 
+  Future<void> _editPaidDate(BuildContext context, WidgetRef ref) async {
+    final paidAt = detail.paidDateFromHistory ?? DateTime.now().toUtc();
+    final picked = await PurchasePaidDateSheet.show(
+      context,
+      initialDate: paidAt,
+    );
+    if (!context.mounted || picked == null) return;
+
+    await ref
+        .read(purchaseDetailProvider(purchaseId).notifier)
+        .updatePaidDate(picked);
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final createdAt = detail.createdAt;
     final whatsAppPhone = extractWhatsAppPhone(detail.supplierContactInfo);
+    final user = ref.watch(authProvider).user;
+    final canEditPaidDate =
+        user?.hasFeature(RecordsFeatures.editDate) ?? false;
 
     return ListView(
       padding: AppSpacing.screenPadding,
@@ -230,6 +255,17 @@ class _PurchaseDetailContent extends StatelessWidget {
           status: detail.status,
           onChanged: onStatusSelected,
         ),
+        if (detail.showsPaidDate) ...[
+          const VGap(AppSpacing.lg),
+          _PurchaseStatusHistorySection(
+            detail: detail,
+            dateFormat: dateFormat,
+            canEditPaidDate: canEditPaidDate,
+            onEditPaidDate: canEditPaidDate
+                ? () => _editPaidDate(context, ref)
+                : null,
+          ),
+        ],
         const VGap(AppSpacing.lg),
         if (detail.paidProofUrl != null || detail.deliveredProofUrl != null) ...[
           AppSectionHeader(title: l10n.purchaseProofPhotos),
@@ -297,6 +333,63 @@ class _PurchaseDetailContent extends StatelessWidget {
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       throw Exception('Could not open WhatsApp');
     }
+  }
+}
+
+class _PurchaseStatusHistorySection extends StatelessWidget {
+  const _PurchaseStatusHistorySection({
+    required this.detail,
+    required this.dateFormat,
+    required this.canEditPaidDate,
+    required this.onEditPaidDate,
+  });
+
+  final PurchaseRequestDetail detail;
+  final DateFormat dateFormat;
+  final bool canEditPaidDate;
+  final VoidCallback? onEditPaidDate;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final paidAt = detail.paidDateFromHistory;
+    final paidAtLabel =
+        paidAt == null ? '—' : dateFormat.format(paidAt.toLocal());
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AppSectionHeader(title: l10n.purchaseStatusHistory),
+        const VGap(AppSpacing.sm),
+        AppCard(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppText.body(l10n.purchasePaidDate, muted: true),
+                    const VGap(AppSpacing.xxs),
+                    AppText.title(
+                      paidAtLabel,
+                      key: const Key('purchase_paid_date_value'),
+                    ),
+                  ],
+                ),
+              ),
+              if (canEditPaidDate && onEditPaidDate != null)
+                IconButton(
+                  key: const Key('purchase_paid_date_edit'),
+                  tooltip: l10n.purchaseEditPaidDate,
+                  onPressed: onEditPaidDate,
+                  icon: const Icon(Icons.edit_outlined),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
 

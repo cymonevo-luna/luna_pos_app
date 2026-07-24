@@ -95,26 +95,31 @@ class MainScaffold extends ConsumerWidget {
           label: l10n.purchases,
         ),
       5 => NavigationDestination(
+          icon: const Icon(Icons.payments_outlined),
+          selectedIcon: const Icon(Icons.payments),
+          label: l10n.expensesTitle,
+        ),
+      6 => NavigationDestination(
           icon: const Icon(Icons.event_repeat_outlined),
           selectedIcon: const Icon(Icons.event_repeat),
           label: l10n.recurringExpensesTitle,
         ),
-      6 => NavigationDestination(
+      7 => NavigationDestination(
           icon: const Icon(Icons.account_balance_wallet_outlined),
           selectedIcon: const Icon(Icons.account_balance_wallet),
           label: l10n.cashierBalanceTitle,
         ),
-      7 => NavigationDestination(
+      8 => NavigationDestination(
           icon: const Icon(Icons.delete_outline),
           selectedIcon: const Icon(Icons.delete),
           label: l10n.disposeFoodTitle,
         ),
-      8 => NavigationDestination(
+      9 => NavigationDestination(
           icon: const Icon(Icons.edit_note_outlined),
           selectedIcon: const Icon(Icons.edit_note),
           label: l10n.manageMenus,
         ),
-      9 => NavigationDestination(
+      10 => NavigationDestination(
           icon: const Icon(Icons.person_outline),
           selectedIcon: const Icon(Icons.person),
           label: l10n.profile,

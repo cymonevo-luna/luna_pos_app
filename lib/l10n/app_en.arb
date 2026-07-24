@@ -1019,6 +1019,58 @@
   "@recurringExpenseManagedByStaffSalary": {
     "description": "Error when update/delete is rejected because expense is staff-managed"
   },
+  "expensesTitle": "Expenses",
+  "@expensesTitle": {
+    "description": "Expenses tab and screen title"
+  },
+  "createExpense": "New expense",
+  "@createExpense": {
+    "description": "Create expense screen title and FAB label"
+  },
+  "editExpense": "Edit expense",
+  "@editExpense": {
+    "description": "Edit expense screen title"
+  },
+  "searchExpenses": "Search expenses",
+  "@searchExpenses": {
+    "description": "Search field hint on expense list"
+  },
+  "noExpenses": "No expenses yet",
+  "@noExpenses": {
+    "description": "Empty state on expense list"
+  },
+  "expenseAmountLabel": "Amount",
+  "@expenseAmountLabel": {
+    "description": "Amount field label on expense form"
+  },
+  "expenseTitleTooShort": "Title must be at least 2 characters",
+  "@expenseTitleTooShort": {
+    "description": "Validation when expense title is too short"
+  },
+  "expenseAmountInvalid": "Enter an amount greater than 0",
+  "@expenseAmountInvalid": {
+    "description": "Validation when expense amount is invalid"
+  },
+  "expenseSourceOfFundLabel": "Source of fund",
+  "@expenseSourceOfFundLabel": {
+    "description": "Source of fund dropdown label on expense form"
+  },
+  "expenseSourceCashier": "Cashier",
+  "@expenseSourceCashier": {
+    "description": "Cashier source of fund option"
+  },
+  "expenseSourcePersonalMoney": "Personal money",
+  "@expenseSourcePersonalMoney": {
+    "description": "Personal money source of fund option"
+  },
+  "expenseReportingDateLabel": "Reporting date",
+  "@expenseReportingDateLabel": {
+    "description": "Admin-only reporting date field label on expense edit form"
+  },
+  "expenseSaveFailed": "Failed to save expense",
+  "@expenseSaveFailed": {
+    "description": "Generic error when expense save fails"
+  },
   "cancel": "Cancel",
   "@cancel": {
     "description": "Cancel button label"

@@ -108,6 +108,15 @@ void main() {
         }),
         queryParameters: {'page': '1', 'per_page': '20'},
       );
+      harness.adapter.onGet(
+        '/api/admin/expenses',
+        (server) => server.reply(200, {
+          'success': true,
+          'data': [],
+          'meta': {'page': 1, 'per_page': 20, 'total': 0},
+        }),
+        queryParameters: {'page': '1', 'per_page': '20'},
+      );
     });
 
     testWidgets('shows Stock, Purchases, and Recurring without Messages',

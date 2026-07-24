@@ -9,11 +9,12 @@ enum ShellBranch {
   calendar(2),
   stock(3),
   purchases(4),
-  recurringExpenses(5),
-  cashierBalance(6),
-  disposeFood(7),
-  manageMenus(8),
-  profile(9);
+  expenses(5),
+  recurringExpenses(6),
+  cashierBalance(7),
+  disposeFood(8),
+  manageMenus(9),
+  profile(10);
 
   const ShellBranch(this.branchIndex);
   final int branchIndex;
@@ -28,6 +29,7 @@ final _defaultRoutePriority = <({String feature, String route})>[
   (feature: PosFeatures.productionRequests, route: AppRoute.calendar.path),
   (feature: PosFeatures.stock, route: AppRoute.stock.path),
   (feature: PosFeatures.purchases, route: AppRoute.purchases.path),
+  (feature: PosFeatures.expensesManage, route: AppRoute.expenses.path),
   (
     feature: PosFeatures.recurringExpenses,
     route: AppRoute.recurringExpenses.path,
@@ -80,6 +82,10 @@ bool isOperationalRoute(String location) {
       _matchesPrefix(location, AppRoute.purchases.path);
 }
 
+bool isExpenseRoute(String location) {
+  return _matchesPrefix(location, AppRoute.expenses.path);
+}
+
 bool isRecurringExpenseRoute(String location) {
   return _matchesPrefix(location, AppRoute.recurringExpenses.path);
 }
@@ -106,6 +112,9 @@ String? requiredFeatureForLocation(String location) {
   if (_matchesPrefix(location, AppRoute.stock.path)) return PosFeatures.stock;
   if (_matchesPrefix(location, AppRoute.purchases.path)) {
     return PosFeatures.purchases;
+  }
+  if (_matchesPrefix(location, AppRoute.expenses.path)) {
+    return PosFeatures.expensesManage;
   }
   if (_matchesPrefix(location, AppRoute.recurringExpenses.path)) {
     return PosFeatures.recurringExpenses;
@@ -144,6 +153,9 @@ List<int> visibleShellBranches(User? user) {
   }
   if (user.hasFeature(PosFeatures.purchases)) {
     branches.add(ShellBranch.purchases.branchIndex);
+  }
+  if (user.hasFeature(PosFeatures.expensesManage)) {
+    branches.add(ShellBranch.expenses.branchIndex);
   }
   if (user.hasFeature(PosFeatures.recurringExpenses)) {
     branches.add(ShellBranch.recurringExpenses.branchIndex);

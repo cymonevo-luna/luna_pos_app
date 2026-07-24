@@ -11,4 +11,6 @@ abstract final class PosFeatures {
   static const cashierBalance = 'pos.cashier_balance';
   static const menuDisposals = 'pos.menu_disposals';
   static const menusManage = 'pos.menus.manage';
+  static const expensesManage = 'expenses.manage';
+  static const recordsEditDate = 'records.edit_date';
 }

@@ -86,6 +86,7 @@ abstract final class TestAccounts {
             'pos.transactions',
             'pos.production_requests',
             'pos.cashier_balance',
+            'pos.menu_disposals',
           ],
         'operational' => const [
             'pos.stock',

@@ -306,5 +306,16 @@
   "dailyMenuSummaryTitle": "Ringkasan Menu Harian",
   "dailyMenuSummaryTotalItems": "Item terjual",
   "dailyMenuSummaryTotalRevenue": "Total pendapatan",
-  "dailyMenuSummaryNoSales": "Belum ada penjualan menu hari ini"
+  "dailyMenuSummaryNoSales": "Belum ada penjualan menu hari ini",
+  "disposeFoodTitle": "Buang Makanan",
+  "disposeFoodSelectMenu": "Pilih menu yang akan dibuang",
+  "disposeFoodChangeMenu": "Ganti menu",
+  "disposeFoodQuantity": "Jumlah",
+  "disposeFoodNoteHint": "Alasan pembuangan (opsional, maks 500 karakter)",
+  "disposeFoodSummary": "Ringkasan",
+  "disposeFoodEstimatedLoss": "Perkiraan kerugian",
+  "disposeFoodLossCalculatedOnSubmit": "Kerugian akhir dihitung saat Anda mengirim",
+  "disposeFoodConfirm": "Konfirmasi pembuangan",
+  "disposeFoodSuccess": "Membuang {menuTitle} x{quantity}. Kerugian: {lossAmount}",
+  "availableStock": "Stok tersedia"
 }

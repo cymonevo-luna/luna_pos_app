@@ -1939,6 +1939,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No menu sales today'**
   String get dailyMenuSummaryNoSales;
+
+  /// Title for dispose food screen and navigation tab
+  ///
+  /// In en, this message translates to:
+  /// **'Dispose Food'**
+  String get disposeFoodTitle;
+
+  /// Instruction shown on dispose food menu selection step
+  ///
+  /// In en, this message translates to:
+  /// **'Select a menu item to dispose'**
+  String get disposeFoodSelectMenu;
+
+  /// Action to clear selected menu on dispose food screen
+  ///
+  /// In en, this message translates to:
+  /// **'Change menu'**
+  String get disposeFoodChangeMenu;
+
+  /// Quantity field label on dispose food form
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get disposeFoodQuantity;
+
+  /// Hint for optional dispose food note field
+  ///
+  /// In en, this message translates to:
+  /// **'Optional reason for disposal (max 500 characters)'**
+  String get disposeFoodNoteHint;
+
+  /// Summary card title on dispose food form
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get disposeFoodSummary;
+
+  /// Label for pre-submit estimated loss amount
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated loss'**
+  String get disposeFoodEstimatedLoss;
+
+  /// Subtitle explaining loss is finalized on submit
+  ///
+  /// In en, this message translates to:
+  /// **'Final loss is calculated when you submit'**
+  String get disposeFoodLossCalculatedOnSubmit;
+
+  /// Submit button on dispose food form
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm disposal'**
+  String get disposeFoodConfirm;
+
+  /// SnackBar after successful menu disposal
+  ///
+  /// In en, this message translates to:
+  /// **'Disposed {menuTitle} x{quantity}. Loss: {lossAmount}'**
+  String disposeFoodSuccess(String menuTitle, int quantity, String lossAmount);
+
+  /// Label for menu item available stock count
+  ///
+  /// In en, this message translates to:
+  /// **'Available stock'**
+  String get availableStock;
 }
 
 class _AppLocalizationsDelegate

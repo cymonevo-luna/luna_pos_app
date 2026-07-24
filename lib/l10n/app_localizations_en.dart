@@ -993,4 +993,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dailyMenuSummaryNoSales => 'No menu sales today';
+
+  @override
+  String get disposeFoodTitle => 'Dispose Food';
+
+  @override
+  String get disposeFoodSelectMenu => 'Select a menu item to dispose';
+
+  @override
+  String get disposeFoodChangeMenu => 'Change menu';
+
+  @override
+  String get disposeFoodQuantity => 'Quantity';
+
+  @override
+  String get disposeFoodNoteHint =>
+      'Optional reason for disposal (max 500 characters)';
+
+  @override
+  String get disposeFoodSummary => 'Summary';
+
+  @override
+  String get disposeFoodEstimatedLoss => 'Estimated loss';
+
+  @override
+  String get disposeFoodLossCalculatedOnSubmit =>
+      'Final loss is calculated when you submit';
+
+  @override
+  String get disposeFoodConfirm => 'Confirm disposal';
+
+  @override
+  String disposeFoodSuccess(String menuTitle, int quantity, String lossAmount) {
+    return 'Disposed $menuTitle x$quantity. Loss: $lossAmount';
+  }
+
+  @override
+  String get availableStock => 'Available stock';
 }

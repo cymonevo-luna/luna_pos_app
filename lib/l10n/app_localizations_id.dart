@@ -995,4 +995,41 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get dailyMenuSummaryNoSales => 'Belum ada penjualan menu hari ini';
+
+  @override
+  String get disposeFoodTitle => 'Buang Makanan';
+
+  @override
+  String get disposeFoodSelectMenu => 'Pilih menu yang akan dibuang';
+
+  @override
+  String get disposeFoodChangeMenu => 'Ganti menu';
+
+  @override
+  String get disposeFoodQuantity => 'Jumlah';
+
+  @override
+  String get disposeFoodNoteHint =>
+      'Alasan pembuangan (opsional, maks 500 karakter)';
+
+  @override
+  String get disposeFoodSummary => 'Ringkasan';
+
+  @override
+  String get disposeFoodEstimatedLoss => 'Perkiraan kerugian';
+
+  @override
+  String get disposeFoodLossCalculatedOnSubmit =>
+      'Kerugian akhir dihitung saat Anda mengirim';
+
+  @override
+  String get disposeFoodConfirm => 'Konfirmasi pembuangan';
+
+  @override
+  String disposeFoodSuccess(String menuTitle, int quantity, String lossAmount) {
+    return 'Membuang $menuTitle x$quantity. Kerugian: $lossAmount';
+  }
+
+  @override
+  String get availableStock => 'Stok tersedia';
 }

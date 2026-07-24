@@ -39,6 +39,20 @@ const _$PurchaseRequestStatusEnumMap = {
   PurchaseRequestStatus.delivered: 'DELIVERED',
 };
 
+_PurchaseStatusHistoryEntry _$PurchaseStatusHistoryEntryFromJson(
+  Map<String, dynamic> json,
+) => _PurchaseStatusHistoryEntry(
+  status: $enumDecode(_$PurchaseRequestStatusEnumMap, json['status']),
+  createdAt: _nullableDateTimeFromJson(json['created_at']),
+);
+
+Map<String, dynamic> _$PurchaseStatusHistoryEntryToJson(
+  _PurchaseStatusHistoryEntry instance,
+) => <String, dynamic>{
+  'status': _$PurchaseRequestStatusEnumMap[instance.status]!,
+  'created_at': instance.createdAt?.toIso8601String(),
+};
+
 _PurchaseRequestItem _$PurchaseRequestItemFromJson(Map<String, dynamic> json) =>
     _PurchaseRequestItem(
       foodSupplyId: json['food_supply_id'] as String,
@@ -82,6 +96,14 @@ _PurchaseRequestDetail _$PurchaseRequestDetailFromJson(
   deliveredProofUrl: json['delivered_proof_url'] as String?,
   createdByUsername: json['created_by_username'] as String?,
   createdAt: _nullableDateTimeFromJson(json['created_at']),
+  statusHistory:
+      (json['status_history'] as List<dynamic>?)
+          ?.map(
+            (e) =>
+                PurchaseStatusHistoryEntry.fromJson(e as Map<String, dynamic>),
+          )
+          .toList() ??
+      [],
 );
 
 Map<String, dynamic> _$PurchaseRequestDetailToJson(
@@ -100,4 +122,5 @@ Map<String, dynamic> _$PurchaseRequestDetailToJson(
   'delivered_proof_url': instance.deliveredProofUrl,
   'created_by_username': instance.createdByUsername,
   'created_at': instance.createdAt?.toIso8601String(),
+  'status_history': instance.statusHistory,
 };

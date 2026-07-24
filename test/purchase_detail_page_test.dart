@@ -7,6 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 import 'package:luna_pos/core/formatting/currency_formatter.dart';
+import 'package:luna_pos/features/auth/auth_controller.dart';
+import 'package:luna_pos/features/user/models/user.dart';
 import 'package:luna_pos/core/config/app_config.dart';
 import 'package:luna_pos/core/di/locator.dart';
 import 'package:luna_pos/core/network/api_client.dart';
@@ -23,6 +25,27 @@ import 'package:luna_pos/testing/test_accounts.dart';
 
 import 'helpers/auth_harness.dart';
 import 'helpers/purchase_test_fakes.dart';
+
+class _PurchaseAuthController extends AuthController {
+  _PurchaseAuthController(this._role);
+
+  final TestAccountRole _role;
+
+  @override
+  AuthState build() => AuthState(
+        status: AuthStatus.authenticated,
+        user: User(
+          id: TestAccounts.userIdFor(_role),
+          name: 'Test User',
+          email: TestAccounts.emailFor(_role),
+          merchantId: TestAccounts.testMerchantId,
+          roles: TestAccounts.apiRolesFor(_role),
+          features: _role == TestAccountRole.admin
+              ? const ['pos.purchases', 'records.edit_date']
+              : TestAccounts.apiFeaturesFor(_role),
+        ),
+      );
+}
 
 class _MockUrlLauncher extends Fake
     with MockPlatformInterfaceMixin
@@ -50,6 +73,7 @@ void main() {
     String? paidProofUrl,
     String? deliveredProofUrl,
     Object? supplierContactInfo = '081234567890',
+    List<Map<String, dynamic>>? statusHistory,
   }) =>
       {
         'id': id,
@@ -87,6 +111,34 @@ void main() {
         'created_at': '2026-07-12T10:00:00Z',
         'paid_proof_url': ?paidProofUrl,
         'delivered_proof_url': ?deliveredProofUrl,
+        'status_history': statusHistory ??
+            switch (status) {
+              PurchaseRequestStatus.paid => [
+                  {
+                    'status': 'REQUESTED',
+                    'created_at': '2026-07-10T08:00:00Z',
+                  },
+                  {
+                    'status': 'PAID',
+                    'created_at': '2026-07-12T10:00:00Z',
+                  },
+                ],
+              PurchaseRequestStatus.delivered => [
+                  {
+                    'status': 'REQUESTED',
+                    'created_at': '2026-07-10T08:00:00Z',
+                  },
+                  {
+                    'status': 'PAID',
+                    'created_at': '2026-07-12T10:00:00Z',
+                  },
+                  {
+                    'status': 'DELIVERED',
+                    'created_at': '2026-07-13T12:00:00Z',
+                  },
+                ],
+              _ => <Map<String, dynamic>>[],
+            },
       };
 
   late _MockUrlLauncher mockUrlLauncher;
@@ -127,6 +179,7 @@ void main() {
     WidgetTester tester, {
     Map<String, dynamic>? detail,
     String id = 'pr-detail',
+    TestAccountRole role = TestAccountRole.operational,
   }) async {
     adapter.onGet(
       '/api/admin/purchase-requests/$id',
@@ -138,6 +191,11 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        overrides: [
+          authProvider.overrideWith(
+            () => _PurchaseAuthController(role),
+          ),
+        ],
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -350,5 +408,141 @@ void main() {
 
     expect(find.byType(Image), findsWidgets);
     expect(find.text(AppLocalizationsEn().purchaseProofPaid), findsOneWidget);
+  });
+
+  testWidgets('PAID purchase shows paid date edit for admin', (tester) async {
+    await pumpDetail(
+      tester,
+      detail: detailPayload(status: PurchaseRequestStatus.paid),
+      role: TestAccountRole.admin,
+    );
+
+    await tester.scrollUntilVisible(
+      find.text(l10n.purchaseStatusHistory),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    expect(find.text(l10n.purchasePaidDate), findsOneWidget);
+    expect(find.byKey(const Key('purchase_paid_date_edit')), findsOneWidget);
+  });
+
+  testWidgets('REQUESTED purchase hides paid date edit', (tester) async {
+    await pumpDetail(
+      tester,
+      detail: detailPayload(status: PurchaseRequestStatus.requested),
+      role: TestAccountRole.admin,
+    );
+
+    expect(find.text(l10n.purchaseStatusHistory), findsNothing);
+    expect(find.byKey(const Key('purchase_paid_date_edit')), findsNothing);
+  });
+
+  testWidgets('operational user sees read-only paid date', (tester) async {
+    await pumpDetail(
+      tester,
+      detail: detailPayload(status: PurchaseRequestStatus.paid),
+      role: TestAccountRole.operational,
+    );
+
+    await tester.scrollUntilVisible(
+      find.text(l10n.purchaseStatusHistory),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    expect(find.text(l10n.purchasePaidDate), findsOneWidget);
+    expect(find.byKey(const Key('purchase_paid_date_edit')), findsNothing);
+  });
+
+  testWidgets('admin saving paid date patches record-date and reloads detail',
+      (tester) async {
+    const updatedPaidAt = '2026-07-05T03:30:00.000Z';
+    var patched = false;
+
+    adapter.reset();
+
+    adapter.onGet(
+      '/api/admin/purchase-requests/pr-detail',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': detailPayload(
+          status: PurchaseRequestStatus.paid,
+          statusHistory: patched
+              ? [
+                  {
+                    'status': 'REQUESTED',
+                    'created_at': '2026-07-10T08:00:00Z',
+                  },
+                  {
+                    'status': 'PAID',
+                    'created_at': updatedPaidAt,
+                  },
+                ]
+              : [
+                  {
+                    'status': 'REQUESTED',
+                    'created_at': '2026-07-10T08:00:00Z',
+                  },
+                  {
+                    'status': 'PAID',
+                    'created_at': '2026-07-12T10:00:00Z',
+                  },
+                ],
+        ),
+      }),
+    );
+
+    adapter.onPatch(
+      '/api/admin/purchase-requests/pr-detail/record-date',
+      (server) {
+        patched = true;
+        return server.reply(200, {'success': true});
+      },
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith(
+            () => _PurchaseAuthController(TestAccountRole.admin),
+          ),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const PurchaseDetailPage(purchaseId: 'pr-detail'),
+        ),
+      ),
+    );
+    for (var i = 0; i < 30; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+
+    final editButton = find.byKey(const Key('purchase_paid_date_edit'));
+    await tester.scrollUntilVisible(
+      editButton,
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(editButton);
+    await tester.pumpAndSettle();
+
+    await tester.tap(editButton);
+    await tester.pumpAndSettle();
+
+    expect(find.text(l10n.purchaseEditPaidDate), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('purchase_paid_date_save')));
+    for (var i = 0; i < 30; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    await tester.pumpAndSettle();
+
+    expect(patched, isTrue);
+    expect(
+      find.byKey(const Key('purchase_paid_date_value')),
+      findsOneWidget,
+    );
   });
 }

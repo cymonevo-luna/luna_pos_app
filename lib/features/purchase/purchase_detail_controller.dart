@@ -162,6 +162,29 @@ class PurchaseDetailController extends Notifier<PurchaseDetailState> {
     }
   }
 
+  Future<bool> updatePaidDate(DateTime paidAt) async {
+    state = state.copyWith(updatingStatus: true, clearError: true);
+    try {
+      await _repository.patchPurchasePaidDate(_purchaseId, paidAt);
+      final detail = await _repository.get(_purchaseId);
+      state = state.copyWith(
+        updatingStatus: false,
+        detail: detail,
+        clearError: true,
+      );
+      return true;
+    } on ApiException catch (e) {
+      state = state.copyWith(updatingStatus: false, error: e.message);
+      return false;
+    } catch (_) {
+      state = state.copyWith(
+        updatingStatus: false,
+        error: 'Failed to update paid date',
+      );
+      return false;
+    }
+  }
+
   Future<bool> _patchStatus(
     PurchaseRequestStatus status, {
     String? proofUrl,

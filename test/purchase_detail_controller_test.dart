@@ -116,6 +116,69 @@ void main() {
     );
   });
 
+  test('updatePaidDate patches record-date then reloads detail', () async {
+    const updatedPaidAt = '2026-07-05T03:30:00.000Z';
+    var patched = false;
+
+    adapter.reset();
+
+    adapter.onPatch(
+      '/api/admin/purchase-requests/pr-detail/record-date',
+      (server) {
+        patched = true;
+        return server.reply(200, {'success': true});
+      },
+      data: {'paid_at': updatedPaidAt},
+    );
+
+    adapter.onGet(
+      '/api/admin/purchase-requests/pr-detail',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          ...detailPayload(status: PurchaseRequestStatus.paid),
+          'status_history': patched
+              ? [
+                  {
+                    'status': 'REQUESTED',
+                    'created_at': '2026-07-10T08:00:00Z',
+                  },
+                  {
+                    'status': 'PAID',
+                    'created_at': updatedPaidAt,
+                  },
+                ]
+              : [
+                  {
+                    'status': 'PAID',
+                    'created_at': '2026-07-12T10:00:00Z',
+                  },
+                ],
+        },
+      }),
+    );
+
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    await container.read(purchaseDetailProvider('pr-detail').notifier).retry();
+    await Future.doWhile(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+      return container.read(purchaseDetailProvider('pr-detail')).loading;
+    });
+
+    final notifier = container.read(purchaseDetailProvider('pr-detail').notifier);
+    final success = await notifier.updatePaidDate(
+      DateTime.parse(updatedPaidAt),
+    );
+
+    expect(success, isTrue);
+    expect(patched, isTrue);
+    expect(
+      container.read(purchaseDetailProvider('pr-detail')).detail?.paidDateFromHistory,
+      DateTime.parse(updatedPaidAt),
+    );
+  });
+
   test('PATCH failure keeps previous status and surfaces error', () async {
     adapter.onPatch(
       '/api/admin/purchase-requests/pr-detail/status',

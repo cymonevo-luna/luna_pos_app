@@ -658,6 +658,18 @@ class AppLocalizationsId extends AppLocalizations {
   String get purchaseCreatedAt => 'Dibuat pada';
 
   @override
+  String get purchaseStatusHistory => 'Riwayat status';
+
+  @override
+  String get purchasePaidDate => 'Tanggal dibayar';
+
+  @override
+  String get purchaseEditPaidDate => 'Ubah tanggal dibayar';
+
+  @override
+  String get purchasePaidDateTime => 'Waktu';
+
+  @override
   String get smartPurchaseTitle => 'Permintaan cerdas';
 
   @override

@@ -63,6 +63,36 @@ num? _nullableNumFromJson(dynamic value) {
 }
 
 @freezed
+abstract class PurchaseStatusHistoryEntry with _$PurchaseStatusHistoryEntry {
+  const factory PurchaseStatusHistoryEntry({
+    required PurchaseRequestStatus status,
+    @JsonKey(
+      name: 'created_at',
+      fromJson: _nullableDateTimeFromJson,
+    )
+    DateTime? createdAt,
+  }) = _PurchaseStatusHistoryEntry;
+
+  factory PurchaseStatusHistoryEntry.fromJson(Map<String, dynamic> json) =>
+      _$PurchaseStatusHistoryEntryFromJson(json);
+}
+
+extension PurchaseRequestDetailStatusHistory on PurchaseRequestDetail {
+  bool get showsPaidDate =>
+      status == PurchaseRequestStatus.paid ||
+      status == PurchaseRequestStatus.delivered;
+
+  DateTime? get paidDateFromHistory {
+    for (final entry in statusHistory) {
+      if (entry.status == PurchaseRequestStatus.paid) {
+        return entry.createdAt;
+      }
+    }
+    return null;
+  }
+}
+
+@freezed
 abstract class PurchaseRequestItem with _$PurchaseRequestItem {
   const factory PurchaseRequestItem({
     @JsonKey(name: 'food_supply_id') required String foodSupplyId,
@@ -101,6 +131,9 @@ abstract class PurchaseRequestDetail with _$PurchaseRequestDetail {
       fromJson: _nullableDateTimeFromJson,
     )
     DateTime? createdAt,
+    @JsonKey(name: 'status_history', defaultValue: [])
+    @Default([])
+    List<PurchaseStatusHistoryEntry> statusHistory,
   }) = _PurchaseRequestDetail;
 
   factory PurchaseRequestDetail.fromJson(Map<String, dynamic> json) =>

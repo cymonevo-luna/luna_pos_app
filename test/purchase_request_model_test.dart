@@ -26,6 +26,29 @@ void main() {
   });
 
   group('PurchaseRequestDetail.fromJson', () {
+    test('parses status_history and paid date helper', () {
+      final detail = PurchaseRequestDetail.fromJson({
+        'id': 'pr-1',
+        'supplier_id': 'sup-1',
+        'supplier_name': 'Supplier A',
+        'status': 'PAID',
+        'status_history': [
+          {
+            'status': 'REQUESTED',
+            'created_at': '2026-07-10T08:00:00Z',
+          },
+          {
+            'status': 'PAID',
+            'created_at': '2026-07-12T10:00:00Z',
+          },
+        ],
+        'items': [],
+      });
+
+      expect(detail.showsPaidDate, isTrue);
+      expect(detail.paidDateFromHistory, DateTime.parse('2026-07-12T10:00:00Z'));
+    });
+
     test('parses total_actual_amount and line_actual_amount', () {
       final detail = PurchaseRequestDetail.fromJson({
         'id': 'pr-1',

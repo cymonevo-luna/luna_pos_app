@@ -142,6 +142,7 @@ Map<String, dynamic> _loginUserPayload(
   required String userId,
   required String email,
   List<String> additionalRoles = const [],
+  List<String> additionalFeatures = const [],
 }) =>
     {
       'id': userId,
@@ -152,10 +153,13 @@ Map<String, dynamic> _loginUserPayload(
         role,
         additionalRoles: additionalRoles,
       ),
-      'features': TestAccounts.apiFeaturesFor(
-        role,
-        additionalRoles: additionalRoles,
-      ),
+      'features': [
+        ...TestAccounts.apiFeaturesFor(
+          role,
+          additionalRoles: additionalRoles,
+        ),
+        ...additionalFeatures,
+      ],
     };
 
 Map<String, dynamic> _merchantPayload() => {
@@ -270,6 +274,7 @@ void seedAuthenticatedTestAccount(
   String accessToken = 'acc',
   String refreshToken = 'ref',
   List<String> additionalRoles = const [],
+  List<String> additionalFeatures = const [],
   DateTime? refreshExpiresAt,
 }) {
   final resolvedUserId = userId ?? TestAccounts.userIdFor(role);
@@ -296,6 +301,7 @@ void seedAuthenticatedTestAccount(
         userId: resolvedUserId,
         email: TestAccounts.emailFor(role),
         additionalRoles: additionalRoles,
+        additionalFeatures: additionalFeatures,
       ),
     }),
   );

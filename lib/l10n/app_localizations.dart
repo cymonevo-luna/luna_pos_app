@@ -1316,6 +1316,30 @@ abstract class AppLocalizations {
   /// **'Created at'**
   String get purchaseCreatedAt;
 
+  /// Section title for purchase status history on detail screen
+  ///
+  /// In en, this message translates to:
+  /// **'Status history'**
+  String get purchaseStatusHistory;
+
+  /// Label for when a purchase was marked paid
+  ///
+  /// In en, this message translates to:
+  /// **'Paid date'**
+  String get purchasePaidDate;
+
+  /// Title for paid date picker sheet and edit button tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Edit paid date'**
+  String get purchaseEditPaidDate;
+
+  /// Label for paid date time picker row
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get purchasePaidDateTime;
+
   /// Title for smart supplier purchase request flow
   ///
   /// In en, this message translates to:

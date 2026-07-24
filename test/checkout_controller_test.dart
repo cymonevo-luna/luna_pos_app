@@ -192,6 +192,56 @@ void main() {
         .selectOrderOption(kTestOrderOptionTakeAwayId);
   }
 
+  void seedSingleLineCart({int sellPrice = 10000}) {
+    container.read(orderProvider.notifier).addLine(
+          const POSMenuItem(
+            id: 'm1',
+            title: 'Es Teh',
+            sellPrice: 10000,
+            availableStock: 10,
+          ),
+          quantity: 1,
+        );
+  }
+
+  test('proceed includes order option surcharge in transaction amounts', () async {
+    seedSingleLineCart();
+    await container.read(orderOptionsProvider.notifier).loadIfNeeded();
+    container
+        .read(checkoutProvider.notifier)
+        .selectOrderOption(kTestOrderOptionBoxId);
+
+    final result = await container.read(checkoutProvider.notifier).proceed(
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.qris,
+          printReceipt: false,
+        );
+
+    expect(result, isNotNull);
+    final request = transactionRepository.lastRequest!;
+    expect(request.subtotalAmount, 13000);
+    expect(request.amount, 13000);
+  });
+
+  test('proceed without surcharge uses cart grand total only', () async {
+    seedSingleLineCart();
+    await container.read(orderOptionsProvider.notifier).loadIfNeeded();
+    container
+        .read(checkoutProvider.notifier)
+        .selectOrderOption(kTestOrderOptionDineInId);
+
+    final result = await container.read(checkoutProvider.notifier).proceed(
+          discountAmount: 0,
+          paymentMethod: PaymentMethod.qris,
+          printReceipt: false,
+        );
+
+    expect(result, isNotNull);
+    final request = transactionRepository.lastRequest!;
+    expect(request.subtotalAmount, 10000);
+    expect(request.amount, 10000);
+  });
+
   test('proceed submits correct cash transaction payload', () async {
     seedTwoLineCart();
     await prepareOrderOptionSelection();

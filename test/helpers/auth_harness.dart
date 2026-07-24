@@ -310,6 +310,7 @@ String _displayNameFor(TestAccountRole role) => switch (role) {
 
 const kTestOrderOptionTakeAwayId = 'opt-takeaway';
 const kTestOrderOptionDineInId = 'opt-dinein';
+const kTestOrderOptionBoxId = 'opt-box';
 
 /// Stubs `GET /api/v1/pos/order-options` with default Take Away / Dine In options.
 void stubOrderOptions(DioAdapter adapter) {
@@ -323,11 +324,19 @@ void stubOrderOptions(DioAdapter adapter) {
             'id': kTestOrderOptionTakeAwayId,
             'name': 'Take Away',
             'priority': 10,
+            'additional_price': 0,
           },
           {
             'id': kTestOrderOptionDineInId,
             'name': 'Dine In',
             'priority': 5,
+            'additional_price': 0,
+          },
+          {
+            'id': kTestOrderOptionBoxId,
+            'name': 'Box',
+            'priority': 1,
+            'additional_price': 3000,
           },
         ],
       },

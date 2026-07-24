@@ -148,7 +148,14 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
     final order = ref.watch(orderProvider);
     final checkout = ref.watch(checkoutProvider);
     final orderOptions = ref.watch(orderOptionsProvider);
-    final subtotalAmount = order.grandTotal;
+    final selectedOptionId = checkout.selectedOrderOptionId;
+    final selectedOption = selectedOptionId == null
+        ? null
+        : orderOptions.options
+            .where((o) => o.id == selectedOptionId)
+            .firstOrNull;
+    final optionSurcharge = selectedOption?.additionalPrice ?? 0;
+    final subtotalAmount = order.grandTotal + optionSurcharge;
     final discountValid = isDiscountValid(
       discountAmount: _discountAmount,
       subtotalAmount: subtotalAmount,
@@ -222,6 +229,13 @@ class _CheckoutPageState extends ConsumerState<CheckoutPage> {
                   label: l10n.subtotal,
                   value: formatRupiah(subtotalAmount),
                 ),
+                if (optionSurcharge > 0 && selectedOption != null) ...[
+                  const VGap(AppSpacing.sm),
+                  _SummaryRow(
+                    label: selectedOption.name,
+                    value: formatRupiah(optionSurcharge),
+                  ),
+                ],
                 const VGap(AppSpacing.md),
                 AppTextField(
                   fieldKey: const Key('discount_field'),
@@ -357,7 +371,9 @@ class _OrderOptionSelector extends StatelessWidget {
               .map(
                 (option) => _OrderOptionChip(
                   key: Key('order_option_${option.id}'),
-                  label: option.name,
+                  label: option.additionalPrice > 0
+                      ? '${option.name} (+${formatRupiah(option.additionalPrice)})'
+                      : option.name,
                   selected: selectedOptionId == option.id,
                   enabled: enabled,
                   onTap: () => onSelected(option.id),

@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ReceiptData {
 
- String get brandName; String get branchName; String get branchAddress; String get branchPhone; String get cashierName; String get transactionId; DateTime get transactionDate; String get paymentMethod; List<ReceiptLineItem> get items; int get subtotalAmount; int get discountAmount; int get totalAmount; int? get cashTendered; int get changeAmount; String get thankYouNote; String? get orderOptionName;
+ String get brandName; String get branchName; String get branchAddress; String get branchPhone; String get cashierName; String get transactionId; DateTime get transactionDate; String get paymentMethod; List<ReceiptLineItem> get items; int get subtotalAmount; int get discountAmount; int get totalAmount; int? get cashTendered; int get changeAmount; String get thankYouNote; String? get orderOptionName; int get orderOptionAdditionalPrice;
 /// Create a copy of ReceiptData
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ReceiptDataCopyWith<ReceiptData> get copyWith => _$ReceiptDataCopyWithImpl<Rece
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReceiptData&&(identical(other.brandName, brandName) || other.brandName == brandName)&&(identical(other.branchName, branchName) || other.branchName == branchName)&&(identical(other.branchAddress, branchAddress) || other.branchAddress == branchAddress)&&(identical(other.branchPhone, branchPhone) || other.branchPhone == branchPhone)&&(identical(other.cashierName, cashierName) || other.cashierName == cashierName)&&(identical(other.transactionId, transactionId) || other.transactionId == transactionId)&&(identical(other.transactionDate, transactionDate) || other.transactionDate == transactionDate)&&(identical(other.paymentMethod, paymentMethod) || other.paymentMethod == paymentMethod)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.subtotalAmount, subtotalAmount) || other.subtotalAmount == subtotalAmount)&&(identical(other.discountAmount, discountAmount) || other.discountAmount == discountAmount)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.cashTendered, cashTendered) || other.cashTendered == cashTendered)&&(identical(other.changeAmount, changeAmount) || other.changeAmount == changeAmount)&&(identical(other.thankYouNote, thankYouNote) || other.thankYouNote == thankYouNote)&&(identical(other.orderOptionName, orderOptionName) || other.orderOptionName == orderOptionName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReceiptData&&(identical(other.brandName, brandName) || other.brandName == brandName)&&(identical(other.branchName, branchName) || other.branchName == branchName)&&(identical(other.branchAddress, branchAddress) || other.branchAddress == branchAddress)&&(identical(other.branchPhone, branchPhone) || other.branchPhone == branchPhone)&&(identical(other.cashierName, cashierName) || other.cashierName == cashierName)&&(identical(other.transactionId, transactionId) || other.transactionId == transactionId)&&(identical(other.transactionDate, transactionDate) || other.transactionDate == transactionDate)&&(identical(other.paymentMethod, paymentMethod) || other.paymentMethod == paymentMethod)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.subtotalAmount, subtotalAmount) || other.subtotalAmount == subtotalAmount)&&(identical(other.discountAmount, discountAmount) || other.discountAmount == discountAmount)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.cashTendered, cashTendered) || other.cashTendered == cashTendered)&&(identical(other.changeAmount, changeAmount) || other.changeAmount == changeAmount)&&(identical(other.thankYouNote, thankYouNote) || other.thankYouNote == thankYouNote)&&(identical(other.orderOptionName, orderOptionName) || other.orderOptionName == orderOptionName)&&(identical(other.orderOptionAdditionalPrice, orderOptionAdditionalPrice) || other.orderOptionAdditionalPrice == orderOptionAdditionalPrice));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,brandName,branchName,branchAddress,branchPhone,cashierName,transactionId,transactionDate,paymentMethod,const DeepCollectionEquality().hash(items),subtotalAmount,discountAmount,totalAmount,cashTendered,changeAmount,thankYouNote,orderOptionName);
+int get hashCode => Object.hash(runtimeType,brandName,branchName,branchAddress,branchPhone,cashierName,transactionId,transactionDate,paymentMethod,const DeepCollectionEquality().hash(items),subtotalAmount,discountAmount,totalAmount,cashTendered,changeAmount,thankYouNote,orderOptionName,orderOptionAdditionalPrice);
 
 @override
 String toString() {
-  return 'ReceiptData(brandName: $brandName, branchName: $branchName, branchAddress: $branchAddress, branchPhone: $branchPhone, cashierName: $cashierName, transactionId: $transactionId, transactionDate: $transactionDate, paymentMethod: $paymentMethod, items: $items, subtotalAmount: $subtotalAmount, discountAmount: $discountAmount, totalAmount: $totalAmount, cashTendered: $cashTendered, changeAmount: $changeAmount, thankYouNote: $thankYouNote, orderOptionName: $orderOptionName)';
+  return 'ReceiptData(brandName: $brandName, branchName: $branchName, branchAddress: $branchAddress, branchPhone: $branchPhone, cashierName: $cashierName, transactionId: $transactionId, transactionDate: $transactionDate, paymentMethod: $paymentMethod, items: $items, subtotalAmount: $subtotalAmount, discountAmount: $discountAmount, totalAmount: $totalAmount, cashTendered: $cashTendered, changeAmount: $changeAmount, thankYouNote: $thankYouNote, orderOptionName: $orderOptionName, orderOptionAdditionalPrice: $orderOptionAdditionalPrice)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ReceiptDataCopyWith<$Res>  {
   factory $ReceiptDataCopyWith(ReceiptData value, $Res Function(ReceiptData) _then) = _$ReceiptDataCopyWithImpl;
 @useResult
 $Res call({
- String brandName, String branchName, String branchAddress, String branchPhone, String cashierName, String transactionId, DateTime transactionDate, String paymentMethod, List<ReceiptLineItem> items, int subtotalAmount, int discountAmount, int totalAmount, int? cashTendered, int changeAmount, String thankYouNote, String? orderOptionName
+ String brandName, String branchName, String branchAddress, String branchPhone, String cashierName, String transactionId, DateTime transactionDate, String paymentMethod, List<ReceiptLineItem> items, int subtotalAmount, int discountAmount, int totalAmount, int? cashTendered, int changeAmount, String thankYouNote, String? orderOptionName, int orderOptionAdditionalPrice
 });
 
 
@@ -62,7 +62,7 @@ class _$ReceiptDataCopyWithImpl<$Res>
 
 /// Create a copy of ReceiptData
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? brandName = null,Object? branchName = null,Object? branchAddress = null,Object? branchPhone = null,Object? cashierName = null,Object? transactionId = null,Object? transactionDate = null,Object? paymentMethod = null,Object? items = null,Object? subtotalAmount = null,Object? discountAmount = null,Object? totalAmount = null,Object? cashTendered = freezed,Object? changeAmount = null,Object? thankYouNote = null,Object? orderOptionName = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? brandName = null,Object? branchName = null,Object? branchAddress = null,Object? branchPhone = null,Object? cashierName = null,Object? transactionId = null,Object? transactionDate = null,Object? paymentMethod = null,Object? items = null,Object? subtotalAmount = null,Object? discountAmount = null,Object? totalAmount = null,Object? cashTendered = freezed,Object? changeAmount = null,Object? thankYouNote = null,Object? orderOptionName = freezed,Object? orderOptionAdditionalPrice = null,}) {
   return _then(_self.copyWith(
 brandName: null == brandName ? _self.brandName : brandName // ignore: cast_nullable_to_non_nullable
 as String,branchName: null == branchName ? _self.branchName : branchName // ignore: cast_nullable_to_non_nullable
@@ -80,7 +80,8 @@ as int,cashTendered: freezed == cashTendered ? _self.cashTendered : cashTendered
 as int?,changeAmount: null == changeAmount ? _self.changeAmount : changeAmount // ignore: cast_nullable_to_non_nullable
 as int,thankYouNote: null == thankYouNote ? _self.thankYouNote : thankYouNote // ignore: cast_nullable_to_non_nullable
 as String,orderOptionName: freezed == orderOptionName ? _self.orderOptionName : orderOptionName // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,orderOptionAdditionalPrice: null == orderOptionAdditionalPrice ? _self.orderOptionAdditionalPrice : orderOptionAdditionalPrice // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -165,10 +166,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String brandName,  String branchName,  String branchAddress,  String branchPhone,  String cashierName,  String transactionId,  DateTime transactionDate,  String paymentMethod,  List<ReceiptLineItem> items,  int subtotalAmount,  int discountAmount,  int totalAmount,  int? cashTendered,  int changeAmount,  String thankYouNote,  String? orderOptionName)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String brandName,  String branchName,  String branchAddress,  String branchPhone,  String cashierName,  String transactionId,  DateTime transactionDate,  String paymentMethod,  List<ReceiptLineItem> items,  int subtotalAmount,  int discountAmount,  int totalAmount,  int? cashTendered,  int changeAmount,  String thankYouNote,  String? orderOptionName,  int orderOptionAdditionalPrice)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ReceiptData() when $default != null:
-return $default(_that.brandName,_that.branchName,_that.branchAddress,_that.branchPhone,_that.cashierName,_that.transactionId,_that.transactionDate,_that.paymentMethod,_that.items,_that.subtotalAmount,_that.discountAmount,_that.totalAmount,_that.cashTendered,_that.changeAmount,_that.thankYouNote,_that.orderOptionName);case _:
+return $default(_that.brandName,_that.branchName,_that.branchAddress,_that.branchPhone,_that.cashierName,_that.transactionId,_that.transactionDate,_that.paymentMethod,_that.items,_that.subtotalAmount,_that.discountAmount,_that.totalAmount,_that.cashTendered,_that.changeAmount,_that.thankYouNote,_that.orderOptionName,_that.orderOptionAdditionalPrice);case _:
   return orElse();
 
 }
@@ -186,10 +187,10 @@ return $default(_that.brandName,_that.branchName,_that.branchAddress,_that.branc
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String brandName,  String branchName,  String branchAddress,  String branchPhone,  String cashierName,  String transactionId,  DateTime transactionDate,  String paymentMethod,  List<ReceiptLineItem> items,  int subtotalAmount,  int discountAmount,  int totalAmount,  int? cashTendered,  int changeAmount,  String thankYouNote,  String? orderOptionName)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String brandName,  String branchName,  String branchAddress,  String branchPhone,  String cashierName,  String transactionId,  DateTime transactionDate,  String paymentMethod,  List<ReceiptLineItem> items,  int subtotalAmount,  int discountAmount,  int totalAmount,  int? cashTendered,  int changeAmount,  String thankYouNote,  String? orderOptionName,  int orderOptionAdditionalPrice)  $default,) {final _that = this;
 switch (_that) {
 case _ReceiptData():
-return $default(_that.brandName,_that.branchName,_that.branchAddress,_that.branchPhone,_that.cashierName,_that.transactionId,_that.transactionDate,_that.paymentMethod,_that.items,_that.subtotalAmount,_that.discountAmount,_that.totalAmount,_that.cashTendered,_that.changeAmount,_that.thankYouNote,_that.orderOptionName);case _:
+return $default(_that.brandName,_that.branchName,_that.branchAddress,_that.branchPhone,_that.cashierName,_that.transactionId,_that.transactionDate,_that.paymentMethod,_that.items,_that.subtotalAmount,_that.discountAmount,_that.totalAmount,_that.cashTendered,_that.changeAmount,_that.thankYouNote,_that.orderOptionName,_that.orderOptionAdditionalPrice);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -206,10 +207,10 @@ return $default(_that.brandName,_that.branchName,_that.branchAddress,_that.branc
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String brandName,  String branchName,  String branchAddress,  String branchPhone,  String cashierName,  String transactionId,  DateTime transactionDate,  String paymentMethod,  List<ReceiptLineItem> items,  int subtotalAmount,  int discountAmount,  int totalAmount,  int? cashTendered,  int changeAmount,  String thankYouNote,  String? orderOptionName)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String brandName,  String branchName,  String branchAddress,  String branchPhone,  String cashierName,  String transactionId,  DateTime transactionDate,  String paymentMethod,  List<ReceiptLineItem> items,  int subtotalAmount,  int discountAmount,  int totalAmount,  int? cashTendered,  int changeAmount,  String thankYouNote,  String? orderOptionName,  int orderOptionAdditionalPrice)?  $default,) {final _that = this;
 switch (_that) {
 case _ReceiptData() when $default != null:
-return $default(_that.brandName,_that.branchName,_that.branchAddress,_that.branchPhone,_that.cashierName,_that.transactionId,_that.transactionDate,_that.paymentMethod,_that.items,_that.subtotalAmount,_that.discountAmount,_that.totalAmount,_that.cashTendered,_that.changeAmount,_that.thankYouNote,_that.orderOptionName);case _:
+return $default(_that.brandName,_that.branchName,_that.branchAddress,_that.branchPhone,_that.cashierName,_that.transactionId,_that.transactionDate,_that.paymentMethod,_that.items,_that.subtotalAmount,_that.discountAmount,_that.totalAmount,_that.cashTendered,_that.changeAmount,_that.thankYouNote,_that.orderOptionName,_that.orderOptionAdditionalPrice);case _:
   return null;
 
 }
@@ -221,7 +222,7 @@ return $default(_that.brandName,_that.branchName,_that.branchAddress,_that.branc
 
 
 class _ReceiptData extends ReceiptData {
-  const _ReceiptData({required this.brandName, required this.branchName, required this.branchAddress, required this.branchPhone, required this.cashierName, required this.transactionId, required this.transactionDate, required this.paymentMethod, required final  List<ReceiptLineItem> items, required this.subtotalAmount, this.discountAmount = 0, required this.totalAmount, this.cashTendered, this.changeAmount = 0, required this.thankYouNote, this.orderOptionName}): _items = items,super._();
+  const _ReceiptData({required this.brandName, required this.branchName, required this.branchAddress, required this.branchPhone, required this.cashierName, required this.transactionId, required this.transactionDate, required this.paymentMethod, required final  List<ReceiptLineItem> items, required this.subtotalAmount, this.discountAmount = 0, required this.totalAmount, this.cashTendered, this.changeAmount = 0, required this.thankYouNote, this.orderOptionName, this.orderOptionAdditionalPrice = 0}): _items = items,super._();
   
 
 @override final  String brandName;
@@ -246,6 +247,7 @@ class _ReceiptData extends ReceiptData {
 @override@JsonKey() final  int changeAmount;
 @override final  String thankYouNote;
 @override final  String? orderOptionName;
+@override@JsonKey() final  int orderOptionAdditionalPrice;
 
 /// Create a copy of ReceiptData
 /// with the given fields replaced by the non-null parameter values.
@@ -257,16 +259,16 @@ _$ReceiptDataCopyWith<_ReceiptData> get copyWith => __$ReceiptDataCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReceiptData&&(identical(other.brandName, brandName) || other.brandName == brandName)&&(identical(other.branchName, branchName) || other.branchName == branchName)&&(identical(other.branchAddress, branchAddress) || other.branchAddress == branchAddress)&&(identical(other.branchPhone, branchPhone) || other.branchPhone == branchPhone)&&(identical(other.cashierName, cashierName) || other.cashierName == cashierName)&&(identical(other.transactionId, transactionId) || other.transactionId == transactionId)&&(identical(other.transactionDate, transactionDate) || other.transactionDate == transactionDate)&&(identical(other.paymentMethod, paymentMethod) || other.paymentMethod == paymentMethod)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.subtotalAmount, subtotalAmount) || other.subtotalAmount == subtotalAmount)&&(identical(other.discountAmount, discountAmount) || other.discountAmount == discountAmount)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.cashTendered, cashTendered) || other.cashTendered == cashTendered)&&(identical(other.changeAmount, changeAmount) || other.changeAmount == changeAmount)&&(identical(other.thankYouNote, thankYouNote) || other.thankYouNote == thankYouNote)&&(identical(other.orderOptionName, orderOptionName) || other.orderOptionName == orderOptionName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReceiptData&&(identical(other.brandName, brandName) || other.brandName == brandName)&&(identical(other.branchName, branchName) || other.branchName == branchName)&&(identical(other.branchAddress, branchAddress) || other.branchAddress == branchAddress)&&(identical(other.branchPhone, branchPhone) || other.branchPhone == branchPhone)&&(identical(other.cashierName, cashierName) || other.cashierName == cashierName)&&(identical(other.transactionId, transactionId) || other.transactionId == transactionId)&&(identical(other.transactionDate, transactionDate) || other.transactionDate == transactionDate)&&(identical(other.paymentMethod, paymentMethod) || other.paymentMethod == paymentMethod)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.subtotalAmount, subtotalAmount) || other.subtotalAmount == subtotalAmount)&&(identical(other.discountAmount, discountAmount) || other.discountAmount == discountAmount)&&(identical(other.totalAmount, totalAmount) || other.totalAmount == totalAmount)&&(identical(other.cashTendered, cashTendered) || other.cashTendered == cashTendered)&&(identical(other.changeAmount, changeAmount) || other.changeAmount == changeAmount)&&(identical(other.thankYouNote, thankYouNote) || other.thankYouNote == thankYouNote)&&(identical(other.orderOptionName, orderOptionName) || other.orderOptionName == orderOptionName)&&(identical(other.orderOptionAdditionalPrice, orderOptionAdditionalPrice) || other.orderOptionAdditionalPrice == orderOptionAdditionalPrice));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,brandName,branchName,branchAddress,branchPhone,cashierName,transactionId,transactionDate,paymentMethod,const DeepCollectionEquality().hash(_items),subtotalAmount,discountAmount,totalAmount,cashTendered,changeAmount,thankYouNote,orderOptionName);
+int get hashCode => Object.hash(runtimeType,brandName,branchName,branchAddress,branchPhone,cashierName,transactionId,transactionDate,paymentMethod,const DeepCollectionEquality().hash(_items),subtotalAmount,discountAmount,totalAmount,cashTendered,changeAmount,thankYouNote,orderOptionName,orderOptionAdditionalPrice);
 
 @override
 String toString() {
-  return 'ReceiptData(brandName: $brandName, branchName: $branchName, branchAddress: $branchAddress, branchPhone: $branchPhone, cashierName: $cashierName, transactionId: $transactionId, transactionDate: $transactionDate, paymentMethod: $paymentMethod, items: $items, subtotalAmount: $subtotalAmount, discountAmount: $discountAmount, totalAmount: $totalAmount, cashTendered: $cashTendered, changeAmount: $changeAmount, thankYouNote: $thankYouNote, orderOptionName: $orderOptionName)';
+  return 'ReceiptData(brandName: $brandName, branchName: $branchName, branchAddress: $branchAddress, branchPhone: $branchPhone, cashierName: $cashierName, transactionId: $transactionId, transactionDate: $transactionDate, paymentMethod: $paymentMethod, items: $items, subtotalAmount: $subtotalAmount, discountAmount: $discountAmount, totalAmount: $totalAmount, cashTendered: $cashTendered, changeAmount: $changeAmount, thankYouNote: $thankYouNote, orderOptionName: $orderOptionName, orderOptionAdditionalPrice: $orderOptionAdditionalPrice)';
 }
 
 
@@ -277,7 +279,7 @@ abstract mixin class _$ReceiptDataCopyWith<$Res> implements $ReceiptDataCopyWith
   factory _$ReceiptDataCopyWith(_ReceiptData value, $Res Function(_ReceiptData) _then) = __$ReceiptDataCopyWithImpl;
 @override @useResult
 $Res call({
- String brandName, String branchName, String branchAddress, String branchPhone, String cashierName, String transactionId, DateTime transactionDate, String paymentMethod, List<ReceiptLineItem> items, int subtotalAmount, int discountAmount, int totalAmount, int? cashTendered, int changeAmount, String thankYouNote, String? orderOptionName
+ String brandName, String branchName, String branchAddress, String branchPhone, String cashierName, String transactionId, DateTime transactionDate, String paymentMethod, List<ReceiptLineItem> items, int subtotalAmount, int discountAmount, int totalAmount, int? cashTendered, int changeAmount, String thankYouNote, String? orderOptionName, int orderOptionAdditionalPrice
 });
 
 
@@ -294,7 +296,7 @@ class __$ReceiptDataCopyWithImpl<$Res>
 
 /// Create a copy of ReceiptData
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? brandName = null,Object? branchName = null,Object? branchAddress = null,Object? branchPhone = null,Object? cashierName = null,Object? transactionId = null,Object? transactionDate = null,Object? paymentMethod = null,Object? items = null,Object? subtotalAmount = null,Object? discountAmount = null,Object? totalAmount = null,Object? cashTendered = freezed,Object? changeAmount = null,Object? thankYouNote = null,Object? orderOptionName = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? brandName = null,Object? branchName = null,Object? branchAddress = null,Object? branchPhone = null,Object? cashierName = null,Object? transactionId = null,Object? transactionDate = null,Object? paymentMethod = null,Object? items = null,Object? subtotalAmount = null,Object? discountAmount = null,Object? totalAmount = null,Object? cashTendered = freezed,Object? changeAmount = null,Object? thankYouNote = null,Object? orderOptionName = freezed,Object? orderOptionAdditionalPrice = null,}) {
   return _then(_ReceiptData(
 brandName: null == brandName ? _self.brandName : brandName // ignore: cast_nullable_to_non_nullable
 as String,branchName: null == branchName ? _self.branchName : branchName // ignore: cast_nullable_to_non_nullable
@@ -312,7 +314,8 @@ as int,cashTendered: freezed == cashTendered ? _self.cashTendered : cashTendered
 as int?,changeAmount: null == changeAmount ? _self.changeAmount : changeAmount // ignore: cast_nullable_to_non_nullable
 as int,thankYouNote: null == thankYouNote ? _self.thankYouNote : thankYouNote // ignore: cast_nullable_to_non_nullable
 as String,orderOptionName: freezed == orderOptionName ? _self.orderOptionName : orderOptionName // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,orderOptionAdditionalPrice: null == orderOptionAdditionalPrice ? _self.orderOptionAdditionalPrice : orderOptionAdditionalPrice // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

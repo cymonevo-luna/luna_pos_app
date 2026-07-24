@@ -23,6 +23,8 @@ class MockBluetoothPrinterService implements BluetoothPrinterService {
   final StreamController<bool> _connectionController =
       StreamController<bool>.broadcast();
   bool _isConnected = false;
+  bool _linkConnected = false;
+  bool _staleConnection = false;
   String? connectedAddress;
   String? _lastConnectedAddress;
   List<int>? lastPrintedBytes;
@@ -36,18 +38,28 @@ class MockBluetoothPrinterService implements BluetoothPrinterService {
   }
 
   void simulateConnectionDrop({bool notifyListeners = true}) {
+    _linkConnected = false;
     _isConnected = false;
+    _staleConnection = false;
     connectedAddress = null;
     if (notifyListeners) {
       _connectionController.add(false);
     }
   }
 
+  /// Simulates a stale UI/service flag: [isConnected] stays true while the
+  /// underlying link is down (no stream notification).
+  void simulateStaleConnectionDrop() {
+    _staleConnection = true;
+    _linkConnected = false;
+    connectedAddress = null;
+  }
+
   @override
   Stream<bool> get connectionStatus => _connectionController.stream;
 
   @override
-  bool get isConnected => _isConnected;
+  bool get isConnected => _staleConnection ? true : _isConnected;
 
   @override
   Future<bool> requestPermissions() async {
@@ -72,7 +84,7 @@ class MockBluetoothPrinterService implements BluetoothPrinterService {
   @override
   Future<void> connect(String deviceAddress) async {
     connectCallCount++;
-    final isReconnect = !_isConnected && _lastConnectedAddress != null;
+    final isReconnect = !_linkConnected && _lastConnectedAddress != null;
     if (!connectSucceeds) {
       throw BluetoothPrinterException('Could not connect to the printer.');
     }
@@ -81,7 +93,9 @@ class MockBluetoothPrinterService implements BluetoothPrinterService {
     }
     connectedAddress = deviceAddress;
     _lastConnectedAddress = deviceAddress;
+    _linkConnected = true;
     _isConnected = true;
+    _staleConnection = false;
     _connectionController.add(true);
   }
 
@@ -89,29 +103,32 @@ class MockBluetoothPrinterService implements BluetoothPrinterService {
   Future<void> disconnect() async {
     _lastConnectedAddress = connectedAddress ?? _lastConnectedAddress;
     connectedAddress = null;
+    _linkConnected = false;
     _isConnected = false;
+    _staleConnection = false;
     _connectionController.add(false);
   }
 
   @override
-  Future<void> printBytes(List<int> data) async {
+  Future<void> printBytes(List<int> data, {String? deviceAddress}) async {
     printCallCount++;
 
     if (data.isEmpty) {
       throw BluetoothPrinterException('Nothing to print.');
     }
 
-    if (!_isConnected && _lastConnectedAddress != null && connectSucceeds) {
-      await connect(_lastConnectedAddress!);
+    final reconnectAddress = _lastConnectedAddress ?? deviceAddress;
+    if (!_linkConnected && reconnectAddress != null && connectSucceeds) {
+      await connect(reconnectAddress);
     }
 
-    if (!_isConnected) {
+    if (!_linkConnected) {
       throw BluetoothPrinterException('Printer is not connected.');
     }
 
     if (remainingPrintFailures > 0) {
       remainingPrintFailures--;
-      final stillConnected = _isConnected;
+      final stillConnected = _linkConnected;
       if (!stillConnected) {
         throw BluetoothPrinterException('Printer is not connected.');
       }
@@ -119,7 +136,7 @@ class MockBluetoothPrinterService implements BluetoothPrinterService {
     }
 
     if (!printSucceeds) {
-      final stillConnected = _isConnected;
+      final stillConnected = _linkConnected;
       if (!stillConnected) {
         throw BluetoothPrinterException('Printer is not connected.');
       }

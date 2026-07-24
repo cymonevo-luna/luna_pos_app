@@ -38,7 +38,7 @@ abstract class BluetoothPrinterService {
 
   Future<void> disconnect();
 
-  Future<void> printBytes(List<int> data);
+  Future<void> printBytes(List<int> data, {String? deviceAddress});
 
   void dispose();
 }
@@ -153,21 +153,22 @@ class PrintBluetoothThermalService implements BluetoothPrinterService {
   }
 
   @override
-  Future<void> printBytes(List<int> data) async {
+  Future<void> printBytes(List<int> data, {String? deviceAddress}) async {
     if (data.isEmpty) {
       throw BluetoothPrinterException('Nothing to print.');
     }
 
-    await _ensureConnectedForPrint();
+    await _ensureConnectedForPrint(deviceAddress: deviceAddress);
     await _writeBytesChunked(data);
   }
 
-  Future<void> _ensureConnectedForPrint() async {
+  Future<void> _ensureConnectedForPrint({String? deviceAddress}) async {
     var connected = await PrintBluetoothThermal.connectionStatus;
     await _setConnected(connected);
 
-    if (!connected && _lastConnectedAddress != null) {
-      await connect(_lastConnectedAddress!);
+    final reconnectAddress = _lastConnectedAddress ?? deviceAddress;
+    if (!connected && reconnectAddress != null) {
+      await connect(reconnectAddress);
       connected = await PrintBluetoothThermal.connectionStatus;
       await _setConnected(connected);
     }

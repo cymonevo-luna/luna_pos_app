@@ -133,7 +133,8 @@ class CheckoutController extends Notifier<CheckoutState> {
         ref.read(orderOptionsProvider.notifier).optionById(orderOptionId);
     final selectedOptionName = selectedOption?.name ?? 'selected option';
 
-    final subtotalAmount = order.grandTotal;
+    final subtotalAmount =
+        order.grandTotal + (selectedOption?.additionalPrice ?? 0);
     if (!isDiscountValid(
       discountAmount: discountAmount,
       subtotalAmount: subtotalAmount,
@@ -219,6 +220,7 @@ class CheckoutController extends Notifier<CheckoutState> {
         changeAmount: changeAmount,
         cashier: cashier,
         orderOptionName: response.orderOptionName ?? selectedOptionName,
+        orderOptionAdditionalPrice: selectedOption?.additionalPrice ?? 0,
       );
     } on ApiException catch (error) {
       if (error.statusCode == 404) {
@@ -257,6 +259,7 @@ class CheckoutController extends Notifier<CheckoutState> {
     int? changeAmount,
     required User cashier,
     String? orderOptionName,
+    int orderOptionAdditionalPrice = 0,
   }) async {
     try {
       final storeSettings =
@@ -272,6 +275,7 @@ class CheckoutController extends Notifier<CheckoutState> {
         cashTendered: cashTendered,
         changeAmount: changeAmount,
         orderOptionName: orderOptionName,
+        orderOptionAdditionalPrice: orderOptionAdditionalPrice,
       );
 
       final receiptData = ReceiptData.fromCheckout(
@@ -351,6 +355,7 @@ class CheckoutController extends Notifier<CheckoutState> {
     int? cashTendered,
     int? changeAmount,
     String? orderOptionName,
+    int orderOptionAdditionalPrice = 0,
   }) {
     return receipt.TransactionResponse(
       id: response.id,
@@ -373,6 +378,7 @@ class CheckoutController extends Notifier<CheckoutState> {
           paymentMethod == PaymentMethod.cash ? cashTendered : null,
       changeAmount: paymentMethod == PaymentMethod.cash ? (changeAmount ?? 0) : 0,
       orderOptionName: orderOptionName,
+      orderOptionAdditionalPrice: orderOptionAdditionalPrice,
     );
   }
 

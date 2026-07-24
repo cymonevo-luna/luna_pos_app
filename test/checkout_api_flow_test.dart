@@ -310,6 +310,64 @@ void main() {
       expect(history.items.first.id, 'tx-e2e-1');
       expect(history.items.first.amount, 73000);
     });
+
+    test('checkout with priced order option sends surcharge-inclusive subtotal',
+        () async {
+      container.read(orderProvider.notifier).addLine(
+            const POSMenuItem(
+              id: 'm1',
+              title: 'Es Teh',
+              sellPrice: 10000,
+              availableStock: 10,
+            ),
+            quantity: 1,
+          );
+      await container.read(orderOptionsProvider.notifier).loadIfNeeded();
+      container
+          .read(checkoutProvider.notifier)
+          .selectOrderOption(kTestOrderOptionBoxId);
+
+      adapter.onPost(
+        '/api/v1/pos/transactions',
+        (server) => server.reply(201, {
+          'success': true,
+          'data': {
+            'id': 'tx-box-1',
+            'method': 'QRIS',
+            'subtotal_amount': 13000,
+            'discount_amount': 0,
+            'amount': 13000,
+            'order_option_id': kTestOrderOptionBoxId,
+          },
+        }),
+        data: {
+          'method': 'QRIS',
+          'items': [
+            {
+              'menu_id': 'm1',
+              'title': 'Es Teh',
+              'quantity': 1,
+              'unit_price': 10000,
+              'line_total': 10000,
+            },
+          ],
+          'subtotal_amount': 13000,
+          'discount_amount': 0,
+          'amount': 13000,
+          'order_option_id': kTestOrderOptionBoxId,
+        },
+      );
+
+      final result = await container.read(checkoutProvider.notifier).proceed(
+            discountAmount: 0,
+            paymentMethod: PaymentMethod.qris,
+            printReceipt: false,
+          );
+
+      expect(result, isNotNull);
+      expect(result!.transactionId, 'tx-box-1');
+      expect(container.read(orderProvider).lines, isEmpty);
+    });
   });
 
   group('successful qris checkout API flow', () {

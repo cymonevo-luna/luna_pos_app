@@ -85,6 +85,21 @@ class ReceiptBuilder {
       );
     }
 
+    final orderOptionAdditionalPrice = data.orderOptionAdditionalPrice;
+    if (orderOptionAdditionalPrice > 0) {
+      final orderOptionName = data.orderOptionName?.trim();
+      final surchargeLabel = orderOptionName != null && orderOptionName.isNotEmpty
+          ? orderOptionName
+          : 'Order option';
+      bytes.addAll(
+        _totalRow(
+          generator,
+          surchargeLabel,
+          formatRupiahForReceipt(orderOptionAdditionalPrice),
+        ),
+      );
+    }
+
     bytes.addAll(
       _totalRow(
         generator,

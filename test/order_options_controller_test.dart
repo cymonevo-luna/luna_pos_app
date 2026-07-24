@@ -61,9 +61,10 @@ void main() {
 
     final state = container.read(orderOptionsProvider);
     expect(state.loading, isFalse);
-    expect(state.options, hasLength(2));
+    expect(state.options, hasLength(3));
     expect(state.options.first.name, 'Take Away');
-    expect(state.options.last.name, 'Dine In');
+    expect(state.options[1].name, 'Dine In');
+    expect(state.options.last.name, 'Box');
   });
 
   test('loadIfNeeded uses cache for same merchant', () async {
@@ -73,7 +74,7 @@ void main() {
     await container.read(orderOptionsProvider.notifier).loadIfNeeded();
 
     final state = container.read(orderOptionsProvider);
-    expect(state.options, hasLength(2));
+    expect(state.options, hasLength(3));
   });
 
   test('refresh reloads options after cache reset', () async {
@@ -83,6 +84,6 @@ void main() {
 
     await container.read(orderOptionsProvider.notifier).refresh();
 
-    expect(container.read(orderOptionsProvider).options, hasLength(2));
+    expect(container.read(orderOptionsProvider).options, hasLength(3));
   });
 }

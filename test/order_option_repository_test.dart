@@ -27,10 +27,36 @@ void main() {
     final response =
         await locator<OrderOptionRepository>().fetchOrderOptions();
 
-    expect(response.options, hasLength(2));
+    expect(response.options, hasLength(3));
     expect(response.options.first.id, kTestOrderOptionTakeAwayId);
     expect(response.options.first.name, 'Take Away');
     expect(response.options.first.priority, 10);
+    expect(response.options.first.additionalPrice, 0);
+  });
+
+  test('fetchOrderOptions deserializes additional_price', () async {
+    adapter.onGet(
+      '/api/v1/pos/order-options',
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'options': [
+            {
+              'id': '1',
+              'name': 'Box',
+              'priority': 1,
+              'additional_price': 3000,
+            },
+          ],
+        },
+      }),
+    );
+
+    final response =
+        await locator<OrderOptionRepository>().fetchOrderOptions();
+
+    expect(response.options, hasLength(1));
+    expect(response.options.first.additionalPrice, 3000);
   });
 
   test('fetchOrderOptions handles empty list', () async {

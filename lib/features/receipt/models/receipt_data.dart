@@ -27,6 +27,7 @@ abstract class ReceiptData with _$ReceiptData {
     @Default(0) int changeAmount,
     required String thankYouNote,
     String? orderOptionName,
+    @Default(0) int orderOptionAdditionalPrice,
   }) = _ReceiptData;
 
   const ReceiptData._();
@@ -53,6 +54,7 @@ abstract class ReceiptData with _$ReceiptData {
       changeAmount: txn.changeAmount,
       thankYouNote: store.thankYouNote,
       orderOptionName: txn.orderOptionName,
+      orderOptionAdditionalPrice: txn.orderOptionAdditionalPrice,
     );
   }
 

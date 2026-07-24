@@ -214,6 +214,34 @@ void main() {
     await tester.pump();
   }
 
+  testWidgets('selecting priced order option updates chip label and total',
+      (WidgetTester tester) async {
+    container.read(orderProvider.notifier).addLine(
+          const POSMenuItem(
+            id: 'm1',
+            title: 'Es Teh',
+            sellPrice: 10000,
+            availableStock: 10,
+          ),
+          quantity: 1,
+        );
+
+    await pumpCheckoutPage(tester);
+    await scrollToOrderOptions(tester);
+
+    expect(find.text('Box (+Rp 3.000)'), findsOneWidget);
+    expect(find.text('Dine In'), findsOneWidget);
+
+    await tester.tap(find.text('Dine In'));
+    await tester.pump();
+    expect(find.text('Rp 10.000'), findsWidgets);
+
+    await tester.tap(find.text('Box (+Rp 3.000)'));
+    await tester.pump();
+    expect(find.text('Rp 13.000'), findsWidgets);
+    expect(find.textContaining('+Rp 3.000'), findsOneWidget);
+  });
+
   testWidgets('checkout page lists lines and subtotal', (WidgetTester tester) async {
     seedTwoLineCart();
 

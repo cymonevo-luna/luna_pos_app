@@ -9,6 +9,7 @@ abstract class OrderOption with _$OrderOption {
     required String id,
     required String name,
     required int priority,
+    @JsonKey(name: 'additional_price') @Default(0) int additionalPrice,
   }) = _OrderOption;
 
   factory OrderOption.fromJson(Map<String, dynamic> json) =>

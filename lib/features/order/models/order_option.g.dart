@@ -10,6 +10,7 @@ _OrderOption _$OrderOptionFromJson(Map<String, dynamic> json) => _OrderOption(
   id: json['id'] as String,
   name: json['name'] as String,
   priority: (json['priority'] as num).toInt(),
+  additionalPrice: (json['additional_price'] as num?)?.toInt() ?? 0,
 );
 
 Map<String, dynamic> _$OrderOptionToJson(_OrderOption instance) =>
@@ -17,6 +18,7 @@ Map<String, dynamic> _$OrderOptionToJson(_OrderOption instance) =>
       'id': instance.id,
       'name': instance.name,
       'priority': instance.priority,
+      'additional_price': instance.additionalPrice,
     };
 
 _OrderOptionsResponse _$OrderOptionsResponseFromJson(

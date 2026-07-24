@@ -72,6 +72,31 @@ void main() {
     expect(response.menus.last.revenue, 50000);
   });
 
+  test('fetchTodaySummary parses RFC3339 date_from and date_to', () async {
+    adapter.onGet(
+      DailyMenuSummaryRepository.summaryPath,
+      (server) => server.reply(200, {
+        'success': true,
+        'data': {
+          'date_from': '2026-07-24T00:00:00Z',
+          'date_to': '2026-07-24T23:59:59Z',
+          'total_revenue': 0,
+          'total_quantity': 0,
+          'menus': <Map<String, dynamic>>[],
+        },
+      }),
+    );
+
+    final response =
+        await locator<DailyMenuSummaryRepository>().fetchTodaySummary();
+
+    expect(response.dateFrom, '2026-07-24T00:00:00Z');
+    expect(response.dateTo, '2026-07-24T23:59:59Z');
+    expect(response.totalQuantity, 0);
+    expect(response.totalRevenue, 0);
+    expect(response.menus, isEmpty);
+  });
+
   test('fetchTodaySummary calls correct endpoint without date params', () async {
     adapter.onGet(
       DailyMenuSummaryRepository.summaryPath,

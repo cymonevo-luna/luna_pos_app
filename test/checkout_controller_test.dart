@@ -405,7 +405,6 @@ void main() {
     await printer.connect('00:11:22:33:44:55');
 
     final result = await container.read(checkoutProvider.notifier).proceed(
-          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,
@@ -441,7 +440,6 @@ void main() {
     locator.registerSingleton<BluetoothPrinterService>(printer);
 
     final result = await container.read(checkoutProvider.notifier).proceed(
-          orderOptionId: kTestOrderOptionId,
           discountAmount: 0,
           paymentMethod: PaymentMethod.cash,
           cashTendered: 80000,

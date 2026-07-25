@@ -57,7 +57,6 @@ class _DisposeFoodPageState extends ConsumerState<DisposeFoodPage> {
           ),
         ),
       );
-      ref.read(disposeFoodProvider.notifier).clearSelection();
       _noteController.clear();
       _quantityController.text = '1';
     }

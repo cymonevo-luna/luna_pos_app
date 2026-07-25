@@ -120,10 +120,11 @@ class DisposeFoodController extends Notifier<DisposeFoodState> {
       );
 
       ref.read(menuProvider.notifier).invalidateAfterMutation();
+      await ref.read(menuProvider.notifier).loadIfNeeded();
 
       if (!ref.mounted) return response;
 
-      state = DisposeFoodState(lastDisposal: response);
+      state = const DisposeFoodState();
       return response;
     } on ApiException catch (e) {
       if (!ref.mounted) rethrow;

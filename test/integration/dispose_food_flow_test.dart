@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luna_pos/core/router/pos_features.dart';
+import 'package:luna_pos/features/menu_disposal/data/menu_disposal_repository.dart';
 import 'package:luna_pos/shared/widgets/app_button.dart';
 import 'package:luna_pos/l10n/app_localizations_en.dart';
 import 'package:luna_pos/testing/test_accounts.dart';
@@ -87,16 +88,69 @@ void main() {
       final submitFinder = find.byKey(const Key('dispose_food_submit'));
       await tester.ensureVisible(submitFinder.at(0));
       await tester.tap(submitFinder.at(0));
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
 
+      expect(find.text(l10n.disposeFoodSelectMenu), findsOneWidget);
+      expect(find.byKey(const Key('dispose_menu_row_m1')), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(Scaffold).first,
+          matching: find.byType(CircularProgressIndicator),
+        ),
+        findsNothing,
+      );
       expect(find.textContaining('Loss:'), findsOneWidget);
+      expect(find.textContaining('Available stock: 3'), findsOneWidget);
 
       await tester.tap(find.text(l10n.menu));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.text('Stock: 3'), findsOneWidget);
+    });
+
+    testWidgets('API error keeps user on form', (tester) async {
+      harness
+        ..stubLoginForRole(TestAccountRole.cashier)
+        ..stubSampleMenu(availableStock: 5);
+
+      harness.adapter.onPost(
+        MenuDisposalRepository.listPath,
+        (server) => server.reply(422, {
+          'success': false,
+          'error': {
+            'message': 'Insufficient stock for this menu item',
+          },
+        }),
+        data: {'menu_id': 'm1', 'quantity': 2},
+      );
+
+      await harness.pumpApp(tester);
+      await harness.loginViaUi(tester, TestAccountRole.cashier);
+      await harness.expectAuthenticatedHome(tester);
+
+      await tester.tap(find.text(l10n.disposeFoodTitle));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('dispose_menu_row_m1')));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.byKey(const Key('dispose_food_quantity_field')),
+        '2',
+      );
+      await tester.pumpAndSettle();
+
+      final submitFinder = find.byKey(const Key('dispose_food_submit'));
+      await tester.ensureVisible(submitFinder.at(0));
+      await tester.tap(submitFinder.at(0));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('dispose_food_submit')), findsOneWidget);
+      expect(find.textContaining('Insufficient stock'), findsWidgets);
+      expect(find.text(l10n.disposeFoodSelectMenu), findsNothing);
+      final submitButton = tester.widget<AppButton>(submitFinder.at(0));
+      expect(submitButton.loading, isFalse);
     });
 
     testWidgets('client blocks over-stock quantity', (tester) async {

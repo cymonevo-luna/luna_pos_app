@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:luna_pos/core/di/locator.dart';
@@ -13,7 +14,15 @@ import 'package:luna_pos/core/storage/preferences_service.dart';
 import 'package:luna_pos/features/auth/auth_controller.dart';
 import 'package:luna_pos/features/menu/menu_controller.dart' as menu_ctrl;
 import 'package:luna_pos/features/menu/menu_page.dart';
+import 'package:luna_pos/features/menu_management/data/admin_category_repository.dart';
+import 'package:luna_pos/core/network/paginated_response.dart';
+import 'package:luna_pos/features/menu_management/models/admin_category.dart';
+import 'package:luna_pos/features/menu_management/data/admin_menu_repository.dart';
+import 'package:luna_pos/features/menu_management/menu_management_list_controller.dart';
+import 'package:luna_pos/features/menu_management/models/admin_menu.dart';
+import 'package:luna_pos/features/menu_management/menu_management_form_sheet.dart';
 import 'package:luna_pos/features/menu_management/menu_management_list_page.dart';
+import 'package:luna_pos/features/purchase/data/purchase_image_picker.dart';
 import 'package:luna_pos/features/user/models/user.dart';
 import 'package:luna_pos/l10n/app_localizations.dart';
 import 'package:luna_pos/l10n/app_localizations_en.dart';
@@ -21,6 +30,47 @@ import 'package:luna_pos/shared/widgets/main_scaffold.dart';
 import 'package:luna_pos/testing/test_accounts.dart';
 
 import 'helpers/auth_harness.dart';
+
+class _FakeAdminCategoryRepository extends AdminCategoryRepository {
+  _FakeAdminCategoryRepository(super.api);
+
+  @override
+  Future<PaginatedResponse<AdminCategory>> fetchCategories({
+    int page = 1,
+    int perPage = AdminCategoryRepository.pickerPerPage,
+  }) {
+    return Future.value(
+      PaginatedResponse(
+        items: const [AdminCategory(id: 'cat-1', name: 'Rice')],
+        page: 1,
+        perPage: perPage,
+        total: 1,
+      ),
+    );
+  }
+}
+
+Future<void> _waitForCategoriesInForm(WidgetTester tester) async {
+  for (var i = 0; i < 50; i++) {
+    await tester.pump(const Duration(milliseconds: 50));
+    if (!tester.any(find.byType(LinearProgressIndicator))) {
+      break;
+    }
+  }
+  await tester.pumpAndSettle();
+
+  if (!tester.any(find.text('Rice'))) {
+    await tester.ensureVisible(
+      find.byKey(const Key('menu_management_category_field')),
+    );
+    await tester.tap(find.byKey(const Key('menu_management_category_field')));
+    await tester.pumpAndSettle();
+    if (tester.any(find.text('Rice'))) {
+      await tester.tap(find.text('Rice').last);
+      await tester.pumpAndSettle();
+    }
+  }
+}
 
 final _l10n = AppLocalizationsEn();
 
@@ -89,14 +139,49 @@ class _MockMenuPageController extends menu_ctrl.MenuController {
   Future<void> loadIfNeeded() async {}
 }
 
+class _MockMenuManagementListController extends MenuManagementListController {
+  @override
+  MenuManagementState build() => const MenuManagementState();
+
+  @override
+  Future<void> loadInitial() async {}
+
+  @override
+  Future<void> refresh() async {}
+}
+
+class _SuccessMenuManagementController extends MenuManagementListController {
+  @override
+  MenuManagementState build() => const MenuManagementState();
+
+  @override
+  Future<AdminMenu?> createMenu(AdminMenuRequest request) async {
+    return AdminMenu(
+      id: 'menu-new',
+      title: request.title,
+      categoryId: request.categoryId,
+      categoryName: 'Rice',
+      availableStock: request.availableStock,
+      sellPrice: request.sellPrice,
+      recipeYield: 1,
+      marginPercent: 35,
+      vatPercent: 11,
+    );
+  }
+}
+
 ProviderContainer _buildContainer({
   AuthController Function()? authFactory,
+  MenuManagementListController Function()? menuManagementFactory,
 }) {
   return ProviderContainer(
     overrides: [
       authProvider.overrideWith(authFactory ?? _ManageMenusAuthController.new),
       shellCurrentBranchProvider.overrideWith(_HomeShellNotifier.new),
       menu_ctrl.menuProvider.overrideWith(_MockMenuPageController.new),
+      menuManagementProvider.overrideWith(
+        menuManagementFactory ?? _MockMenuManagementListController.new,
+      ),
     ],
   );
 }
@@ -131,6 +216,15 @@ void main() {
       ..registerSingleton<ApiClient>(mocked.client)
       ..registerSingleton<PreferencesService>(
         await PreferencesService.create(),
+      )
+      ..registerLazySingleton<AdminMenuRepository>(
+        () => AdminMenuRepository(locator<ApiClient>()),
+      )
+      ..registerLazySingleton<AdminCategoryRepository>(
+        () => _FakeAdminCategoryRepository(mocked.client),
+      )
+      ..registerLazySingleton<PurchaseImagePicker>(
+        () => _FakePurchaseImagePicker(),
       );
   });
 
@@ -213,4 +307,54 @@ void main() {
     expect(find.byType(MenuManagementListPage), findsOneWidget);
     expect(router.state.matchedLocation, AppRoute.manageMenus.path);
   });
+
+  testWidgets('phone create save returns to manage menus list', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final container = _buildContainer(
+      menuManagementFactory: _SuccessMenuManagementController.new,
+    );
+    addTearDown(container.dispose);
+
+    final router = await pumpRouterApp(tester, container: container);
+
+    router.go(AppRoute.manageMenusNew.path);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(MenuManagementFormPage), findsOneWidget);
+
+    await _waitForCategoriesInForm(tester);
+
+    await tester.enterText(
+      find.byKey(const Key('menu_management_title_field')),
+      'Tea',
+    );
+    await tester.enterText(
+      find.byKey(const Key('menu_management_stock_field')),
+      '5',
+    );
+    await tester.enterText(
+      find.byKey(const Key('menu_management_price_field')),
+      '15000',
+    );
+    await tester.ensureVisible(
+      find.byKey(const Key('menu_management_submit_button')),
+    );
+    await tester.tap(find.byKey(const Key('menu_management_submit_button')));
+    await tester.pumpAndSettle();
+
+    expect(router.state.matchedLocation, AppRoute.manageMenus.path);
+    expect(find.byType(MainScaffold), findsOneWidget);
+    expect(find.byType(MenuManagementListPage), findsOneWidget);
+    expect(find.byType(MenuManagementFormPage), findsNothing);
+  });
+}
+
+class _FakePurchaseImagePicker implements PurchaseImagePicker {
+  @override
+  Future<XFile?> pickFromCamera() async => null;
+
+  @override
+  Future<XFile?> pickFromGallery() async => null;
 }

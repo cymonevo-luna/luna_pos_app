@@ -215,8 +215,11 @@ class _MenuManagementFormSheetState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context).manageMenusSaved)),
       );
-      widget.onSaved?.call();
-      Navigator.of(context).pop(true);
+      if (widget.onSaved != null) {
+        widget.onSaved!();
+      } else {
+        Navigator.of(context).pop(true);
+      }
     } on ApiException catch (e) {
       if (!mounted) return;
       final fieldErrors = parseApiFieldErrors(e.data);
@@ -266,8 +269,11 @@ class _MenuManagementFormSheetState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.manageMenusDeleted)),
       );
-      widget.onSaved?.call();
-      Navigator.of(context).pop(true);
+      if (widget.onSaved != null) {
+        widget.onSaved!();
+      } else {
+        Navigator.of(context).pop(true);
+      }
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() => _submitting = false);
@@ -332,28 +338,31 @@ class _MenuManagementFormSheetState
             if (_loadingCategories)
               const LinearProgressIndicator()
             else
-              DropdownButtonFormField<String>(
+              KeyedSubtree(
                 key: const Key('menu_management_category_field'),
-                initialValue: _categoryId,
-                decoration: const InputDecoration(),
-                items: [
+                child: DropdownButtonFormField<String>(
+                  key: ValueKey(_categoryId),
+                  initialValue: _categoryId,
+                  decoration: const InputDecoration(),
+                  items: [
                   for (final category in _categories)
                     DropdownMenuItem(
                       value: category.id,
                       child: Text(category.name),
                     ),
-                ],
-                onChanged: _submitting
-                    ? null
-                    : (value) => setState(() => _categoryId = value),
-                validator: (value) {
-                  final apiError = _fieldErrors['category_id'];
-                  if (apiError != null) return apiError;
-                  if (value == null || value.isEmpty) {
-                    return l10n.manageMenusCategoryRequired;
-                  }
-                  return null;
-                },
+                  ],
+                  onChanged: _submitting
+                      ? null
+                      : (value) => setState(() => _categoryId = value),
+                  validator: (value) {
+                    final apiError = _fieldErrors['category_id'];
+                    if (apiError != null) return apiError;
+                    if (value == null || value.isEmpty) {
+                      return l10n.manageMenusCategoryRequired;
+                    }
+                    return null;
+                  },
+                ),
               ),
             const VGap(AppSpacing.md),
             AppTextField(
